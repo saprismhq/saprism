@@ -99,22 +99,7 @@ The application uses PostgreSQL with these core tables:
 
 ## Recent Changes
 
-### January 2025 - Complete Rebrand to Salespring
-- **Brand Identity**: Successfully rebranded from "SalesCoach AI" to "Salespring" with spring-inspired theme
-- **Visual Design**: Updated color palette to fresh greens reflecting growth and new beginnings
-- **Logo System**: Created custom SVG logo with spring coil design and leaf accents
-- **Theme Colors**: Implemented green-based color scheme (hsl(142, 76%, 36%) primary, hsl(95, 60%, 88%) accent)
-- **Content Strategy**: Updated all copy to reflect growth and nurturing metaphors
-- **Database Schema**: Fixed Prisma schema to match actual database structure (removed non-existent columns)
-
-### January 2025 - Server Refactoring
-- **Repository Pattern**: Implemented separate repository classes for each entity with clear interfaces
-- **Service Layer**: Created dedicated service classes to handle business logic
-- **Dependency Injection**: Added Container class for managing service dependencies
-- **Controller Pattern**: Separated HTTP handling logic into dedicated controller classes
-- **Authentication Service**: Refactored authentication logic into a dedicated service
-- **SOLID Principles**: Applied Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
-- **Legacy Compatibility**: Maintained backward compatibility with existing authentication system
+See [CHANGELOG.md](./CHANGELOG.md) for detailed version history and changes.
 
 ## Deployment Strategy
 
