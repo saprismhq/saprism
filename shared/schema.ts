@@ -85,6 +85,8 @@ export const insertNoteSchema = NoteSchema.omit({
 export const insertCoachingSuggestionSchema = CoachingSuggestionSchema.omit({
   id: true,
   createdAt: true,
+}).partial({
+  isUsed: true,
 });
 
 export const insertCrmSyncLogSchema = CrmSyncLogSchema.omit({
