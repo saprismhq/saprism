@@ -6,6 +6,7 @@ export interface IMeetingService {
   getMeetingById(id: number): Promise<MeetingWithNotes | undefined>;
   getMeetingsByUserId(userId: string): Promise<Meeting[]>;
   updateMeeting(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
+  deleteMeeting(id: number): Promise<void>;
   validateMeetingOwnership(meetingId: number, userId: string): Promise<boolean>;
 }
 
@@ -26,6 +27,10 @@ export class MeetingService implements IMeetingService {
 
   async updateMeeting(id: number, updates: Partial<InsertMeeting>): Promise<Meeting> {
     return await this.meetingRepository.update(id, updates);
+  }
+
+  async deleteMeeting(id: number): Promise<void> {
+    return await this.meetingRepository.delete(id);
   }
 
   async validateMeetingOwnership(meetingId: number, userId: string): Promise<boolean> {

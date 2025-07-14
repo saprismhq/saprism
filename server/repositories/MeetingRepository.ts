@@ -10,6 +10,7 @@ export interface IMeetingRepository {
   getById(id: number): Promise<MeetingWithNotes | undefined>;
   getByUserId(userId: string): Promise<Meeting[]>;
   update(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
+  delete(id: number): Promise<void>;
 }
 
 export class MeetingRepository implements IMeetingRepository {
@@ -49,5 +50,11 @@ export class MeetingRepository implements IMeetingRepository {
       data: updates,
     });
     return updatedMeeting;
+  }
+
+  async delete(id: number): Promise<void> {
+    await db.meeting.delete({
+      where: { id },
+    });
   }
 }

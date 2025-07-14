@@ -44,6 +44,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/meetings', isAuthenticated, (req, res) => meetingController.createMeeting(req, res));
   app.get('/api/meetings', isAuthenticated, (req, res) => meetingController.getMeetings(req, res));
   app.get('/api/meetings/:id', isAuthenticated, (req, res) => meetingController.getMeetingById(req, res));
+  app.delete('/api/meetings/:id', isAuthenticated, (req, res) => meetingController.deleteMeeting(req, res));
 
   // Note routes
   app.post('/api/notes', isAuthenticated, (req, res) => noteController.createNote(req, res));

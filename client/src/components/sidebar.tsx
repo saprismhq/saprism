@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useQuery } from "@tanstack/react-query";
-import { Brain, Plus, History, BarChart3, Settings, User, LogOut } from "lucide-react";
+import { Brain, Plus, History, BarChart3, Settings, User, LogOut, X } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
 import type { Meeting } from "@shared/schema";
 
@@ -13,7 +14,9 @@ interface SidebarProps {
   activeMeetingId: number | null;
   onSelectMeeting: (id: number) => void;
   onCreateMeeting: (data: { clientName: string; clientCompany: string }) => void;
+  onDeleteMeeting: (id: number) => void;
   createMeetingLoading: boolean;
+  deleteMeetingLoading: boolean;
 }
 
 export function Sidebar({
@@ -21,7 +24,9 @@ export function Sidebar({
   activeMeetingId,
   onSelectMeeting,
   onCreateMeeting,
+  onDeleteMeeting,
   createMeetingLoading,
+  deleteMeetingLoading,
 }: SidebarProps) {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [clientName, setClientName] = useState("");
@@ -124,23 +129,57 @@ export function Sidebar({
           <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">Recent Meetings</h3>
           <div className="space-y-1 max-h-72 overflow-y-auto">
             {meetings.slice(0, 10).map((meeting) => (
-              <button
+              <div
                 key={meeting.id}
-                onClick={() => onSelectMeeting(meeting.id)}
-                className={`w-full text-left px-3 py-3 rounded-lg text-sm transition-colors ${
+                className={`relative group rounded-lg transition-colors ${
                   meeting.id === activeMeetingId
                     ? "bg-primary/10 text-primary border border-primary/20"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}
               >
-                <div className="font-medium">{meeting.clientName}</div>
-                {meeting.clientCompany && (
-                  <div className="text-xs text-gray-500 mt-1">{meeting.clientCompany}</div>
-                )}
-                <div className="text-xs text-gray-400 mt-1">
-                  {new Date(meeting.meetingDate).toLocaleDateString()}
-                </div>
-              </button>
+                <button
+                  onClick={() => onSelectMeeting(meeting.id)}
+                  className="w-full text-left px-3 py-3 pr-10 rounded-lg text-sm"
+                >
+                  <div className="font-medium">{meeting.clientName}</div>
+                  {meeting.clientCompany && (
+                    <div className="text-xs text-gray-500 mt-1">{meeting.clientCompany}</div>
+                  )}
+                  <div className="text-xs text-gray-400 mt-1">
+                    {new Date(meeting.createdAt).toLocaleDateString()}
+                  </div>
+                </button>
+                
+                {/* Delete button */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button
+                      className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-red-100 rounded"
+                      disabled={deleteMeetingLoading}
+                    >
+                      <X className="w-4 h-4 text-red-600" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Meeting</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete the meeting with {meeting.clientName}? 
+                        This action cannot be undone and will permanently remove all notes and coaching suggestions.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>No</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => onDeleteMeeting(meeting.id)}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Yes, Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             ))}
           </div>
         </div>

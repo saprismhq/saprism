@@ -76,6 +76,44 @@ export default function Home() {
     },
   });
 
+  // Delete meeting mutation
+  const deleteMeetingMutation = useMutation({
+    mutationFn: async (meetingId: number) => {
+      const response = await apiRequest("DELETE", `/api/meetings/${meetingId}`);
+      return response.json();
+    },
+    onSuccess: (_, deletedMeetingId) => {
+      // Invalidate meetings query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
+      // If the deleted meeting was active, clear the active meeting
+      if (activeMeetingId === deletedMeetingId) {
+        setActiveMeetingId(null);
+      }
+      toast({
+        title: "Meeting Deleted",
+        description: "Meeting has been successfully deleted",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "Failed to delete meeting",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Auto-select first meeting if none selected
   useEffect(() => {
     if (meetings && meetings.length > 0 && !activeMeetingId) {
@@ -102,7 +140,9 @@ export default function Home() {
           activeMeetingId={activeMeetingId}
           onSelectMeeting={setActiveMeetingId}
           onCreateMeeting={createMeetingMutation.mutate}
+          onDeleteMeeting={deleteMeetingMutation.mutate}
           createMeetingLoading={createMeetingMutation.isPending}
+          deleteMeetingLoading={deleteMeetingMutation.isPending}
         />
         
         <main className="flex-1 overflow-hidden">

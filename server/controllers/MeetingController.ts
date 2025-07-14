@@ -54,4 +54,24 @@ export class MeetingController {
       res.status(500).json({ message: "Failed to fetch meeting" });
     }
   }
+
+  async deleteMeeting(req: any, res: Response): Promise<void> {
+    try {
+      const meetingId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      // Validate meeting ownership
+      const hasAccess = await this.meetingService.validateMeetingOwnership(meetingId, userId);
+      if (!hasAccess) {
+        res.status(403).json({ message: "Access denied" });
+        return;
+      }
+      
+      await this.meetingService.deleteMeeting(meetingId);
+      res.json({ message: "Meeting deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting meeting:", error);
+      res.status(500).json({ message: "Failed to delete meeting" });
+    }
+  }
 }
