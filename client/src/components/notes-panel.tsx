@@ -20,6 +20,43 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   const [lastAnalysis, setLastAnalysis] = useState<AIAnalysisResult | null>(null);
   const [analysisDebounce, setAnalysisDebounce] = useState<NodeJS.Timeout | null>(null);
 
+  // Auto-save functionality
+  const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [previousMeetingId, setPreviousMeetingId] = useState<number | null>(null);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+
+  // Auto-save when content changes
+  useEffect(() => {
+    if (meeting && noteContent && noteContent !== (meeting.notes[0]?.content || "")) {
+      // Clear existing timeout
+      if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+      }
+
+      // Set new timeout for auto-save
+      const timeout = setTimeout(() => {
+        setIsAutoSaving(true);
+        saveNoteMutation.mutate({ content: noteContent, meetingId: meeting.id, isAutoSave: true });
+      }, 2000); // Auto-save after 2 seconds of inactivity
+
+      setAutoSaveTimeout(timeout);
+    }
+
+    return () => {
+      if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+      }
+    };
+  }, [noteContent, meeting]);
+
+  // Save current note before switching meetings
+  useEffect(() => {
+    if (previousMeetingId && previousMeetingId !== meeting?.id && noteContent) {
+      saveNoteMutation.mutate({ content: noteContent, meetingId: previousMeetingId, isAutoSave: true });
+    }
+    setPreviousMeetingId(meeting?.id || null);
+  }, [meeting?.id]);
+
   // Update note content when meeting changes
   useEffect(() => {
     if (meeting && meeting.notes.length > 0) {
@@ -58,7 +95,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
   // Save note mutation
   const saveNoteMutation = useMutation({
-    mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
+    mutationFn: async ({ content, meetingId, isAutoSave = false }: { content: string; meetingId: number; isAutoSave?: boolean }) => {
       const noteData = {
         content,
         meetingId,
@@ -67,7 +104,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
       if (meeting?.notes.length > 0) {
         // Update existing note
-        const response = await apiRequest("PUT", `/api/notes/${meeting.notes[0].id}`, noteData);
+        const response = await apiRequest("PATCH", `/api/notes/${meeting.notes[0].id}`, noteData);
         return response.json();
       } else {
         // Create new note
@@ -75,14 +112,18 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         return response.json();
       }
     },
-    onSuccess: () => {
-      toast({
-        title: "Note Saved",
-        description: "Your meeting notes have been saved successfully.",
-      });
+    onSuccess: (data, variables) => {
+      if (!variables.isAutoSave) {
+        toast({
+          title: "Note Saved",
+          description: "Your meeting notes have been saved successfully.",
+        });
+      }
+      setIsAutoSaving(false);
       queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
     },
-    onError: (error) => {
+    onError: (error, variables) => {
+      setIsAutoSaving(false);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
@@ -94,11 +135,13 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         }, 500);
         return;
       }
-      toast({
-        title: "Error",
-        description: "Failed to save note",
-        variant: "destructive",
-      });
+      if (!variables.isAutoSave) {
+        toast({
+          title: "Error",
+          description: "Failed to save note",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -228,6 +271,12 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
               <Save className="w-4 h-4 mr-2" />
               {saveNoteMutation.isPending ? "Saving..." : "Save"}
             </Button>
+            {isAutoSaving && (
+              <div className="flex items-center text-sm text-gray-500">
+                <div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Auto-saving...
+              </div>
+            )}
             <Button
               onClick={handleCrmSync}
               disabled={syncToCrmMutation.isPending || !noteContent.trim()}

@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 import { NotesPanel } from "@/components/notes-panel";
 import { CoachingPanel } from "@/components/coaching-panel";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Meeting, MeetingWithNotes } from "@shared/schema";
 
 export default function Home() {
@@ -48,6 +48,8 @@ export default function Home() {
       return response.json();
     },
     onSuccess: (meeting: Meeting) => {
+      // Invalidate meetings query to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
       setActiveMeetingId(meeting.id);
       toast({
         title: "Meeting Created",
