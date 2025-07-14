@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import { StringFieldUpdateOperationsInputObjectSchema } from './StringFieldUpdateOperationsInput.schema';
 import { JsonNullValueInputSchema } from '../enums/JsonNullValueInput.schema';
-import { BoolFieldUpdateOperationsInputObjectSchema } from './BoolFieldUpdateOperationsInput.schema';
-import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema';
+import { NullableBoolFieldUpdateOperationsInputObjectSchema } from './NullableBoolFieldUpdateOperationsInput.schema';
+import { NullableDateTimeFieldUpdateOperationsInputObjectSchema } from './NullableDateTimeFieldUpdateOperationsInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -16,27 +17,29 @@ const jsonSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
 
 const Schema: z.ZodType<Prisma.CoachingSuggestionUpdateManyMutationInput> = z
   .object({
+    type: z
+      .union([
+        z.string(),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional(),
     content: z
       .union([z.lazy(() => JsonNullValueInputSchema), jsonSchema])
       .optional(),
-    used: z
+    isUsed: z
       .union([
         z.boolean(),
-        z.lazy(() => BoolFieldUpdateOperationsInputObjectSchema),
+        z.lazy(() => NullableBoolFieldUpdateOperationsInputObjectSchema),
       ])
-      .optional(),
+      .optional()
+      .nullable(),
     createdAt: z
       .union([
         z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
+        z.lazy(() => NullableDateTimeFieldUpdateOperationsInputObjectSchema),
       ])
-      .optional(),
-    updatedAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
+      .optional()
+      .nullable(),
   })
   .strict();
 

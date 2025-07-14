@@ -43,10 +43,10 @@ export const NoteSchema = z.object({
 export const CoachingSuggestionSchema = z.object({
   id: z.number(),
   meetingId: z.number(),
+  type: z.string(),
   content: z.any(),
-  used: z.boolean(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  isUsed: z.boolean().nullable(),
+  createdAt: z.date().nullable(),
 });
 
 export const CrmSyncLogSchema = z.object({
@@ -85,7 +85,6 @@ export const insertNoteSchema = NoteSchema.omit({
 export const insertCoachingSuggestionSchema = CoachingSuggestionSchema.omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
 export const insertCrmSyncLogSchema = CrmSyncLogSchema.omit({

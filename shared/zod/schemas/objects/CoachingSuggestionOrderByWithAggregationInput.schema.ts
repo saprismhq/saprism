@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { SortOrderSchema } from '../enums/SortOrder.schema';
+import { SortOrderInputObjectSchema } from './SortOrderInput.schema';
 import { CoachingSuggestionCountOrderByAggregateInputObjectSchema } from './CoachingSuggestionCountOrderByAggregateInput.schema';
 import { CoachingSuggestionAvgOrderByAggregateInputObjectSchema } from './CoachingSuggestionAvgOrderByAggregateInput.schema';
 import { CoachingSuggestionMaxOrderByAggregateInputObjectSchema } from './CoachingSuggestionMaxOrderByAggregateInput.schema';
@@ -13,10 +14,20 @@ const Schema: z.ZodType<Prisma.CoachingSuggestionOrderByWithAggregationInput> =
     .object({
       id: z.lazy(() => SortOrderSchema).optional(),
       meetingId: z.lazy(() => SortOrderSchema).optional(),
+      type: z.lazy(() => SortOrderSchema).optional(),
       content: z.lazy(() => SortOrderSchema).optional(),
-      used: z.lazy(() => SortOrderSchema).optional(),
-      createdAt: z.lazy(() => SortOrderSchema).optional(),
-      updatedAt: z.lazy(() => SortOrderSchema).optional(),
+      isUsed: z
+        .union([
+          z.lazy(() => SortOrderSchema),
+          z.lazy(() => SortOrderInputObjectSchema),
+        ])
+        .optional(),
+      createdAt: z
+        .union([
+          z.lazy(() => SortOrderSchema),
+          z.lazy(() => SortOrderInputObjectSchema),
+        ])
+        .optional(),
       _count: z
         .lazy(() => CoachingSuggestionCountOrderByAggregateInputObjectSchema)
         .optional(),

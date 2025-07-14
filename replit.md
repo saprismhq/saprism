@@ -1,8 +1,8 @@
-# SalesCoach AI - replit.md
+# Salespring - replit.md
 
 ## Overview
 
-SalesCoach AI is a full-stack web application that provides AI-powered sales coaching and meeting management. The application features intelligent note-taking, real-time coaching suggestions, AI-driven deal stage analysis, and seamless CRM integration with Salesforce.
+Salespring is a full-stack web application that provides AI-powered sales coaching and meeting management. The application features intelligent note-taking, real-time coaching suggestions, AI-driven deal stage analysis, and seamless CRM integration with Salesforce. The platform helps sales teams "spring" their opportunities to life with fresh, growth-oriented insights.
 
 ## User Preferences
 
@@ -98,6 +98,14 @@ The application uses PostgreSQL with these core tables:
 - **zod**: Schema validation
 
 ## Recent Changes
+
+### January 2025 - Complete Rebrand to Salespring
+- **Brand Identity**: Successfully rebranded from "SalesCoach AI" to "Salespring" with spring-inspired theme
+- **Visual Design**: Updated color palette to fresh greens reflecting growth and new beginnings
+- **Logo System**: Created custom SVG logo with spring coil design and leaf accents
+- **Theme Colors**: Implemented green-based color scheme (hsl(142, 76%, 36%) primary, hsl(95, 60%, 88%) accent)
+- **Content Strategy**: Updated all copy to reflect growth and nurturing metaphors
+- **Database Schema**: Fixed Prisma schema to match actual database structure (removed non-existent columns)
 
 ### January 2025 - Server Refactoring
 - **Repository Pattern**: Implemented separate repository classes for each entity with clear interfaces

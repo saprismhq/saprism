@@ -1,23 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Users, BarChart3, Zap } from "lucide-react";
+import { Brain, Users, BarChart3, Zap, Leaf, TrendingUp } from "lucide-react";
+import { SalespringLogo } from "@/components/salespring-logo";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-white">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SalesCoach</h1>
-                <p className="text-sm text-gray-500">AI-Powered</p>
-              </div>
-            </div>
+            <SalespringLogo size="md" />
             <Button 
               onClick={() => window.location.href = '/api/login'}
               className="bg-primary hover:bg-primary/90"
@@ -31,37 +24,43 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              <Leaf className="w-16 h-16 text-accent opacity-20 absolute -top-4 -right-4" />
+              <TrendingUp className="w-20 h-20 text-primary" />
+            </div>
+          </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
-            Transform Your Sales Process with
-            <span className="text-primary"> AI-Powered Coaching</span>
+            Watch Your Sales
+            <span className="text-primary"> Spring</span> to Life
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Empower your sales team with intelligent note-taking, real-time guidance, 
-            and automatic CRM sync. Turn every meeting into a winning opportunity.
+            Nurture every opportunity with AI-powered insights, real-time coaching, 
+            and seamless CRM integration. Transform prospects into flourishing deals.
           </p>
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary/90 text-lg px-8 py-3"
             onClick={() => window.location.href = '/api/login'}
           >
-            Start Your Free Trial
+            Start Growing Today
           </Button>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gradient-to-br from-green-50/50 to-emerald-50/50">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Everything You Need to Close More Deals
+            Everything You Need to Cultivate Success
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card>
               <CardHeader>
                 <Brain className="w-8 h-8 text-primary mb-2" />
-                <CardTitle>AI-Powered Notes</CardTitle>
+                <CardTitle>Smart Insights</CardTitle>
                 <CardDescription>
-                  Intelligent note-taking that extracts key insights and identifies opportunities
+                  Plant the seeds of success with AI-powered note analysis that identifies growth opportunities
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -71,7 +70,7 @@ export default function Landing() {
                 <Zap className="w-8 h-8 text-accent mb-2" />
                 <CardTitle>Real-Time Coaching</CardTitle>
                 <CardDescription>
-                  Get contextual prompts and suggestions during your meetings
+                  Nurture every conversation with contextual prompts that help deals bloom
                 </CardDescription>
               </CardHeader>
             </Card>

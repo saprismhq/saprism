@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { IntWithAggregatesFilterObjectSchema } from './IntWithAggregatesFilter.schema';
+import { StringWithAggregatesFilterObjectSchema } from './StringWithAggregatesFilter.schema';
 import { JsonWithAggregatesFilterObjectSchema } from './JsonWithAggregatesFilter.schema';
-import { BoolWithAggregatesFilterObjectSchema } from './BoolWithAggregatesFilter.schema';
-import { DateTimeWithAggregatesFilterObjectSchema } from './DateTimeWithAggregatesFilter.schema';
+import { BoolNullableWithAggregatesFilterObjectSchema } from './BoolNullableWithAggregatesFilter.schema';
+import { DateTimeNullableWithAggregatesFilterObjectSchema } from './DateTimeNullableWithAggregatesFilter.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -47,25 +48,27 @@ const Schema: z.ZodType<Prisma.CoachingSuggestionScalarWhereWithAggregatesInput>
       meetingId: z
         .union([z.lazy(() => IntWithAggregatesFilterObjectSchema), z.number()])
         .optional(),
-      content: z.lazy(() => JsonWithAggregatesFilterObjectSchema).optional(),
-      used: z
+      type: z
         .union([
-          z.lazy(() => BoolWithAggregatesFilterObjectSchema),
+          z.lazy(() => StringWithAggregatesFilterObjectSchema),
+          z.string(),
+        ])
+        .optional(),
+      content: z.lazy(() => JsonWithAggregatesFilterObjectSchema).optional(),
+      isUsed: z
+        .union([
+          z.lazy(() => BoolNullableWithAggregatesFilterObjectSchema),
           z.boolean(),
         ])
-        .optional(),
+        .optional()
+        .nullable(),
       createdAt: z
         .union([
-          z.lazy(() => DateTimeWithAggregatesFilterObjectSchema),
+          z.lazy(() => DateTimeNullableWithAggregatesFilterObjectSchema),
           z.coerce.date(),
         ])
-        .optional(),
-      updatedAt: z
-        .union([
-          z.lazy(() => DateTimeWithAggregatesFilterObjectSchema),
-          z.coerce.date(),
-        ])
-        .optional(),
+        .optional()
+        .nullable(),
     })
     .strict();
 

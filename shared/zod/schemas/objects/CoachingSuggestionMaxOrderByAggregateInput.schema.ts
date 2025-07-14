@@ -7,9 +7,9 @@ const Schema: z.ZodType<Prisma.CoachingSuggestionMaxOrderByAggregateInput> = z
   .object({
     id: z.lazy(() => SortOrderSchema).optional(),
     meetingId: z.lazy(() => SortOrderSchema).optional(),
-    used: z.lazy(() => SortOrderSchema).optional(),
+    type: z.lazy(() => SortOrderSchema).optional(),
+    isUsed: z.lazy(() => SortOrderSchema).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
-    updatedAt: z.lazy(() => SortOrderSchema).optional(),
   })
   .strict();
 

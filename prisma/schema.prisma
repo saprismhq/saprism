@@ -74,10 +74,10 @@ model Note {
 model CoachingSuggestion {
   id         Int      @id @default(autoincrement())
   meetingId  Int      @map("meeting_id")
+  type       String   @db.VarChar(255)
   content    Json
-  used       Boolean  @default(false)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  isUsed     Boolean? @map("is_used")
+  createdAt  DateTime? @default(now()) @map("created_at")
 
   // Relations
   meeting Meeting @relation(fields: [meetingId], references: [id])

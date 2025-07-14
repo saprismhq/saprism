@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery } from "@tanstack/react-query";
 import { Brain, Plus, History, BarChart3, Settings, User, LogOut } from "lucide-react";
+import { SalespringLogo } from "@/components/salespring-logo";
 import type { Meeting } from "@shared/schema";
 
 interface SidebarProps {
@@ -48,15 +49,7 @@ export function Sidebar({
     <aside className="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col h-full">
       {/* Logo & Brand */}
       <div className="p-6 border-b border-gray-100">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Brain className="text-white text-sm" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-900">SalesCoach</h1>
-            <p className="text-xs text-gray-500">AI-Powered</p>
-          </div>
-        </div>
+        <SalespringLogo size="md" />
       </div>
 
       {/* Create Meeting Button */}

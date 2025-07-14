@@ -15,10 +15,10 @@ const jsonSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
 const Schema: z.ZodType<Prisma.CoachingSuggestionCreateManyMeetingInput> = z
   .object({
     id: z.number().optional(),
+    type: z.string(),
     content: z.union([z.lazy(() => JsonNullValueInputSchema), jsonSchema]),
-    used: z.boolean().optional(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
+    isUsed: z.boolean().optional().nullable(),
+    createdAt: z.coerce.date().optional().nullable(),
   })
   .strict();
 
