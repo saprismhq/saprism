@@ -26,6 +26,14 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: Express sessions with PostgreSQL store for persistence
 - **API Design**: RESTful endpoints with JSON responses and proper error handling
 
+### Modern Architecture Patterns (Updated January 2025)
+- **SOLID Principles**: Refactored server code to follow Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
+- **Repository Pattern**: Separate data access layer with interfaces for each entity (User, Meeting, Note, CoachingSuggestion, CrmSyncLog)
+- **Service Layer**: Business logic separated into dedicated services with clear interfaces
+- **Dependency Injection**: Container-based DI system for managing service dependencies
+- **Controller Pattern**: Dedicated controllers for handling HTTP requests and responses
+- **Separation of Concerns**: Clean separation between data access, business logic, and presentation layers
+
 ### Database Schema
 The application uses PostgreSQL with these core tables:
 - `sessions` - Session storage for authentication with automatic expiration
@@ -88,6 +96,17 @@ The application uses PostgreSQL with these core tables:
 - **wouter**: Lightweight routing
 - **react-hook-form**: Form management
 - **zod**: Schema validation
+
+## Recent Changes
+
+### January 2025 - Server Refactoring
+- **Repository Pattern**: Implemented separate repository classes for each entity with clear interfaces
+- **Service Layer**: Created dedicated service classes to handle business logic
+- **Dependency Injection**: Added Container class for managing service dependencies
+- **Controller Pattern**: Separated HTTP handling logic into dedicated controller classes
+- **Authentication Service**: Refactored authentication logic into a dedicated service
+- **SOLID Principles**: Applied Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
+- **Legacy Compatibility**: Maintained backward compatibility with existing authentication system
 
 ## Deployment Strategy
 
