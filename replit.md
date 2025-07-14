@@ -8,6 +8,7 @@ SalesCoach AI is a full-stack web application that provides AI-powered sales coa
 
 Preferred communication style: Simple, everyday language.
 UX/UI Preferences: Clean, uncluttered interface with proper spacing and clear navigation.
+Development Preferences: Don't route to home page by default during local development for testing core features.
 
 ## System Architecture
 
