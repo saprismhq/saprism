@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { openaiService } from "./services/openai";
 import { salesforceService } from "./services/salesforce";
 import { insertMeetingSchema, insertNoteSchema, insertCoachingSuggestionSchema } from "@shared/schema";

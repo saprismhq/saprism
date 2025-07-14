@@ -88,7 +88,7 @@ export async function setupAuth(app: Express) {
     .REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
       {
-        name: `replitauth:${domain}`,
+        name: `oidc:${domain}`,
         config,
         scope: "openid email profile offline_access",
         callbackURL: `https://${domain}/api/callback`,
@@ -102,14 +102,14 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    passport.authenticate(`oidc:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    passport.authenticate(`oidc:${req.hostname}`, {
       successReturnToOrRedirect: "/home",
       failureRedirect: "/api/login",
     })(req, res, next);
