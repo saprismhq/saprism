@@ -147,12 +147,14 @@ export default function Home() {
         
         <main className="flex-1 overflow-hidden">
           <NotesPanel
+            key={activeMeetingId}
             meeting={activeMeeting}
             isLoading={activeMeetingLoading}
           />
         </main>
         
         <CoachingPanel
+          key={activeMeetingId}
           meeting={activeMeeting}
           isLoading={activeMeetingLoading}
         />

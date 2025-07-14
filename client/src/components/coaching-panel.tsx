@@ -65,6 +65,12 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     },
   });
 
+  // Clear coaching suggestions when meeting changes
+  useEffect(() => {
+    setCoachingSuggestions(null);
+    setCopiedItems(new Set());
+  }, [meeting?.id]);
+
   // Generate coaching suggestions when meeting changes
   useEffect(() => {
     if (meeting && meeting.notes.length > 0) {
