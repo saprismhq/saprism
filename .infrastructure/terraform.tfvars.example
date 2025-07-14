@@ -1,0 +1,53 @@
+# Example Terraform variables file for Salespring
+# Copy this file to terraform.tfvars and update the values
+
+# Project configuration
+project_name = "salespring"
+environment  = "development"
+aws_region   = "us-east-1"
+
+# Application configuration
+app_port = 5000
+
+# Database configuration
+db_instance_class = "db.t3.micro"
+db_name          = "salespring"
+db_username      = "salespring_user"
+
+# ECS configuration
+ecs_desired_count = 1
+ecs_cpu          = 256
+ecs_memory       = 512
+
+# Monitoring configuration
+log_retention_days = 14
+
+# RDS configuration
+allocated_storage           = 20
+max_allocated_storage      = 100
+storage_type               = "gp2"
+storage_encrypted          = true
+backup_retention_period    = 7
+backup_window             = "03:00-04:00"
+maintenance_window        = "sun:04:00-sun:05:00"
+enable_deletion_protection = false
+multi_az                  = false
+enable_performance_insights = false
+enable_monitoring         = false
+monitoring_interval       = 60
+auto_minor_version_upgrade = true
+allow_major_version_upgrade = false
+apply_immediately         = false
+
+# Optional: Domain and SSL configuration
+# domain_name     = "salespring.yourdomain.com"
+# certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012"
+# enable_https    = true
+
+# Additional tags
+tags = {
+  Owner       = "YourName"
+  Environment = "development"
+  Project     = "salespring"
+  ManagedBy   = "terraform"
+}

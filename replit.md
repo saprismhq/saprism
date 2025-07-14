@@ -101,12 +101,24 @@ The application uses PostgreSQL with these core tables:
 
 ## Deployment Strategy
 
-The application is configured for deployment on Replit with:
+The application supports multiple deployment options:
+
+### Replit Deployment
 - **Build Process**: Vite builds the frontend, ESBuild bundles the backend
 - **Environment Variables**: Database connection, API keys, and authentication secrets
 - **Session Storage**: PostgreSQL-backed sessions for scalability
 - **Static Assets**: Served through Express middleware
 - **Development Mode**: Hot reloading with Vite middleware integration
+
+### AWS Infrastructure (Terraform)
+- **Infrastructure as Code**: Complete Terraform configuration in `.infrastructure/` folder
+- **Container Orchestration**: ECS Fargate with auto-scaling and load balancing
+- **Database**: RDS PostgreSQL with automated backups and Multi-AZ support
+- **Security**: VPC isolation, security groups, and IAM roles with least privilege
+- **Monitoring**: CloudWatch logs, metrics, and alarms for health monitoring
+- **Secrets Management**: AWS Systems Manager Parameter Store for secure configuration
+- **Container Registry**: ECR for Docker image storage and vulnerability scanning
+- **Load Balancing**: Application Load Balancer with health checks and SSL termination
 
 ## Brand Identity
 
