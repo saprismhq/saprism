@@ -1,6 +1,5 @@
-import { notes, type Note, type InsertNote } from "@shared/schema";
+import { type Note, type InsertNote } from "@shared/schema";
 import { db } from "../db";
-import { eq, desc } from "drizzle-orm";
 
 export interface INoteRepository {
   create(note: InsertNote): Promise<Note>;
@@ -10,27 +9,24 @@ export interface INoteRepository {
 
 export class NoteRepository implements INoteRepository {
   async create(note: InsertNote): Promise<Note> {
-    const [newNote] = await db
-      .insert(notes)
-      .values(note)
-      .returning();
+    const newNote = await db.note.create({
+      data: note,
+    });
     return newNote;
   }
 
   async update(id: number, updates: Partial<InsertNote>): Promise<Note> {
-    const [updatedNote] = await db
-      .update(notes)
-      .set(updates)
-      .where(eq(notes.id, id))
-      .returning();
+    const updatedNote = await db.note.update({
+      where: { id },
+      data: updates,
+    });
     return updatedNote;
   }
 
   async getByMeetingId(meetingId: number): Promise<Note[]> {
-    return await db
-      .select()
-      .from(notes)
-      .where(eq(notes.meetingId, meetingId))
-      .orderBy(desc(notes.createdAt));
+    return await db.note.findMany({
+      where: { meetingId },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }

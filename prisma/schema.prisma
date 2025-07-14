@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../shared/zod"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  sid    String   @id @db.VarChar(255)
+  sess   Json
+  expire DateTime
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("sessions")
+}
+
+model User {
+  id              String    @id @db.VarChar(255)
+  email           String?   @unique @db.VarChar(255)
+  firstName       String?   @map("first_name") @db.VarChar(255)
+  lastName        String?   @map("last_name") @db.VarChar(255)
+  profileImageUrl String?   @map("profile_image_url") @db.VarChar(255)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  meetings Meeting[]
+
+  @@map("users")
+}
+
+model Meeting {
+  id            Int       @id @default(autoincrement())
+  userId        String    @map("user_id") @db.VarChar(255)
+  clientName    String    @map("client_name") @db.VarChar(255)
+  clientCompany String?   @map("client_company") @db.VarChar(255)
+  status        String    @default("active") @db.VarChar(50)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  user                User                 @relation(fields: [userId], references: [id])
+  notes               Note[]
+  coachingSuggestions CoachingSuggestion[]
+  crmSyncLogs         CrmSyncLog[]
+
+  @@map("meetings")
+}
+
+model Note {
+  id         Int      @id @default(autoincrement())
+  meetingId  Int      @map("meeting_id")
+  content    String   @db.Text
+  aiAnalysis Json?    @map("ai_analysis")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id])
+
+  @@map("notes")
+}
+
+model CoachingSuggestion {
+  id         Int      @id @default(autoincrement())
+  meetingId  Int      @map("meeting_id")
+  content    Json
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id])
+
+  @@map("coaching_suggestions")
+}
+
+model CrmSyncLog {
+  id         Int      @id @default(autoincrement())
+  meetingId  Int      @map("meeting_id")
+  status     String   @db.VarChar(50)
+  syncData   Json?    @map("sync_data")
+  error      String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id])
+
+  @@map("crm_sync_logs")
+}

@@ -1,6 +1,5 @@
-import { crmSyncLogs, type CrmSyncLog, type InsertCrmSyncLog } from "@shared/schema";
+import { type CrmSyncLog, type InsertCrmSyncLog } from "@shared/schema";
 import { db } from "../db";
-import { eq, desc } from "drizzle-orm";
 
 export interface ICrmSyncLogRepository {
   create(log: InsertCrmSyncLog): Promise<CrmSyncLog>;
@@ -9,18 +8,16 @@ export interface ICrmSyncLogRepository {
 
 export class CrmSyncLogRepository implements ICrmSyncLogRepository {
   async create(log: InsertCrmSyncLog): Promise<CrmSyncLog> {
-    const [newLog] = await db
-      .insert(crmSyncLogs)
-      .values(log)
-      .returning();
+    const newLog = await db.crmSyncLog.create({
+      data: log,
+    });
     return newLog;
   }
 
   async getByMeetingId(meetingId: number): Promise<CrmSyncLog[]> {
-    return await db
-      .select()
-      .from(crmSyncLogs)
-      .where(eq(crmSyncLogs.meetingId, meetingId))
-      .orderBy(desc(crmSyncLogs.createdAt));
+    return await db.crmSyncLog.findMany({
+      where: { meetingId },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }
