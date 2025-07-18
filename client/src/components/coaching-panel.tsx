@@ -71,6 +71,8 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
 
   // Handle meeting changes: load existing suggestions
   useEffect(() => {
+    console.log("Meeting data changed in coaching panel:", meeting);
+    
     if (!meeting) {
       setCoachingSuggestions(null);
       setCopiedItems(new Set());
@@ -80,11 +82,14 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     // Load existing coaching suggestions from the meeting
     if (meeting.coachingSuggestions && meeting.coachingSuggestions.length > 0) {
       const latestSuggestion = meeting.coachingSuggestions[0];
+      console.log("Latest coaching suggestion from meeting:", latestSuggestion);
+      
       if (latestSuggestion && latestSuggestion.content) {
         console.log("Loading coaching suggestions from meeting:", latestSuggestion.content);
         setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
       }
     } else {
+      console.log("No coaching suggestions found in meeting data");
       setCoachingSuggestions(null);
     }
     
