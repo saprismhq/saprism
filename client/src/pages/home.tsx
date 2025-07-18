@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useAuth, useMeetings, useMeeting, useCreateMeeting, useDeleteMeeting } from "@/lib/api";
+import { useAuth } from "@/lib/api/auth";
+import { useMeetings, useMeeting, useCreateMeeting, useDeleteMeeting } from "@/lib/api/meetings";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Sidebar } from "@/components/sidebar";

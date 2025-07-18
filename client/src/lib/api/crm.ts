@@ -27,16 +27,13 @@ export const crmApi = {
   },
 
   syncMeeting: async (meetingId: number): Promise<CrmSyncResult> => {
-    return apiRequest(`/api/crm/sync`, {
-      method: "POST",
-      body: JSON.stringify({ meetingId }),
-    });
+    const response = await apiRequest("POST", `/api/crm/sync`, { meetingId });
+    return response.json();
   },
 
   testConnection: async (): Promise<CrmStatus> => {
-    return apiRequest("/api/crm/test", {
-      method: "POST",
-    });
+    const response = await apiRequest("POST", "/api/crm/test", {});
+    return response.json();
   },
 };
 

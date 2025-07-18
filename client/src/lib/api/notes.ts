@@ -14,23 +14,17 @@ export const notesApi = {
   },
 
   create: async (note: Omit<InsertNote, "id">): Promise<Note> => {
-    return apiRequest("/api/notes", {
-      method: "POST",
-      body: JSON.stringify(note),
-    });
+    const response = await apiRequest("POST", "/api/notes", note);
+    return response.json();
   },
 
   update: async (id: number, updates: Partial<InsertNote>): Promise<Note> => {
-    return apiRequest(`/api/notes/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(updates),
-    });
+    const response = await apiRequest("PATCH", `/api/notes/${id}`, updates);
+    return response.json();
   },
 
   delete: async (id: number): Promise<void> => {
-    return apiRequest(`/api/notes/${id}`, {
-      method: "DELETE",
-    });
+    await apiRequest("DELETE", `/api/notes/${id}`, {});
   },
 };
 

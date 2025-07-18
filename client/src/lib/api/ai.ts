@@ -6,24 +6,18 @@ import type { AIAnalysisResult, CoachingSuggestionContent } from "@shared/schema
 // AI API functions
 export const aiApi = {
   analyzeNotes: async (meetingId: number): Promise<AIAnalysisResult> => {
-    return apiRequest(`/api/ai/analyze`, {
-      method: "POST",
-      body: JSON.stringify({ meetingId }),
-    });
+    const response = await apiRequest("POST", `/api/ai/analyze`, { meetingId });
+    return response.json();
   },
 
   generateCoaching: async (meetingId: number): Promise<CoachingSuggestionContent> => {
-    return apiRequest(`/api/ai/coaching`, {
-      method: "POST",
-      body: JSON.stringify({ meetingId }),
-    });
+    const response = await apiRequest("POST", `/api/ai/coaching`, { meetingId });
+    return response.json();
   },
 
   generateFollowUp: async (meetingId: number): Promise<{ questions: string[] }> => {
-    return apiRequest(`/api/ai/follow-up`, {
-      method: "POST",
-      body: JSON.stringify({ meetingId }),
-    });
+    const response = await apiRequest("POST", `/api/ai/follow-up`, { meetingId });
+    return response.json();
   },
 };
 
