@@ -12,9 +12,10 @@ import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 interface NotesPanelProps {
   meeting: MeetingWithNotes | undefined;
   isLoading: boolean;
+  onAnalyzing?: (isAnalyzing: boolean) => void; // Callback to notify parent about analysis state
 }
 
-export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
+export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps) {
   const { toast } = useToast();
   const [noteContent, setNoteContent] = useState("");
   const [lastAnalysis, setLastAnalysis] = useState<AIAnalysisResult | null>(null);
@@ -100,10 +101,14 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   // AI Analysis mutation (now includes coaching suggestions)
   const analyzeNotesMutation = useMutation({
     mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
+      // Notify parent that analysis is starting
+      onAnalyzing?.(true);
       const response = await apiRequest("POST", "/api/ai/analyze", { content, meetingId });
       return response.json();
     },
     onSuccess: (result: any) => {
+      // Notify parent that analysis is complete
+      onAnalyzing?.(false);
       // Handle both old format (just analysis) and new format (analysis + coaching)
       if (result.analysis) {
         setLastAnalysis(result.analysis);
@@ -135,6 +140,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       }
     },
     onError: (error) => {
+      // Notify parent that analysis is complete (even on error)
+      onAnalyzing?.(false);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",

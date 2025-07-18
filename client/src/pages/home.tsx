@@ -11,6 +11,7 @@ export default function Home() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const [activeMeetingId, setActiveMeetingId] = useState<number | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -135,6 +136,7 @@ export default function Home() {
             key={activeMeetingId}
             meeting={activeMeeting}
             isLoading={activeMeetingLoading}
+            onAnalyzing={setIsAnalyzing}
           />
         </main>
         
@@ -142,6 +144,7 @@ export default function Home() {
           key={activeMeetingId}
           meeting={activeMeeting}
           isLoading={activeMeetingLoading}
+          isAnalyzing={isAnalyzing}
         />
       </div>
     </div>

@@ -11,9 +11,10 @@ import type { MeetingWithNotes, CoachingSuggestionContent } from "@shared/schema
 interface CoachingPanelProps {
   meeting: MeetingWithNotes | undefined;
   isLoading: boolean;
+  isAnalyzing?: boolean; // New prop for when AI analysis is running
 }
 
-export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
+export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: CoachingPanelProps) {
   const { toast } = useToast();
   const [coachingSuggestions, setCoachingSuggestions] = useState<CoachingSuggestionContent | null>(null);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
@@ -162,7 +163,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
 
       {/* Coaching Content */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-        {generateCoachingMutation.isPending && (
+        {(generateCoachingMutation.isPending || isAnalyzing) && (
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
