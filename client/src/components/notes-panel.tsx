@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Save, FolderSync, Mic, Clock, Tag, Brain } from "lucide-react";
+import { Save, FolderSync, Mic, Clock, Tag, Brain, User, Calendar } from "lucide-react";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
 interface NotesPanelProps {
@@ -321,11 +321,40 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {meeting.clientCompany ? `${meeting.clientCompany} - ${meeting.clientName}` : meeting.clientName}
-            </p>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Meeting Notes</h2>
+            <div className="flex items-center space-x-6 text-sm">
+              <div className="flex items-center space-x-2">
+                <User className="w-4 h-4 text-gray-400" />
+                <div>
+                  <span className="font-medium text-gray-900">{meeting.clientName}</span>
+                  {meeting.clientCompany && (
+                    <span className="text-gray-500 ml-1">at {meeting.clientCompany}</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">
+                  {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span className="text-gray-600">
+                  {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}
+                </span>
+              </div>
+            </div>
           </div>
           <div className="flex items-center space-x-3">
             <Button
