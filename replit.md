@@ -7,6 +7,7 @@ Salespring is a full-stack web application that provides AI-powered sales coachi
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Branding preference: Use "Growth Guide" instead of "AI Coach" for coaching features to align with spring/growth theme.
 
 ## System Architecture
 

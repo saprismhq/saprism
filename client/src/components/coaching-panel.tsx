@@ -123,7 +123,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading coaching...</p>
+            <p className="text-gray-600">Loading insights...</p>
           </div>
         </div>
       </section>
@@ -135,8 +135,8 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
       <section className="w-96 bg-gray-50 border-l border-gray-200 flex flex-col">
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
-            <p className="text-gray-600 mb-4">AI coaching will appear here</p>
-            <p className="text-sm text-gray-500">Start taking notes to get intelligent suggestions</p>
+            <p className="text-gray-600 mb-4">Growth insights will appear here</p>
+            <p className="text-sm text-gray-500">Start taking notes to get intelligent guidance</p>
           </div>
         </div>
       </section>
@@ -150,7 +150,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center">
             <Lightbulb className="w-4 h-4 mr-2 text-primary" />
-            AI Coach
+            Growth Guide
           </h3>
           {meeting && meeting.notes.length > 0 && (
             <Button
@@ -179,7 +179,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-sm text-gray-600">Generating coaching suggestions...</p>
+              <p className="text-sm text-gray-600">Generating growth insights...</p>
             </div>
           </div>
         )}
