@@ -27,7 +27,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
   // Auto-save when content changes
   useEffect(() => {
-    if (meeting && noteContent && noteContent !== (meeting.notes[0]?.content || "")) {
+    if (meeting && noteContent.trim() && noteContent !== (meeting.notes[0]?.content || "")) {
       // Clear existing timeout
       if (autoSaveTimeout) {
         clearTimeout(autoSaveTimeout);
@@ -51,7 +51,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
   // Save current note before switching meetings
   useEffect(() => {
-    if (previousMeetingId && previousMeetingId !== meeting?.id && noteContent) {
+    if (previousMeetingId && previousMeetingId !== meeting?.id && noteContent.trim()) {
+      // Only save if content has changed from what's already saved
       saveNoteMutation.mutate({ content: noteContent, meetingId: previousMeetingId, isAutoSave: true });
     }
     setPreviousMeetingId(meeting?.id || null);
@@ -120,7 +121,9 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         });
       }
       setIsAutoSaving(false);
+      // Invalidate both meeting details and meeting list queries
       queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
     },
     onError: (error, variables) => {
       setIsAutoSaving(false);

@@ -18,15 +18,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
   const [coachingSuggestions, setCoachingSuggestions] = useState<CoachingSuggestionContent | null>(null);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
 
-  // Load existing coaching suggestions from the meeting
-  useEffect(() => {
-    if (meeting && meeting.coachingSuggestions && meeting.coachingSuggestions.length > 0) {
-      const latestSuggestion = meeting.coachingSuggestions[0];
-      if (latestSuggestion && latestSuggestion.content) {
-        setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
-      }
-    }
-  }, [meeting]);
+
 
   // Generate coaching suggestions mutation
   const generateCoachingMutation = useMutation({
@@ -75,25 +67,37 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     },
   });
 
-  // Clear coaching suggestions when meeting changes
+  // Handle meeting changes: load existing suggestions or generate new ones
   useEffect(() => {
-    setCoachingSuggestions(null);
+    if (!meeting) {
+      setCoachingSuggestions(null);
+      setCopiedItems(new Set());
+      return;
+    }
+
+    // Load existing coaching suggestions from the meeting
+    if (meeting.coachingSuggestions && meeting.coachingSuggestions.length > 0) {
+      const latestSuggestion = meeting.coachingSuggestions[0];
+      if (latestSuggestion && latestSuggestion.content) {
+        setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
+      }
+    } else {
+      // Clear suggestions and generate new ones if meeting has notes but no suggestions
+      setCoachingSuggestions(null);
+      if (meeting.notes.length > 0) {
+        const latestNote = meeting.notes[0];
+        const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
+        
+        generateCoachingMutation.mutate({
+          content: latestNote.content,
+          dealStage,
+          meetingId: meeting.id,
+        });
+      }
+    }
+    
     setCopiedItems(new Set());
   }, [meeting?.id]);
-
-  // Generate coaching suggestions when meeting changes and no existing suggestions
-  useEffect(() => {
-    if (meeting && meeting.notes.length > 0 && (!meeting.coachingSuggestions || meeting.coachingSuggestions.length === 0)) {
-      const latestNote = meeting.notes[0];
-      const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
-      
-      generateCoachingMutation.mutate({
-        content: latestNote.content,
-        dealStage,
-        meetingId: meeting.id,
-      });
-    }
-  }, [meeting]);
 
   // Handle copy to clipboard
   const handleCopy = (text: string, itemId: string) => {
@@ -147,30 +151,10 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     <section className="w-96 bg-gray-50 border-l border-gray-100 flex flex-col h-full">
       {/* Header */}
       <header className="px-6 py-4 bg-white border-b border-gray-100 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-            <Lightbulb className="w-4 h-4 mr-2 text-primary" />
-            Growth Guide
-          </h3>
-          {meeting && meeting.notes.length > 0 && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                const latestNote = meeting.notes[0];
-                const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
-                generateCoachingMutation.mutate({
-                  content: latestNote.content,
-                  dealStage,
-                  meetingId: meeting.id,
-                });
-              }}
-              disabled={generateCoachingMutation.isPending}
-            >
-              {generateCoachingMutation.isPending ? "Generating..." : "Refresh"}
-            </Button>
-          )}
-        </div>
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <Lightbulb className="w-4 h-4 mr-2 text-primary" />
+          Growth Guide
+        </h3>
       </header>
 
       {/* Coaching Content */}
