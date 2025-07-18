@@ -78,6 +78,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     onSuccess: () => {
       // Invalidate meeting data to refresh coaching suggestions
       queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {

@@ -86,7 +86,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     }
     
     setCopiedItems(new Set());
-  }, [meeting?.id]);
+  }, [meeting?.id, meeting?.coachingSuggestions]);
 
   // Handle copy to clipboard
   const handleCopy = (text: string, itemId: string) => {
