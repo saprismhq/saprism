@@ -122,7 +122,7 @@ export class AuthenticationService implements IAuthenticationService {
 
     app.get("/api/callback", (req, res, next) => {
       passport.authenticate(`oidc:${req.hostname}`, {
-        successReturnToOrRedirect: "/home",
+        successReturnToOrRedirect: "/",
         failureRedirect: "/api/login",
       })(req, res, next);
     });
