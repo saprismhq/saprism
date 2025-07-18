@@ -6,7 +6,9 @@ import type { Meeting, MeetingWithNotes, InsertMeeting } from "@shared/schema";
 // Meeting API functions
 export const meetingsApi = {
   getAll: async (): Promise<Meeting[]> => {
-    const response = await fetch("/api/meetings");
+    const response = await fetch("/api/meetings", {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
@@ -14,7 +16,9 @@ export const meetingsApi = {
   },
 
   getById: async (id: number): Promise<MeetingWithNotes> => {
-    const response = await fetch(`/api/meetings/${id}`);
+    const response = await fetch(`/api/meetings/${id}`, {
+      credentials: "include",
+    });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
@@ -22,23 +26,17 @@ export const meetingsApi = {
   },
 
   create: async (meeting: Omit<InsertMeeting, "userId" | "status">): Promise<Meeting> => {
-    return apiRequest("/api/meetings", {
-      method: "POST",
-      body: JSON.stringify(meeting),
-    });
+    const response = await apiRequest("POST", "/api/meetings", meeting);
+    return response.json();
   },
 
   update: async (id: number, updates: Partial<InsertMeeting>): Promise<Meeting> => {
-    return apiRequest(`/api/meetings/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(updates),
-    });
+    const response = await apiRequest("PATCH", `/api/meetings/${id}`, updates);
+    return response.json();
   },
 
   delete: async (id: number): Promise<void> => {
-    return apiRequest(`/api/meetings/${id}`, {
-      method: "DELETE",
-    });
+    await apiRequest("DELETE", `/api/meetings/${id}`);
   },
 };
 
