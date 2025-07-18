@@ -47,7 +47,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         clearTimeout(autoSaveTimeout);
       }
     };
-  }, [noteContent, meeting]);
+  }, [noteContent, meeting, saveNoteMutation]);
 
   // Save current note before switching meetings
   useEffect(() => {
@@ -75,7 +75,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       const response = await apiRequest("POST", "/api/ai/coaching", { content, dealStage, meetingId });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (suggestions: any) => {
+      console.log("Coaching suggestions generated successfully:", suggestions);
       // Invalidate meeting data to refresh coaching suggestions
       queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
       queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });

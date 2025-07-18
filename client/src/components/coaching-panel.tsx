@@ -28,6 +28,8 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     },
     onSuccess: (suggestions: CoachingSuggestionContent) => {
       setCoachingSuggestions(suggestions);
+      // Also invalidate the meeting data to ensure it's fresh
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -79,6 +81,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     if (meeting.coachingSuggestions && meeting.coachingSuggestions.length > 0) {
       const latestSuggestion = meeting.coachingSuggestions[0];
       if (latestSuggestion && latestSuggestion.content) {
+        console.log("Loading coaching suggestions from meeting:", latestSuggestion.content);
         setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
       }
     } else {
@@ -86,7 +89,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     }
     
     setCopiedItems(new Set());
-  }, [meeting?.id, meeting?.coachingSuggestions]);
+  }, [meeting]);
 
   // Handle copy to clipboard
   const handleCopy = (text: string, itemId: string) => {
