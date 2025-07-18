@@ -8,12 +8,19 @@ export class MeetingController {
   async createMeeting(req: any, res: Response): Promise<void> {
     try {
       const userId = req.user.claims.sub;
-      const meetingData = insertMeetingSchema.parse({ ...req.body, userId });
+      const meetingData = insertMeetingSchema.parse({ 
+        ...req.body, 
+        userId,
+        status: "active" // Set default status
+      });
       
       const meeting = await this.meetingService.createMeeting(meetingData);
       res.json(meeting);
     } catch (error) {
       console.error("Error creating meeting:", error);
+      if (error instanceof Error) {
+        console.error("Error details:", error.message);
+      }
       res.status(500).json({ message: "Failed to create meeting" });
     }
   }

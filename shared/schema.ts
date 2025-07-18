@@ -74,6 +74,8 @@ export const insertMeetingSchema = MeetingSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  clientCompany: z.string().optional().transform(val => val === "" ? null : val),
 });
 
 export const insertNoteSchema = NoteSchema.omit({
