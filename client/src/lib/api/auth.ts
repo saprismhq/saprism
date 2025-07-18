@@ -24,7 +24,7 @@ export const authApi = {
 // Custom hooks
 export const useAuth = () => {
   const { data: user, isLoading, error } = useQuery({
-    queryKey: queryKeys.auth.user(),
+    queryKey: ["/api/auth/user"],
     queryFn: authApi.getCurrentUser,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
