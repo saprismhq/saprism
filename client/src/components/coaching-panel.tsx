@@ -275,7 +275,7 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
           </>
         )}
 
-        {!generateCoachingMutation.isPending && !coachingSuggestions && meeting.notes.length === 0 && (
+        {!generateCoachingMutation.isPending && !isAnalyzing && !coachingSuggestions && meeting.notes.length === 0 && (
           <div className="text-center py-8">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lightbulb className="w-6 h-6 text-gray-400" />
