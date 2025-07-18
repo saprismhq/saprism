@@ -24,19 +24,31 @@ export class AIController {
         return;
       }
 
-      const analysis = await openaiService.analyzeNotes(content);
+      // Run AI Analysis and Coaching Generation in parallel for better performance
+      const [analysis, coachingSuggestions] = await Promise.all([
+        openaiService.analyzeNotes(content),
+        openaiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
+      ]);
       
       // Find the most recent note for this meeting
       const notes = await this.noteService.getNotesByMeetingId(meetingId);
       const latestNote = notes[0];
       
-      if (latestNote) {
-        await this.noteService.updateNote(latestNote.id, {
-          aiAnalysis: analysis
-        });
-      }
+      // Update note with analysis and store coaching suggestions in parallel
+      await Promise.all([
+        latestNote ? this.noteService.updateNote(latestNote.id, { aiAnalysis: analysis }) : Promise.resolve(),
+        this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
+          meetingId,
+          type: 'coaching',
+          content: coachingSuggestions
+        }))
+      ]);
       
-      res.json(analysis);
+      // Return both analysis and coaching suggestions
+      res.json({
+        analysis,
+        coachingSuggestions
+      });
     } catch (error) {
       console.error("Error analyzing notes:", error);
       res.status(500).json({ message: "Failed to analyze notes" });

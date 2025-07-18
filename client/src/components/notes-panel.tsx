@@ -69,7 +69,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     }
   }, [meeting]);
 
-  // Generate coaching suggestions mutation
+  // Keep the coaching mutation for manual triggers (if needed)
   const generateCoachingMutation = useMutation({
     mutationFn: async ({ content, dealStage, meetingId }: { content: string; dealStage: string; meetingId: number }) => {
       const response = await apiRequest("POST", "/api/ai/coaching", { content, dealStage, meetingId });
@@ -97,24 +97,18 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     },
   });
 
-  // AI Analysis mutation
+  // AI Analysis mutation (now includes coaching suggestions)
   const analyzeNotesMutation = useMutation({
     mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
       const response = await apiRequest("POST", "/api/ai/analyze", { content, meetingId });
       return response.json();
     },
-    onSuccess: (analysis: AIAnalysisResult) => {
-      setLastAnalysis(analysis);
+    onSuccess: (result: { analysis: AIAnalysisResult; coachingSuggestions: any }) => {
+      setLastAnalysis(result.analysis);
       
-      // Automatically trigger coaching suggestions generation after analysis
-      if (meeting?.id && noteContent.trim()) {
-        const dealStage = analysis.dealStage || "discovery";
-        generateCoachingMutation.mutate({
-          content: noteContent,
-          dealStage,
-          meetingId: meeting.id,
-        });
-      }
+      // Invalidate meeting data to refresh both AI analysis and coaching suggestions
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
