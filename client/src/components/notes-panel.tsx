@@ -322,30 +322,27 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Meeting Notes</h2>
-            <div className="flex items-center space-x-6 text-sm">
-              <div className="flex items-center space-x-2">
-                <User className="w-4 h-4 text-gray-400" />
-                <div>
-                  <span className="font-medium text-gray-900">{meeting.clientName}</span>
-                  {meeting.clientCompany && (
-                    <span className="text-gray-500 ml-1">at {meeting.clientCompany}</span>
-                  )}
-                </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Meeting Notes</h2>
+            {/* Compact flyout details */}
+            <div className="bg-gray-50 rounded-lg px-3 py-2 inline-flex items-center space-x-4 text-sm">
+              <div className="flex items-center space-x-1.5">
+                <User className="w-3.5 h-3.5 text-gray-400" />
+                <span className="font-medium text-gray-900">{meeting.clientName}</span>
+                {meeting.clientCompany && (
+                  <span className="text-gray-500">• {meeting.clientCompany}</span>
+                )}
               </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center space-x-1.5">
+                <Calendar className="w-3.5 h-3.5 text-gray-400" />
                 <span className="text-gray-600">
                   {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
-                    weekday: 'short',
                     month: 'short', 
-                    day: 'numeric',
-                    year: 'numeric'
+                    day: 'numeric'
                   })}
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center space-x-1.5">
+                <Clock className="w-3.5 h-3.5 text-gray-400" />
                 <span className="text-gray-600">
                   {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
                     hour: 'numeric',
