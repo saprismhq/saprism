@@ -103,8 +103,19 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       const response = await apiRequest("POST", "/api/ai/analyze", { content, meetingId });
       return response.json();
     },
-    onSuccess: (result: { analysis: AIAnalysisResult; coachingSuggestions: any }) => {
-      setLastAnalysis(result.analysis);
+    onSuccess: (result: any) => {
+      // Handle both old format (just analysis) and new format (analysis + coaching)
+      if (result.analysis) {
+        setLastAnalysis(result.analysis);
+        console.log("AI Analysis completed:", result.analysis);
+        if (result.coachingSuggestions) {
+          console.log("Coaching suggestions generated simultaneously:", result.coachingSuggestions);
+        }
+      } else {
+        // Fallback for old format
+        setLastAnalysis(result);
+        console.log("AI Analysis completed (old format):", result);
+      }
       
       // Invalidate meeting data to refresh both AI analysis and coaching suggestions
       queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });

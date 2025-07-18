@@ -25,10 +25,17 @@ export class AIController {
       }
 
       // Run AI Analysis and Coaching Generation in parallel for better performance
+      console.log("Starting parallel AI operations...");
+      const startTime = Date.now();
+      
       const [analysis, coachingSuggestions] = await Promise.all([
         openaiService.analyzeNotes(content),
         openaiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
       ]);
+      
+      console.log(`AI operations completed in ${Date.now() - startTime}ms`);
+      console.log("Analysis result:", analysis);
+      console.log("Coaching suggestions result:", coachingSuggestions);
       
       // Find the most recent note for this meeting
       const notes = await this.noteService.getNotesByMeetingId(meetingId);
@@ -45,10 +52,12 @@ export class AIController {
       ]);
       
       // Return both analysis and coaching suggestions
-      res.json({
+      const response = {
         analysis,
         coachingSuggestions
-      });
+      };
+      console.log("Sending response:", response);
+      res.json(response);
     } catch (error) {
       console.error("Error analyzing notes:", error);
       res.status(500).json({ message: "Failed to analyze notes" });
