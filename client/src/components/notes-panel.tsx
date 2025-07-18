@@ -61,9 +61,9 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
 
   // Update note content when meeting changes
   useEffect(() => {
-    if (meeting && meeting.notes.length > 0) {
+    if (meeting && meeting.notes && meeting.notes.length > 0) {
       setNoteContent(meeting.notes[0].content);
-      setLastAnalysis(meeting.notes[0].aiAnalysis);
+      setLastAnalysis(meeting.notes[0].aiAnalysis as AIAnalysisResult);
     } else {
       setNoteContent("");
       setLastAnalysis(null);
@@ -166,7 +166,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
         aiAnalysis: lastAnalysis,
       };
 
-      if (meeting?.notes.length > 0) {
+      if (meeting?.notes && meeting.notes.length > 0) {
         // Update existing note
         const response = await apiRequest("PATCH", `/api/notes/${meeting.notes[0].id}`, noteData);
         return response.json();

@@ -188,22 +188,22 @@ export function Sidebar({
       {/* CRM Integration Status */}
       <div className="p-4 border-t border-gray-100">
         <div className={`flex items-center justify-between p-3 rounded-lg ${
-          crmStatus?.connected ? "bg-accent/10" : "bg-red-50"
+          (crmStatus as any)?.connected ? "bg-accent/10" : "bg-red-50"
         }`}>
           <div className="flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${
-              crmStatus?.connected ? "bg-accent" : "bg-red-500"
+              (crmStatus as any)?.connected ? "bg-accent" : "bg-red-500"
             }`}></div>
             <span className={`text-sm font-medium ${
-              crmStatus?.connected ? "text-accent" : "text-red-600"
+              (crmStatus as any)?.connected ? "text-accent" : "text-red-600"
             }`}>
               Salesforce
             </span>
           </div>
           <div className={`text-xs ${
-            crmStatus?.connected ? "text-accent" : "text-red-600"
+            (crmStatus as any)?.connected ? "text-accent" : "text-red-600"
           }`}>
-            {crmStatus?.connected ? "Connected" : "Disconnected"}
+            {(crmStatus as any)?.connected ? "Connected" : "Disconnected"}
           </div>
         </div>
       </div>
