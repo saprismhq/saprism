@@ -67,7 +67,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     },
   });
 
-  // Handle meeting changes: load existing suggestions or generate new ones
+  // Handle meeting changes: load existing suggestions
   useEffect(() => {
     if (!meeting) {
       setCoachingSuggestions(null);
@@ -82,18 +82,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
         setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
       }
     } else {
-      // Clear suggestions and generate new ones if meeting has notes but no suggestions
       setCoachingSuggestions(null);
-      if (meeting.notes.length > 0) {
-        const latestNote = meeting.notes[0];
-        const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
-        
-        generateCoachingMutation.mutate({
-          content: latestNote.content,
-          dealStage,
-          meetingId: meeting.id,
-        });
-      }
     }
     
     setCopiedItems(new Set());

@@ -69,6 +69,32 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     }
   }, [meeting]);
 
+  // Generate coaching suggestions mutation
+  const generateCoachingMutation = useMutation({
+    mutationFn: async ({ content, dealStage, meetingId }: { content: string; dealStage: string; meetingId: number }) => {
+      const response = await apiRequest("POST", "/api/ai/coaching", { content, dealStage, meetingId });
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate meeting data to refresh coaching suggestions
+      queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      console.error("Coaching generation error:", error);
+    },
+  });
+
   // AI Analysis mutation
   const analyzeNotesMutation = useMutation({
     mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
@@ -77,6 +103,16 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     },
     onSuccess: (analysis: AIAnalysisResult) => {
       setLastAnalysis(analysis);
+      
+      // Automatically trigger coaching suggestions generation after analysis
+      if (meeting?.id && noteContent.trim()) {
+        const dealStage = analysis.dealStage || "discovery";
+        generateCoachingMutation.mutate({
+          content: noteContent,
+          dealStage,
+          meetingId: meeting.id,
+        });
+      }
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
