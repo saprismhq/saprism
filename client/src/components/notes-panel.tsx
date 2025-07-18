@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -47,7 +47,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         clearTimeout(autoSaveTimeout);
       }
     };
-  }, [noteContent, meeting, saveNoteMutation]);
+  }, [noteContent, meeting?.id]);
 
   // Save current note before switching meetings
   useEffect(() => {
