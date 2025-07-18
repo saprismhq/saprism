@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Save, FolderSync, Mic, Clock, Tag, Brain, User, Calendar } from "lucide-react";
+import { Save, FolderSync, Mic, Clock, Tag, Brain, User, Calendar, ChevronDown } from "lucide-react";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
 interface NotesPanelProps {
@@ -321,35 +321,42 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Meeting Notes</h2>
-            {/* Compact flyout details */}
-            <div className="bg-gray-50 rounded-lg px-3 py-2 inline-flex items-center space-x-4 text-sm">
-              <div className="flex items-center space-x-1.5">
-                <User className="w-3.5 h-3.5 text-gray-400" />
-                <span className="font-medium text-gray-900">{meeting.clientName}</span>
-                {meeting.clientCompany && (
-                  <span className="text-gray-500">• {meeting.clientCompany}</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-gray-600">
-                  {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric'
-                  })}
-                </span>
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <Clock className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-gray-600">
-                  {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true
-                  })}
-                </span>
+          <div className="flex items-center space-x-3">
+            <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
+            {/* Flyout details trigger */}
+            <div className="relative group">
+              <button className="flex items-center space-x-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+                <User className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              
+              {/* Flyout content */}
+              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <div className="font-medium text-gray-900">{meeting.clientName}</div>
+                    {meeting.clientCompany && (
+                      <div className="text-gray-500">{meeting.clientCompany}</div>
+                    )}
+                  </div>
+                  <div className="pt-1 border-t border-gray-100">
+                    <div className="text-gray-600">
+                      {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </div>
+                    <div className="text-gray-600">
+                      {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
