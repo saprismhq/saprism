@@ -120,16 +120,19 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       // Invalidate meeting data to refresh both AI analysis and coaching suggestions
       console.log("Invalidating queries for meeting:", meeting?.id);
       
-      // Use the correct query key format from the API structure
-      queryClient.removeQueries({ queryKey: ["meetings", "detail", meeting?.id] });
-      queryClient.removeQueries({ queryKey: ["meetings", "list"] });
-      
-      // Force immediate refetch with fresh data
-      setTimeout(() => {
-        console.log("Force refetching meeting data for:", meeting?.id);
-        queryClient.refetchQueries({ queryKey: ["meetings", "detail", meeting?.id] });
-        queryClient.refetchQueries({ queryKey: ["meetings", "list"] });
-      }, 1000); // Longer delay to ensure backend operations complete
+      try {
+        // Use safer invalidation approach without removing queries immediately
+        queryClient.invalidateQueries({ queryKey: ["meetings", "detail", meeting?.id] });
+        queryClient.invalidateQueries({ queryKey: ["meetings", "list"] });
+        
+        // Force refetch after a delay to ensure backend operations complete
+        setTimeout(() => {
+          console.log("Force refetching meeting data for:", meeting?.id);
+          queryClient.refetchQueries({ queryKey: ["meetings", "detail", meeting?.id] }).catch(console.error);
+        }, 1000);
+      } catch (error) {
+        console.error("Error invalidating queries:", error);
+      }
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
