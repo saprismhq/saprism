@@ -18,6 +18,16 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
   const [coachingSuggestions, setCoachingSuggestions] = useState<CoachingSuggestionContent | null>(null);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
 
+  // Load existing coaching suggestions from the meeting
+  useEffect(() => {
+    if (meeting && meeting.coachingSuggestions && meeting.coachingSuggestions.length > 0) {
+      const latestSuggestion = meeting.coachingSuggestions[0];
+      if (latestSuggestion && latestSuggestion.content) {
+        setCoachingSuggestions(latestSuggestion.content as CoachingSuggestionContent);
+      }
+    }
+  }, [meeting]);
+
   // Generate coaching suggestions mutation
   const generateCoachingMutation = useMutation({
     mutationFn: async ({ content, dealStage, meetingId }: { content: string; dealStage: string; meetingId: number }) => {
@@ -71,9 +81,9 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     setCopiedItems(new Set());
   }, [meeting?.id]);
 
-  // Generate coaching suggestions when meeting changes
+  // Generate coaching suggestions when meeting changes and no existing suggestions
   useEffect(() => {
-    if (meeting && meeting.notes.length > 0) {
+    if (meeting && meeting.notes.length > 0 && (!meeting.coachingSuggestions || meeting.coachingSuggestions.length === 0)) {
       const latestNote = meeting.notes[0];
       const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
       
@@ -137,10 +147,30 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     <section className="w-96 bg-gray-50 border-l border-gray-100 flex flex-col h-full">
       {/* Header */}
       <header className="px-6 py-4 bg-white border-b border-gray-100 flex-shrink-0">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Lightbulb className="w-4 h-4 mr-2 text-primary" />
-          AI Coach
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <Lightbulb className="w-4 h-4 mr-2 text-primary" />
+            AI Coach
+          </h3>
+          {meeting && meeting.notes.length > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const latestNote = meeting.notes[0];
+                const dealStage = latestNote.aiAnalysis?.dealStage || "discovery";
+                generateCoachingMutation.mutate({
+                  content: latestNote.content,
+                  dealStage,
+                  meetingId: meeting.id,
+                });
+              }}
+              disabled={generateCoachingMutation.isPending}
+            >
+              {generateCoachingMutation.isPending ? "Generating..." : "Refresh"}
+            </Button>
+          )}
+        </div>
       </header>
 
       {/* Coaching Content */}
