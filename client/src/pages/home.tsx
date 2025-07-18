@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, useMeetings, useMeeting, useCreateMeeting, useDeleteMeeting } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Sidebar } from "@/components/sidebar";
 import { NotesPanel } from "@/components/notes-panel";
 import { CoachingPanel } from "@/components/coaching-panel";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Meeting, MeetingWithNotes } from "@shared/schema";
 
 export default function Home() {
@@ -29,90 +27,58 @@ export default function Home() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  // Query for meetings
-  const { data: meetings, isLoading: meetingsLoading } = useQuery<Meeting[]>({
-    queryKey: ["/api/meetings"],
-    enabled: isAuthenticated,
-  });
+  // Query for meetings using organized API
+  const { data: meetings, isLoading: meetingsLoading } = useMeetings();
 
-  // Query for active meeting details
-  const { data: activeMeeting, isLoading: activeMeetingLoading } = useQuery<MeetingWithNotes>({
-    queryKey: ["/api/meetings", activeMeetingId],
-    enabled: !!activeMeetingId,
-  });
+  // Query for active meeting details using organized API
+  const { data: activeMeeting, isLoading: activeMeetingLoading } = useMeeting(activeMeetingId);
 
-  // Create new meeting mutation
-  const createMeetingMutation = useMutation({
-    mutationFn: async (meetingData: { clientName: string; clientCompany: string }) => {
-      const response = await apiRequest("POST", "/api/meetings", meetingData);
-      return response.json();
-    },
-    onSuccess: (meeting: Meeting) => {
-      // Invalidate meetings query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
-      setActiveMeetingId(meeting.id);
+  // Create new meeting mutation using organized API
+  const createMeetingMutation = useCreateMeeting();
+
+  // Enhanced success handler for meeting creation
+  const handleMeetingCreated = (meeting: Meeting) => {
+    setActiveMeetingId(meeting.id);
+    toast({
+      title: "Meeting Created",
+      description: `Started new meeting with ${meeting.clientName}`,
+    });
+  };
+
+  // Enhanced error handler
+  const handleMeetingError = (error: any) => {
+    if (isUnauthorizedError(error)) {
       toast({
-        title: "Meeting Created",
-        description: `Started new meeting with ${meeting.clientName}`,
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to create meeting",
+        title: "Unauthorized",
+        description: "You are logged out. Logging in again...",
         variant: "destructive",
       });
-    },
-  });
+      setTimeout(() => {
+        window.location.href = "/api/login";
+      }, 500);
+      return;
+    }
+    toast({
+      title: "Error",
+      description: "Failed to create meeting",
+      variant: "destructive",
+    });
+  };
 
-  // Delete meeting mutation
-  const deleteMeetingMutation = useMutation({
-    mutationFn: async (meetingId: number) => {
-      const response = await apiRequest("DELETE", `/api/meetings/${meetingId}`);
-      return response.json();
-    },
-    onSuccess: (_, deletedMeetingId) => {
-      // Invalidate meetings query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
-      // If the deleted meeting was active, clear the active meeting
-      if (activeMeetingId === deletedMeetingId) {
-        setActiveMeetingId(null);
-      }
-      toast({
-        title: "Meeting Deleted",
-        description: "Meeting has been successfully deleted",
-      });
-    },
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to delete meeting",
-        variant: "destructive",
-      });
-    },
-  });
+  // Delete meeting mutation using organized API
+  const deleteMeetingMutation = useDeleteMeeting();
+
+  // Enhanced delete handler
+  const handleMeetingDeleted = (deletedMeetingId: number) => {
+    // Clear active meeting if it was deleted
+    if (activeMeetingId === deletedMeetingId) {
+      setActiveMeetingId(null);
+    }
+    toast({
+      title: "Meeting Deleted",
+      description: "Meeting has been successfully deleted",
+    });
+  };
 
   // Auto-select first meeting if none selected
   useEffect(() => {
@@ -120,6 +86,25 @@ export default function Home() {
       setActiveMeetingId(meetings[0].id);
     }
   }, [meetings, activeMeetingId]);
+
+  // Handle mutation success/error events
+  useEffect(() => {
+    if (createMeetingMutation.isSuccess && createMeetingMutation.data) {
+      handleMeetingCreated(createMeetingMutation.data);
+    }
+    if (createMeetingMutation.isError) {
+      handleMeetingError(createMeetingMutation.error);
+    }
+  }, [createMeetingMutation.isSuccess, createMeetingMutation.isError, createMeetingMutation.data, createMeetingMutation.error]);
+
+  useEffect(() => {
+    if (deleteMeetingMutation.isSuccess && deleteMeetingMutation.variables) {
+      handleMeetingDeleted(deleteMeetingMutation.variables);
+    }
+    if (deleteMeetingMutation.isError) {
+      handleMeetingError(deleteMeetingMutation.error);
+    }
+  }, [deleteMeetingMutation.isSuccess, deleteMeetingMutation.isError, deleteMeetingMutation.variables, deleteMeetingMutation.error]);
 
   if (isLoading || meetingsLoading) {
     return (
