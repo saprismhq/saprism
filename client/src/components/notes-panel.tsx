@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Save, FolderSync, Mic, Clock, Tag, Brain, User, Calendar, ChevronDown } from "lucide-react";
+import { RichTextEditor } from "./rich-text-editor";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
 interface NotesPanelProps {
@@ -415,13 +415,13 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
           </Button>
         </div>
 
-        {/* Notes Textarea */}
+        {/* Rich Text Editor */}
         <div className="flex-1 mb-4">
-          <Textarea
-            value={noteContent}
-            onChange={(e) => handleNoteChange(e.target.value)}
+          <RichTextEditor
+            content={noteContent}
+            onChange={handleNoteChange}
             placeholder="Start typing your meeting notes here... AI will analyze and provide coaching suggestions in real-time."
-            className="h-full resize-none focus:ring-2 focus:ring-primary focus:border-primary text-base"
+            className="h-full"
           />
         </div>
 
