@@ -1,156 +1,97 @@
-# Salespring
+# Salespring - AI-Powered Sales Coaching Platform
 
-## Overview
+An intelligent sales enablement platform that transforms sales team performance through AI-driven insights, real-time coaching, and comprehensive analytics.
 
-Salespring is a full-stack web application that provides AI-powered sales coaching and meeting management. The application features intelligent note-taking, real-time coaching suggestions, AI-driven deal stage analysis, and seamless CRM integration with Salesforce. The platform helps sales teams "spring" their opportunities to life with fresh, growth-oriented insights.
+## Features
 
-## System Architecture
+### 🤖 AI-Powered Analytics
+- **Smart Note Analysis**: Automatic extraction of deal stage, pain points, budget, timeline, and stakeholders
+- **Growth Guide Coaching**: Real-time, contextual sales coaching suggestions
+- **Sentiment Analysis**: Understanding client engagement and emotional tone
 
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript for type safety and modern development
-- **Build Tool**: Vite for fast development and optimized production builds
-- **UI Framework**: Tailwind CSS with shadcn/ui components for consistent design
-- **State Management**: TanStack Query (React Query) for server state management with caching and synchronization
-- **Routing**: Wouter for lightweight client-side routing
-- **Form Handling**: React Hook Form with Zod validation for type-safe form management
+### 📝 Rich Text Note-Taking
+- **Professional Editor**: Word/OneNote-like formatting capabilities
+- **Real-time Formatting**: Bold, italic, strikethrough, lists, colors, and highlighting
+- **Auto-save**: Never lose your meeting notes with intelligent auto-save
+- **Task Lists**: Checkbox lists for action items and follow-ups
 
-### Backend Architecture
-- **Framework**: Express.js with TypeScript for API development
-- **Database**: PostgreSQL with Neon serverless driver for scalable cloud database
-- **ORM**: Prisma ORM for type-safe database operations and migrations
-- **Authentication**: OpenID Connect with Replit authentication provider
-- **Session Management**: Express sessions with PostgreSQL store for persistence
-- **API Design**: RESTful endpoints with JSON responses and proper error handling
+### 🔗 CRM Integration
+- **Salesforce Sync**: Bidirectional synchronization with Salesforce CRM
+- **Automated Data Flow**: Meeting notes and insights automatically sync to CRM records
+- **Audit Logging**: Complete tracking of all CRM sync operations
 
-### Modern Architecture Patterns
-- **SOLID Principles**: Refactored server code to follow Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
-- **Repository Pattern**: Separate data access layer with interfaces for each entity (User, Meeting, Note, CoachingSuggestion, CrmSyncLog)
-- **Service Layer**: Business logic separated into dedicated services with clear interfaces
-- **Dependency Injection**: Container-based DI system for managing service dependencies
-- **Controller Pattern**: Dedicated controllers for handling HTTP requests and responses
-- **Separation of Concerns**: Clean separation between data access, business logic, and presentation layers
+### 🏗️ Modern Architecture
+- **Full-Stack TypeScript**: Type safety across the entire application
+- **React Frontend**: Modern, responsive user interface
+- **Express.js Backend**: Robust API with authentication and data validation
+- **PostgreSQL Database**: Reliable, scalable data storage
+- **Replit Authentication**: Secure user management with OpenID Connect
 
-### Database Schema
-The application uses PostgreSQL with these core tables:
-- `sessions` - Session storage for authentication with automatic expiration
-- `users` - User profiles linked to authentication system
-- `meetings` - Meeting records with client information and status tracking
-- `notes` - Meeting notes with AI analysis results stored as JSONB
-- `coaching_suggestions` - AI-generated coaching recommendations with usage tracking
-- `crm_sync_logs` - CRM synchronization audit logs for troubleshooting
+## Technology Stack
 
-## Key Components
+### Frontend
+- **React 18** with TypeScript
+- **Tailwind CSS** + shadcn/ui components
+- **TanStack Query** for server state management
+- **TipTap** rich text editor
+- **Wouter** for routing
 
-### Authentication System
-- **Provider**: OpenID Connect integration with Replit's authentication service
-- **Session Management**: PostgreSQL-backed sessions with 7-day TTL for security
-- **Authorization**: Route-level protection with middleware validation
-- **User Management**: Automatic user creation and profile synchronization
+### Backend
+- **Express.js** with TypeScript
+- **Prisma ORM** for database operations
+- **OpenAI GPT-4o** for AI analysis
+- **Salesforce jsforce** for CRM integration
+- **Express sessions** with PostgreSQL storage
 
-### AI Integration
-- **OpenAI Service**: GPT-4o integration for note analysis and coaching suggestions
-- **Analysis Features**: Deal stage identification, pain point extraction, sentiment analysis
-- **Coaching Engine**: Context-aware suggestions based on meeting content and deal stage
-- **Response Format**: Structured JSON responses with confidence scoring
-
-### CRM Integration
-- **Salesforce Service**: jsforce library for Salesforce API integration
-- **Authentication**: OAuth 2.0 with refresh token handling
-- **Data Sync**: Meeting notes and analysis results sync to Salesforce records
-- **Audit Logging**: Comprehensive sync logs for troubleshooting and compliance
-
-### UI Components
-- **Three-Panel Layout**: Sidebar for meetings, center for notes, right for coaching
-- **Responsive Design**: Mobile-friendly with proper breakpoints
-- **Component Library**: shadcn/ui components for consistency
-- **Real-time Updates**: Query invalidation for live data synchronization
-
-## Data Flow
-
-1. **User Authentication**: OpenID Connect flow with session creation
-2. **Meeting Management**: CRUD operations with real-time updates
-3. **Note Taking**: Rich text input with auto-save functionality
-4. **AI Analysis**: Real-time note analysis with debounced API calls
-5. **Coaching Suggestions**: Context-aware recommendations based on analysis
-6. **CRM Sync**: Automatic or manual synchronization with Salesforce
-
-## External Dependencies
-
-### Core Dependencies
-- **@neondatabase/serverless**: PostgreSQL database connection
-- **prisma**: Type-safe database operations
-- **openai**: GPT-4o integration for AI features
-- **jsforce**: Salesforce API integration
-- **passport**: Authentication middleware
-- **express-session**: Session management
-- **connect-pg-simple**: PostgreSQL session store
-
-### UI Dependencies
-- **@radix-ui/***: Accessible UI primitives
-- **@tanstack/react-query**: Server state management
-- **tailwindcss**: Utility-first CSS framework
-- **wouter**: Lightweight routing
-- **react-hook-form**: Form management
-- **zod**: Schema validation
-
-## Deployment Strategy
-
-### Development Environment
-- **Node.js**: ESM modules with TypeScript compilation
-- **Vite Dev Server**: Hot module replacement for frontend
-- **tsx**: TypeScript execution for backend development
-- **Database**: Neon PostgreSQL with connection pooling
-
-### Production Build
-- **Frontend**: Vite build with optimized bundle
-- **Backend**: esbuild compilation to ESM format
-- **Database**: Prisma migrations with schema sync
-- **Environment**: Production-ready with proper error handling
-
-### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string
-- `OPENAI_API_KEY`: OpenAI API authentication
-- `SALESFORCE_*`: Salesforce API credentials
-- `SESSION_SECRET`: Session encryption key
-- `REPLIT_DOMAINS`: Allowed domains for OIDC
-
-### Security Considerations
-- **Session Security**: HttpOnly cookies with secure flags
-- **CORS**: Proper origin validation
-- **API Rate Limiting**: Implicit through OpenAI and Salesforce limits
-- **Input Validation**: Zod schemas for all API endpoints
-- **SQL Injection Prevention**: Parameterized queries through Prisma ORM
+### Infrastructure
+- **PostgreSQL** database with Neon serverless
+- **Replit** hosting and deployment
+- **OpenID Connect** authentication
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18 or higher
+- Node.js 18+ 
 - PostgreSQL database
 - OpenAI API key
-- Salesforce API credentials (optional)
+- Salesforce developer account (optional)
+
+### Environment Variables
+```bash
+DATABASE_URL=your_postgresql_connection_string
+OPENAI_API_KEY=your_openai_api_key
+SESSION_SECRET=your_session_secret
+REPL_ID=your_replit_id
+REPLIT_DOMAINS=your_domain
+```
 
 ### Installation
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Set up environment variables
-4. Run database migrations: `npx prisma db push`
-5. Start development server: `npm run dev`
+```bash
+npm install
+npm run db:push
+npm run dev
+```
 
-### Development
-The application uses a monorepo structure with:
-- `client/` - React frontend
-- `server/` - Express backend
-- `shared/` - Shared types and schemas
-- `prisma/` - Database schema and migrations
+## Usage
+
+1. **Create Meeting**: Start a new client meeting with basic information
+2. **Take Notes**: Use the rich text editor with formatting capabilities
+3. **AI Analysis**: Get automatic insights on deal stage, pain points, and next steps
+4. **Growth Guide**: Receive contextual coaching suggestions
+5. **CRM Sync**: Automatically sync data to your Salesforce CRM
 
 ## Contributing
 
-1. Follow the established architecture patterns
-2. Use TypeScript for type safety
-3. Implement proper error handling
-4. Update documentation for architectural changes
-5. Test all changes thoroughly
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and questions, please open an issue in the GitHub repository.
