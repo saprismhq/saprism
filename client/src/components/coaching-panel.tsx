@@ -217,7 +217,7 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                 <CardHeader className="pb-3">
                   <CardTitle className="text-gray-900 flex items-center text-sm">
                     <ArrowLeftRight className="w-4 h-4 mr-2 text-accent" />
-                    Business Value Framework
+                    Pain-to-Value Mapping
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
