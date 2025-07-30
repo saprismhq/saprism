@@ -389,9 +389,9 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       </header>
 
       {/* Notes Input Area */}
-      <div className="flex-1 flex flex-col p-6 min-h-0">
+      <div className="flex-1 flex flex-col p-6 min-h-0 overflow-hidden">
         {/* Quick Actions */}
-        <div className="flex items-center space-x-2 mb-4">
+        <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
           <Button
             variant="outline"
             size="sm"
@@ -416,7 +416,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
         </div>
 
         {/* Rich Text Editor */}
-        <div className="flex-1 mb-4">
+        <div className="flex-1 mb-4 min-h-0 overflow-hidden">
           <RichTextEditor
             content={noteContent}
             onChange={handleNoteChange}

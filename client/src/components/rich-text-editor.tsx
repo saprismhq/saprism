@@ -73,7 +73,7 @@ export function RichTextEditor({ content, onChange, placeholder, className = "" 
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[300px] p-4',
+        class: 'prose prose-sm max-w-none focus:outline-none h-full p-4 overflow-y-auto',
       },
     },
   })
@@ -126,9 +126,9 @@ export function RichTextEditor({ content, onChange, placeholder, className = "" 
   }
 
   return (
-    <div className={`border border-gray-200 rounded-lg bg-white ${className}`}>
+    <div className={`border border-gray-200 rounded-lg bg-white flex flex-col ${className}`}>
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-2 flex items-center space-x-1 flex-wrap">
+      <div className="border-b border-gray-200 p-2 flex items-center space-x-1 flex-wrap flex-shrink-0">
         {/* Undo/Redo */}
         <Button
           variant="ghost"
@@ -273,11 +273,13 @@ export function RichTextEditor({ content, onChange, placeholder, className = "" 
       </div>
 
       {/* Editor Content */}
-      <EditorContent 
-        editor={editor}
-        className="min-h-[300px]"
-        placeholder={placeholder}
-      />
+      <div className="flex-1 overflow-y-auto">
+        <EditorContent 
+          editor={editor}
+          className="h-full"
+          placeholder={placeholder}
+        />
+      </div>
     </div>
   )
 }
