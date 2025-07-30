@@ -50,13 +50,41 @@ An intelligent sales enablement platform that transforms sales team performance 
 
 ## Getting Started
 
-### Prerequisites
+### Local Development (Recommended)
+
+**Quick Setup with Docker:**
+```bash
+cd .dev
+docker-compose up -d
+cp .env.local ../.env
+cd ..
+npm install
+npm run db:push
+npm run dev
+```
+
+**Or use the setup script:**
+```bash
+cd .dev
+./scripts/setup.sh
+```
+
+This will start:
+- PostgreSQL database (localhost:5432)
+- Redis for sessions (localhost:6379)
+- Adminer database UI (localhost:8080)
+- Redis Commander (localhost:8081)
+- Mailhog for email testing (localhost:8025)
+
+### Manual Setup
+
+#### Prerequisites
 - Node.js 18+ 
 - PostgreSQL database
 - OpenAI API key
 - Salesforce developer account (optional)
 
-### Environment Variables
+#### Environment Variables
 ```bash
 DATABASE_URL=your_postgresql_connection_string
 OPENAI_API_KEY=your_openai_api_key
@@ -65,7 +93,7 @@ REPL_ID=your_replit_id
 REPLIT_DOMAINS=your_domain
 ```
 
-### Installation
+#### Installation
 ```bash
 npm install
 npm run db:push

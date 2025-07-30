@@ -17,6 +17,10 @@ prisma/migrations/*
 *.db
 *.sqlite
 
+# Docker development volumes
+.dev/postgres_data/
+.dev/redis_data/
+
 # Logs
 logs
 *.log
@@ -46,3 +50,8 @@ ehthumbs.db
 # Build files
 build/
 out/
+
+# Backup files
+*.sql
+*.backup
+*.dump

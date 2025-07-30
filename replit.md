@@ -104,6 +104,14 @@ The application uses PostgreSQL with these core tables:
 
 The application supports multiple deployment options:
 
+### Local Development (Docker Compose)
+- **Complete Stack**: Docker Compose setup in `.dev/` folder with PostgreSQL, Redis, and management tools
+- **Quick Setup**: Single command setup with `make dev-setup` or `docker-compose up -d`
+- **Development Tools**: Adminer for database management, Redis Commander, and Mailhog for email testing
+- **Environment Management**: Template environment file with local configuration
+- **Service Management**: Scripts for setup, cleanup, and service management
+- **Production Testing**: Additional production-like Docker configuration for local testing
+
 ### Replit Deployment
 - **Build Process**: Vite builds the frontend, ESBuild bundles the backend
 - **Environment Variables**: Database connection, API keys, and authentication secrets
@@ -128,3 +136,36 @@ The application has been rebranded to "Salespring" with a spring-themed design:
 - **Logo**: Custom SVG with spring coil design and leaf accents
 - **Messaging**: Growth-oriented content with nurturing metaphors
 - **Theme**: Emphasizes growth, new beginnings, and flourishing sales relationships
+
+## Development Infrastructure
+
+### Local Development Stack
+The `.dev/` folder contains a complete Docker Compose stack for local development:
+
+#### Core Services
+- **PostgreSQL 15**: Primary database with automatic initialization scripts
+- **Redis 7**: Session storage and caching with persistent data
+- **Adminer**: Web-based database management (localhost:8080)
+- **Redis Commander**: Redis management interface (localhost:8081)
+- **Mailhog**: Email testing service (localhost:8025)
+
+#### Development Tools
+- **Setup Scripts**: Automated environment setup with `setup.sh` and `cleanup.sh`
+- **Makefile**: Convenient commands for all development operations
+- **Environment Templates**: Pre-configured environment variables for local development
+- **Health Checks**: Service health monitoring and dependency management
+
+#### Production Testing
+- **Production Docker Compose**: `docker-compose.prod.yml` for production-like local testing
+- **Dockerfile**: Multi-stage build for optimized production containers
+- **Nginx Configuration**: Reverse proxy with rate limiting and security headers
+- **Service Architecture**: Separate containers for app, database, cache, and proxy
+
+#### Quick Start Commands
+```bash
+make dev-setup          # Complete environment setup
+make dev-services       # Start Docker services
+make install           # Install npm dependencies
+make db-push           # Apply database schema
+make dev               # Start development server
+```

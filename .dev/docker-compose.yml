@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: salespring_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: salespring
+      POSTGRES_USER: salespring_user
+      POSTGRES_PASSWORD: salespring_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U salespring_user -d salespring"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Session Storage
+  redis:
+    image: redis:7-alpine
+    container_name: salespring_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Adminer for Database Management
+  adminer:
+    image: adminer:4-standalone
+    container_name: salespring_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+
+  # Redis Commander for Redis Management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: salespring_redis_commander
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_HOSTS: local:redis:6379
+
+  # Mailhog for Email Testing (Optional)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: salespring_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: salespring_network
