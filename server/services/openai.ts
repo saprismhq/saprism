@@ -45,7 +45,7 @@ export class OpenAIService {
         confidence: Math.max(0, Math.min(1, result.confidence || 0.5))
       };
     } catch (error) {
-      throw new Error("Failed to analyze notes: " + error.message);
+      throw new Error("Failed to analyze notes: " + (error as Error).message);
     }
   }
 
@@ -56,17 +56,64 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `You are an expert sales coach providing contextual coaching suggestions based on meeting notes and deal stage.
-            Generate coaching suggestions in this JSON format: {
-              "questions": ["array of 2-3 discovery questions"],
-              "painMapping": [{"pain": "identified pain", "value": "corresponding value proposition"}],
-              "framing": {"context": "situation description", "suggestion": "suggested language/approach"},
-              "nextSteps": [{"step": "action item", "priority": 1-3, "description": "detailed description"}]
+            content: `You are an expert enterprise sales coach with deep knowledge of business value frameworks and ROI modeling. Generate comprehensive coaching suggestions that connect technical solutions to quantifiable business outcomes.
+
+            For each pain point identified, provide a structured business value analysis. Focus on:
+            - Quantifiable business impact (costs, time, risks)
+            - Multi-layered value proposition (immediate, medium-term, strategic)
+            - Stakeholder-specific benefits (executives, managers, end users)
+            - Measurable success metrics with baselines and targets
+            - Competitive differentiation and market positioning
+
+            Generate coaching suggestions in this exact JSON format:
+            {
+              "questions": ["array of 2-3 strategic discovery questions that uncover business impact"],
+              "painMapping": [{
+                "pain": "identified pain point",
+                "category": "operational|financial|strategic|compliance|competitive",
+                "severity": 1-5,
+                "businessImpact": {
+                  "cost": "quantified cost impact (e.g., '$50K annually in lost productivity')",
+                  "productivity": "productivity impact description",
+                  "risk": "risk or opportunity cost description"
+                },
+                "technicalSolution": "specific technical capability that addresses this pain",
+                "businessValue": {
+                  "immediate": "0-3 month benefits with metrics",
+                  "mediumTerm": "3-12 month benefits with metrics", 
+                  "longTerm": "12+ month strategic value with metrics"
+                },
+                "metrics": {
+                  "kpi": "key performance indicator affected",
+                  "baseline": "current state measurement",
+                  "target": "expected improvement percentage/amount",
+                  "timeframe": "timeline to achieve target"
+                },
+                "stakeholderBenefit": {
+                  "executives": "C-level impact and strategic value",
+                  "managers": "management efficiency and operational benefits",
+                  "endUsers": "day-to-day user experience improvements"
+                },
+                "competitiveAdvantage": "how this creates market advantage"
+              }],
+              "framing": {
+                "context": "business situation analysis",
+                "suggestion": "recommended messaging approach",
+                "valueProposition": "core value proposition statement",
+                "differentiators": ["array of key differentiating factors"]
+              },
+              "nextSteps": [{
+                "step": "specific action item",
+                "priority": 1-3,
+                "description": "detailed implementation description",
+                "businessJustification": "why this step drives business value",
+                "expectedOutcome": "measurable expected result"
+              }]
             }`
           },
           {
             role: "user",
-            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nProvide coaching suggestions for advancing this deal.`
+            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nProvide comprehensive coaching suggestions with detailed business value analysis for advancing this deal.`
           }
         ],
         response_format: { type: "json_object" },
@@ -77,11 +124,16 @@ export class OpenAIService {
       return {
         questions: result.questions || [],
         painMapping: result.painMapping || [],
-        framing: result.framing || { context: "", suggestion: "" },
+        framing: result.framing || { 
+          context: "", 
+          suggestion: "",
+          valueProposition: "",
+          differentiators: []
+        },
         nextSteps: result.nextSteps || []
       };
     } catch (error) {
-      throw new Error("Failed to generate coaching suggestions: " + error.message);
+      throw new Error("Failed to generate coaching suggestions: " + (error as Error).message);
     }
   }
 
@@ -107,7 +159,7 @@ export class OpenAIService {
       const result = JSON.parse(response.choices[0].message.content || "{}");
       return result.questions || [];
     } catch (error) {
-      throw new Error("Failed to generate follow-up questions: " + error.message);
+      throw new Error("Failed to generate follow-up questions: " + (error as Error).message);
     }
   }
 }

@@ -211,25 +211,181 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
               </Card>
             )}
 
-            {/* Pain-to-Value Mapping */}
+            {/* Enhanced Pain-to-Value Mapping */}
             {coachingSuggestions.painMapping && coachingSuggestions.painMapping.length > 0 && (
               <Card className="bg-white shadow-sm border border-gray-200">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-gray-900 flex items-center text-sm">
                     <ArrowLeftRight className="w-4 h-4 mr-2 text-accent" />
-                    Pain-to-Value Mapping
+                    Business Value Framework
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 space-y-3">
+                <CardContent className="pt-0 space-y-4">
                   {coachingSuggestions.painMapping.map((mapping, index) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-800">{mapping.pain}</p>
-                        <p className="text-xs text-gray-600 mt-1">→ {mapping.value}</p>
+                    <div key={index} className="border border-gray-100 rounded-lg p-4 space-y-3">
+                      {/* Pain Point Header */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-2 flex-1">
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            mapping.severity >= 4 ? 'bg-red-500' :
+                            mapping.severity >= 3 ? 'bg-orange-500' :
+                            'bg-yellow-500'
+                          }`}></div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold text-gray-900">{mapping.pain}</p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span className={`px-2 py-1 text-xs rounded-full ${
+                                mapping.category === 'financial' ? 'bg-green-100 text-green-700' :
+                                mapping.category === 'operational' ? 'bg-blue-100 text-blue-700' :
+                                mapping.category === 'strategic' ? 'bg-purple-100 text-purple-700' :
+                                mapping.category === 'compliance' ? 'bg-red-100 text-red-700' :
+                                'bg-gray-100 text-gray-700'
+                              }`}>
+                                {mapping.category}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Severity: {mapping.severity}/5
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Business Impact */}
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-red-800 mb-2">Business Impact</h4>
+                        <div className="space-y-1 text-xs text-red-700">
+                          <p><span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>
+                          <p><span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>
+                          <p><span className="font-medium">Risk:</span> {mapping.businessImpact.risk}</p>
+                        </div>
+                      </div>
+
+                      {/* Technical Solution */}
+                      <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-blue-800 mb-2">Technical Solution</h4>
+                        <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
+                      </div>
+
+                      {/* Business Value Timeline */}
+                      <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-green-800 mb-2">Business Value Timeline</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-start space-x-2">
+                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-xs font-medium text-green-700">0-3 Months</p>
+                              <p className="text-xs text-green-600">{mapping.businessValue.immediate}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-xs font-medium text-green-700">3-12 Months</p>
+                              <p className="text-xs text-green-600">{mapping.businessValue.mediumTerm}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-xs font-medium text-green-700">12+ Months</p>
+                              <p className="text-xs text-green-600">{mapping.businessValue.longTerm}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Success Metrics */}
+                      <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-purple-800 mb-2">Success Metrics</h4>
+                        <div className="grid grid-cols-2 gap-2 text-xs text-purple-700">
+                          <div>
+                            <p className="font-medium">KPI:</p>
+                            <p>{mapping.metrics.kpi}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">Timeline:</p>
+                            <p>{mapping.metrics.timeframe}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">Baseline:</p>
+                            <p>{mapping.metrics.baseline}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">Target:</p>
+                            <p>{mapping.metrics.target}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stakeholder Benefits */}
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-gray-800 mb-2">Stakeholder Benefits</h4>
+                        <div className="space-y-2 text-xs">
+                          <div>
+                            <p className="font-medium text-gray-700">Executives:</p>
+                            <p className="text-gray-600">{mapping.stakeholderBenefit.executives}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-700">Managers:</p>
+                            <p className="text-gray-600">{mapping.stakeholderBenefit.managers}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-700">End Users:</p>
+                            <p className="text-gray-600">{mapping.stakeholderBenefit.endUsers}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Competitive Advantage */}
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                        <h4 className="text-xs font-semibold text-yellow-800 mb-2">Competitive Advantage</h4>
+                        <p className="text-xs text-yellow-700">{mapping.competitiveAdvantage}</p>
                       </div>
                     </div>
                   ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Enhanced Strategic Framing */}
+            {coachingSuggestions.framing && (
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-900 flex items-center text-sm">
+                    <MessageSquare className="w-4 h-4 mr-2 text-accent" />
+                    Strategic Framing & Positioning
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <p className="text-xs font-medium text-blue-800 mb-1">Situation Context</p>
+                    <p className="text-xs text-blue-700">{coachingSuggestions.framing.context}</p>
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                    <p className="text-xs font-medium text-green-800 mb-1">Core Value Proposition</p>
+                    <p className="text-xs text-green-700">{coachingSuggestions.framing.valueProposition}</p>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+                    <p className="text-xs font-medium text-purple-800 mb-1">Recommended Messaging</p>
+                    <p className="text-xs text-purple-700">{coachingSuggestions.framing.suggestion}</p>
+                  </div>
+
+                  {coachingSuggestions.framing.differentiators && coachingSuggestions.framing.differentiators.length > 0 && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                      <p className="text-xs font-medium text-yellow-800 mb-2">Key Differentiators</p>
+                      <div className="space-y-1">
+                        {coachingSuggestions.framing.differentiators.map((diff, index) => (
+                          <div key={index} className="flex items-start space-x-2">
+                            <div className="w-1 h-1 bg-yellow-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <p className="text-xs text-yellow-700">{diff}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -244,21 +400,37 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {coachingSuggestions.nextSteps
                       .sort((a, b) => a.priority - b.priority)
                       .map((step, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
-                            step.priority === 1 ? "bg-accent" : 
-                            step.priority === 2 ? "bg-warning" : "bg-gray-400"
-                          }`}>
-                            {step.priority}
+                        <div key={index} className="border border-gray-100 rounded-lg p-3 space-y-3">
+                          <div className="flex items-start space-x-3">
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 ${
+                              step.priority === 1 ? "bg-accent" : 
+                              step.priority === 2 ? "bg-warning" : "bg-gray-400"
+                            }`}>
+                              {step.priority}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-gray-800">{step.step}</p>
+                              <p className="text-xs text-gray-600 mt-1">{step.description}</p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-800">{step.step}</p>
-                            <p className="text-xs text-gray-600 mt-1">{step.description}</p>
-                          </div>
+                          
+                          {step.businessJustification && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-md p-2 ml-8">
+                              <p className="text-xs font-medium text-blue-800 mb-1">Business Justification</p>
+                              <p className="text-xs text-blue-700">{step.businessJustification}</p>
+                            </div>
+                          )}
+                          
+                          {step.expectedOutcome && (
+                            <div className="bg-green-50 border border-green-200 rounded-md p-2 ml-8">
+                              <p className="text-xs font-medium text-green-800 mb-1">Expected Outcome</p>
+                              <p className="text-xs text-green-700">{step.expectedOutcome}</p>
+                            </div>
+                          )}
                         </div>
                       ))}
                   </div>

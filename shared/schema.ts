@@ -122,20 +122,51 @@ export type AIAnalysisResult = {
   confidence: number;
 };
 
+// Enhanced pain-to-value mapping with business impact framework
+export type PainValueMapping = {
+  pain: string;
+  category: 'operational' | 'financial' | 'strategic' | 'compliance' | 'competitive';
+  severity: 1 | 2 | 3 | 4 | 5; // 1 = minor, 5 = critical
+  businessImpact: {
+    cost: string; // Quantified cost of the pain
+    productivity: string; // Productivity impact
+    risk: string; // Risk or opportunity cost
+  };
+  technicalSolution: string;
+  businessValue: {
+    immediate: string; // Short-term benefits (0-3 months)
+    mediumTerm: string; // Medium-term benefits (3-12 months)
+    longTerm: string; // Long-term strategic value (12+ months)
+  };
+  metrics: {
+    kpi: string; // Key performance indicator affected
+    baseline: string; // Current state measurement
+    target: string; // Expected improvement
+    timeframe: string; // Timeline to achieve target
+  };
+  stakeholderBenefit: {
+    executives: string; // C-level impact
+    managers: string; // Management impact
+    endUsers: string; // End user impact
+  };
+  competitiveAdvantage: string;
+};
+
 // Coaching suggestion content type
 export type CoachingSuggestionContent = {
   questions?: string[];
-  painMapping?: Array<{
-    pain: string;
-    value: string;
-  }>;
+  painMapping?: PainValueMapping[];
   framing?: {
     context: string;
     suggestion: string;
+    valueProposition: string;
+    differentiators: string[];
   };
   nextSteps?: Array<{
     step: string;
     priority: number;
     description: string;
+    businessJustification: string;
+    expectedOutcome: string;
   }>;
 };
