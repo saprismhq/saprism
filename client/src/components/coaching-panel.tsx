@@ -221,129 +221,182 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
-                  {coachingSuggestions.painMapping.map((mapping, index) => (
-                    <div key={index} className="border border-gray-100 rounded-lg p-4 space-y-3">
-                      {/* Pain Point Header */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-2 flex-1">
-                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                            mapping.severity >= 4 ? 'bg-red-500' :
-                            mapping.severity >= 3 ? 'bg-orange-500' :
-                            'bg-yellow-500'
-                          }`}></div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold text-gray-900">{mapping.pain}</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <span className={`px-2 py-1 text-xs rounded-full ${
-                                mapping.category === 'financial' ? 'bg-green-100 text-green-700' :
-                                mapping.category === 'operational' ? 'bg-blue-100 text-blue-700' :
-                                mapping.category === 'strategic' ? 'bg-purple-100 text-purple-700' :
-                                mapping.category === 'compliance' ? 'bg-red-100 text-red-700' :
-                                'bg-gray-100 text-gray-700'
-                              }`}>
-                                {mapping.category}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                Severity: {mapping.severity}/5
-                              </span>
+                  {coachingSuggestions.painMapping.map((mapping, index) => {
+                    // Handle backward compatibility - check if it's the old simple format
+                    const isOldFormat = mapping.value !== undefined;
+                    
+                    if (isOldFormat) {
+                      // Render old simple format
+                      return (
+                        <div key={index} className="flex items-start space-x-3">
+                          <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-gray-800">{mapping.pain}</p>
+                            <p className="text-xs text-gray-600 mt-1">→ {mapping.value}</p>
+                          </div>
+                        </div>
+                      );
+                    }
+                    
+                    // Render new enhanced format
+                    return (
+                      <div key={index} className="border border-gray-100 rounded-lg p-4 space-y-3">
+                        {/* Pain Point Header */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start space-x-2 flex-1">
+                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                              (mapping.severity || 3) >= 4 ? 'bg-red-500' :
+                              (mapping.severity || 3) >= 3 ? 'bg-orange-500' :
+                              'bg-yellow-500'
+                            }`}></div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-gray-900">{mapping.pain}</p>
+                              {mapping.category && (
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${
+                                    mapping.category === 'financial' ? 'bg-green-100 text-green-700' :
+                                    mapping.category === 'operational' ? 'bg-blue-100 text-blue-700' :
+                                    mapping.category === 'strategic' ? 'bg-purple-100 text-purple-700' :
+                                    mapping.category === 'compliance' ? 'bg-red-100 text-red-700' :
+                                    'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    {mapping.category}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    Severity: {mapping.severity || 3}/5
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Business Impact */}
-                      <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-red-800 mb-2">Business Impact</h4>
-                        <div className="space-y-1 text-xs text-red-700">
-                          <p><span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>
-                          <p><span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>
-                          <p><span className="font-medium">Risk:</span> {mapping.businessImpact.risk}</p>
-                        </div>
-                      </div>
-
-                      {/* Technical Solution */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-blue-800 mb-2">Technical Solution</h4>
-                        <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
-                      </div>
-
-                      {/* Business Value Timeline */}
-                      <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-green-800 mb-2">Business Value Timeline</h4>
-                        <div className="space-y-2">
-                          <div className="flex items-start space-x-2">
-                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-xs font-medium text-green-700">0-3 Months</p>
-                              <p className="text-xs text-green-600">{mapping.businessValue.immediate}</p>
+                        {/* Business Impact */}
+                        {mapping.businessImpact && (
+                          <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-red-800 mb-2">Business Impact</h4>
+                            <div className="space-y-1 text-xs text-red-700">
+                              {mapping.businessImpact.cost && <p><span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>}
+                              {mapping.businessImpact.productivity && <p><span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>}
+                              {mapping.businessImpact.risk && <p><span className="font-medium">Risk:</span> {mapping.businessImpact.risk}</p>}
                             </div>
                           </div>
-                          <div className="flex items-start space-x-2">
-                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-xs font-medium text-green-700">3-12 Months</p>
-                              <p className="text-xs text-green-600">{mapping.businessValue.mediumTerm}</p>
+                        )}
+
+                        {/* Technical Solution */}
+                        {mapping.technicalSolution && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-blue-800 mb-2">Technical Solution</h4>
+                            <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
+                          </div>
+                        )}
+
+                        {/* Business Value Timeline */}
+                        {mapping.businessValue && (
+                          <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-green-800 mb-2">Business Value Timeline</h4>
+                            <div className="space-y-2">
+                              {mapping.businessValue.immediate && (
+                                <div className="flex items-start space-x-2">
+                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                                  <div>
+                                    <p className="text-xs font-medium text-green-700">0-3 Months</p>
+                                    <p className="text-xs text-green-600">{mapping.businessValue.immediate}</p>
+                                  </div>
+                                </div>
+                              )}
+                              {mapping.businessValue.mediumTerm && (
+                                <div className="flex items-start space-x-2">
+                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                                  <div>
+                                    <p className="text-xs font-medium text-green-700">3-12 Months</p>
+                                    <p className="text-xs text-green-600">{mapping.businessValue.mediumTerm}</p>
+                                  </div>
+                                </div>
+                              )}
+                              {mapping.businessValue.longTerm && (
+                                <div className="flex items-start space-x-2">
+                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
+                                  <div>
+                                    <p className="text-xs font-medium text-green-700">12+ Months</p>
+                                    <p className="text-xs text-green-600">{mapping.businessValue.longTerm}</p>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-start space-x-2">
-                            <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-xs font-medium text-green-700">12+ Months</p>
-                              <p className="text-xs text-green-600">{mapping.businessValue.longTerm}</p>
+                        )}
+
+                        {/* Success Metrics */}
+                        {mapping.metrics && (
+                          <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-purple-800 mb-2">Success Metrics</h4>
+                            <div className="grid grid-cols-2 gap-2 text-xs text-purple-700">
+                              {mapping.metrics.kpi && (
+                                <div>
+                                  <p className="font-medium">KPI:</p>
+                                  <p>{mapping.metrics.kpi}</p>
+                                </div>
+                              )}
+                              {mapping.metrics.timeframe && (
+                                <div>
+                                  <p className="font-medium">Timeline:</p>
+                                  <p>{mapping.metrics.timeframe}</p>
+                                </div>
+                              )}
+                              {mapping.metrics.baseline && (
+                                <div>
+                                  <p className="font-medium">Baseline:</p>
+                                  <p>{mapping.metrics.baseline}</p>
+                                </div>
+                              )}
+                              {mapping.metrics.target && (
+                                <div>
+                                  <p className="font-medium">Target:</p>
+                                  <p>{mapping.metrics.target}</p>
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        )}
 
-                      {/* Success Metrics */}
-                      <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-purple-800 mb-2">Success Metrics</h4>
-                        <div className="grid grid-cols-2 gap-2 text-xs text-purple-700">
-                          <div>
-                            <p className="font-medium">KPI:</p>
-                            <p>{mapping.metrics.kpi}</p>
+                        {/* Stakeholder Benefits */}
+                        {mapping.stakeholderBenefit && (
+                          <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-gray-800 mb-2">Stakeholder Benefits</h4>
+                            <div className="space-y-2 text-xs">
+                              {mapping.stakeholderBenefit.executives && (
+                                <div>
+                                  <p className="font-medium text-gray-700">Executives:</p>
+                                  <p className="text-gray-600">{mapping.stakeholderBenefit.executives}</p>
+                                </div>
+                              )}
+                              {mapping.stakeholderBenefit.managers && (
+                                <div>
+                                  <p className="font-medium text-gray-700">Managers:</p>
+                                  <p className="text-gray-600">{mapping.stakeholderBenefit.managers}</p>
+                                </div>
+                              )}
+                              {mapping.stakeholderBenefit.endUsers && (
+                                <div>
+                                  <p className="font-medium text-gray-700">End Users:</p>
+                                  <p className="text-gray-600">{mapping.stakeholderBenefit.endUsers}</p>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium">Timeline:</p>
-                            <p>{mapping.metrics.timeframe}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">Baseline:</p>
-                            <p>{mapping.metrics.baseline}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium">Target:</p>
-                            <p>{mapping.metrics.target}</p>
-                          </div>
-                        </div>
-                      </div>
+                        )}
 
-                      {/* Stakeholder Benefits */}
-                      <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-gray-800 mb-2">Stakeholder Benefits</h4>
-                        <div className="space-y-2 text-xs">
-                          <div>
-                            <p className="font-medium text-gray-700">Executives:</p>
-                            <p className="text-gray-600">{mapping.stakeholderBenefit.executives}</p>
+                        {/* Competitive Advantage */}
+                        {mapping.competitiveAdvantage && (
+                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                            <h4 className="text-xs font-semibold text-yellow-800 mb-2">Competitive Advantage</h4>
+                            <p className="text-xs text-yellow-700">{mapping.competitiveAdvantage}</p>
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-700">Managers:</p>
-                            <p className="text-gray-600">{mapping.stakeholderBenefit.managers}</p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-700">End Users:</p>
-                            <p className="text-gray-600">{mapping.stakeholderBenefit.endUsers}</p>
-                          </div>
-                        </div>
+                        )}
                       </div>
-
-                      {/* Competitive Advantage */}
-                      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-                        <h4 className="text-xs font-semibold text-yellow-800 mb-2">Competitive Advantage</h4>
-                        <p className="text-xs text-yellow-700">{mapping.competitiveAdvantage}</p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </CardContent>
               </Card>
             )}
@@ -358,20 +411,26 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                    <p className="text-xs font-medium text-blue-800 mb-1">Situation Context</p>
-                    <p className="text-xs text-blue-700">{coachingSuggestions.framing.context}</p>
-                  </div>
+                  {coachingSuggestions.framing.context && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                      <p className="text-xs font-medium text-blue-800 mb-1">Situation Context</p>
+                      <p className="text-xs text-blue-700">{coachingSuggestions.framing.context}</p>
+                    </div>
+                  )}
                   
-                  <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                    <p className="text-xs font-medium text-green-800 mb-1">Core Value Proposition</p>
-                    <p className="text-xs text-green-700">{coachingSuggestions.framing.valueProposition}</p>
-                  </div>
+                  {coachingSuggestions.framing.valueProposition && (
+                    <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                      <p className="text-xs font-medium text-green-800 mb-1">Core Value Proposition</p>
+                      <p className="text-xs text-green-700">{coachingSuggestions.framing.valueProposition}</p>
+                    </div>
+                  )}
 
-                  <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
-                    <p className="text-xs font-medium text-purple-800 mb-1">Recommended Messaging</p>
-                    <p className="text-xs text-purple-700">{coachingSuggestions.framing.suggestion}</p>
-                  </div>
+                  {coachingSuggestions.framing.suggestion && (
+                    <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+                      <p className="text-xs font-medium text-purple-800 mb-1">Recommended Messaging</p>
+                      <p className="text-xs text-purple-700">{coachingSuggestions.framing.suggestion}</p>
+                    </div>
+                  )}
 
                   {coachingSuggestions.framing.differentiators && coachingSuggestions.framing.differentiators.length > 0 && (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
