@@ -70,10 +70,14 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
     },
   });
 
-  // Handle meeting changes: load existing suggestions
+  // Handle meeting changes: load existing suggestions and reset mutation states
   useEffect(() => {
     try {
       console.log("Meeting data changed in coaching panel:", meeting);
+      
+      // Reset mutation states to prevent phantom loading indicators
+      generateCoachingMutation.reset();
+      markAsUsedMutation.reset();
       
       if (!meeting) {
         setCoachingSuggestions(null);

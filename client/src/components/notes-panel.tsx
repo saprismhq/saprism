@@ -59,8 +59,14 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
     setPreviousMeetingId(meeting?.id || null);
   }, [meeting?.id]);
 
-  // Update note content when meeting changes
+  // Update note content when meeting changes and reset mutation states
   useEffect(() => {
+    // Reset mutation states to prevent phantom loading indicators
+    analyzeNotesMutation.reset();
+    saveNoteMutation.reset();
+    syncToCrmMutation.reset();
+    generateCoachingMutation.reset();
+    
     if (meeting && meeting.notes && meeting.notes.length > 0) {
       setNoteContent(meeting.notes[0].content);
       setLastAnalysis(meeting.notes[0].aiAnalysis as AIAnalysisResult);
