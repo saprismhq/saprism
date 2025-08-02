@@ -223,7 +223,7 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                 <CardContent className="pt-0 space-y-4">
                   {coachingSuggestions.painMapping.map((mapping, index) => {
                     // Handle backward compatibility - check if it's the old simple format
-                    const isOldFormat = mapping.value !== undefined;
+                    const isOldFormat = (mapping as any).value !== undefined;
                     
                     if (isOldFormat) {
                       // Render old simple format
@@ -232,7 +232,7 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                           <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-gray-800">{mapping.pain}</p>
-                            <p className="text-xs text-gray-600 mt-1">→ {mapping.value}</p>
+                            <p className="text-xs text-gray-600 mt-1">→ {(mapping as any).value}</p>
                           </div>
                         </div>
                       );

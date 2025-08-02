@@ -35,6 +35,11 @@ export default function Home() {
   // Query for active meeting details using organized API
   const { data: activeMeeting, isLoading: activeMeetingLoading } = useMeeting(activeMeetingId);
 
+  // Reset analyzing state when meeting changes
+  useEffect(() => {
+    setIsAnalyzing(false);
+  }, [activeMeetingId]);
+
   // Create new meeting mutation using organized API
   const createMeetingMutation = useCreateMeeting();
 
