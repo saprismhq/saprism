@@ -12,10 +12,9 @@ import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 interface NotesPanelProps {
   meeting: MeetingWithNotes | undefined;
   isLoading: boolean;
-  onAnalyzing?: (isAnalyzing: boolean) => void; // Callback to notify parent about analysis state
 }
 
-export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps) {
+export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   const { toast } = useToast();
   const [noteContent, setNoteContent] = useState("");
   const [lastAnalysis, setLastAnalysis] = useState<AIAnalysisResult | null>(null);
@@ -68,8 +67,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
     if (currentMeetingId !== meetingId) {
       setCurrentMeetingId(meetingId);
       
-      // Immediately reset analyzing state for new meeting
-      onAnalyzing?.(false);
+      // Meeting changed - reset states
       
       // Reset mutation states to prevent phantom loading indicators
       analyzeNotesMutation.reset();
@@ -85,7 +83,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       setNoteContent("");
       setLastAnalysis(null);
     }
-  }, [meeting, currentMeetingId, onAnalyzing]);
+  }, [meeting, currentMeetingId]);
 
   // Keep the coaching mutation for manual triggers (if needed)
   const generateCoachingMutation = useMutation({
@@ -118,14 +116,12 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
   // AI Analysis mutation (now includes coaching suggestions)
   const analyzeNotesMutation = useMutation({
     mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
-      // Notify parent that analysis is starting
-      onAnalyzing?.(true);
+      // Starting analysis
       const response = await apiRequest("POST", "/api/ai/analyze", { content, meetingId });
       return response.json();
     },
     onSuccess: (result: any) => {
-      // Notify parent that analysis is complete
-      onAnalyzing?.(false);
+      // Analysis complete
       // Handle both old format (just analysis) and new format (analysis + coaching)
       if (result.analysis) {
         setLastAnalysis(result.analysis);
@@ -158,7 +154,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
     },
     onError: (error) => {
       // Notify parent that analysis is complete (even on error)
-      onAnalyzing?.(false);
+      // Analysis failed
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
