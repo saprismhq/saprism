@@ -172,8 +172,8 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
 
       {/* Coaching Content */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-        {((generateCoachingMutation.isPending && generateCoachingMutation.variables?.meetingId === meeting?.id) || 
-          (isAnalyzing && meeting?.id === currentMeetingId)) && (
+        {/* Only show loading if actively generating for this specific meeting */}
+        {isAnalyzing && meeting?.id && (
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>

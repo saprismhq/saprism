@@ -64,9 +64,12 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
   useEffect(() => {
     const meetingId = meeting?.id || null;
     
-    // If this is a different meeting, reset mutation states
+    // If this is a different meeting, reset mutation states and analyzing state
     if (currentMeetingId !== meetingId) {
       setCurrentMeetingId(meetingId);
+      
+      // Immediately reset analyzing state for new meeting
+      onAnalyzing?.(false);
       
       // Reset mutation states to prevent phantom loading indicators
       analyzeNotesMutation.reset();
@@ -82,7 +85,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       setNoteContent("");
       setLastAnalysis(null);
     }
-  }, [meeting, currentMeetingId]);
+  }, [meeting, currentMeetingId, onAnalyzing]);
 
   // Keep the coaching mutation for manual triggers (if needed)
   const generateCoachingMutation = useMutation({
@@ -477,8 +480,8 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
           </Card>
         )}
 
-        {/* Analysis loading indicator */}
-        {(analyzeNotesMutation.isPending && analyzeNotesMutation.variables?.meetingId === meeting?.id) && (
+        {/* Analysis loading indicator - only show when actively analyzing */}
+        {analyzeNotesMutation.isPending && meeting?.id && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
             <span className="text-sm text-blue-600">AI analyzing your notes...</span>
