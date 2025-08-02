@@ -74,10 +74,14 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
   useEffect(() => {
     try {
       console.log("Meeting data changed in coaching panel:", meeting);
+      console.log("Before reset - generateCoaching isPending:", generateCoachingMutation.isPending);
+      console.log("Before reset - isAnalyzing prop:", isAnalyzing);
       
       // Reset mutation states to prevent phantom loading indicators
       generateCoachingMutation.reset();
       markAsUsedMutation.reset();
+      
+      console.log("After reset - generateCoaching isPending:", generateCoachingMutation.isPending);
       
       if (!meeting) {
         setCoachingSuggestions(null);
@@ -171,7 +175,15 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-sm text-gray-600">Generating growth insights...</p>
+              <p className="text-sm text-gray-600">
+                Generating growth insights...
+                {/* Debug info */}
+                {process.env.NODE_ENV === 'development' && (
+                  <span className="block text-xs text-gray-400 mt-1">
+                    (Mutation: {generateCoachingMutation.isPending ? 'pending' : 'idle'}, Analyzing: {isAnalyzing ? 'true' : 'false'})
+                  </span>
+                )}
+              </p>
             </div>
           </div>
         )}

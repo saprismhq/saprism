@@ -473,7 +473,15 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
         {analyzeNotesMutation.isPending && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
-            <span className="text-sm text-blue-600">AI analyzing your notes...</span>
+            <span className="text-sm text-blue-600">
+              AI analyzing your notes...
+              {/* Debug info */}
+              {process.env.NODE_ENV === 'development' && (
+                <span className="block text-xs text-gray-400 mt-1">
+                  (Mutation pending: {analyzeNotesMutation.isPending ? 'true' : 'false'})
+                </span>
+              )}
+            </span>
           </div>
         )}
       </div>
