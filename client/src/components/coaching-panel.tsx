@@ -271,127 +271,61 @@ export function CoachingPanel({ meeting, isLoading, isAnalyzing = false }: Coach
                           </div>
                         </div>
 
-                        {/* Business Impact */}
-                        {mapping.businessImpact && (
-                          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-red-800 mb-2">Business Impact</h4>
-                            <div className="space-y-1 text-xs text-red-700">
-                              {mapping.businessImpact.cost && <p><span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>}
-                              {mapping.businessImpact.productivity && <p><span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>}
-                              {mapping.businessImpact.risk && <p><span className="font-medium">Risk:</span> {mapping.businessImpact.risk}</p>}
-                            </div>
+                        {/* Business Impact & Solution */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                          <h4 className="text-xs font-semibold text-blue-800 mb-2">Impact & Solution</h4>
+                          <div className="space-y-2 text-xs text-blue-700">
+                            {mapping.businessImpact && (
+                              <div>
+                                {mapping.businessImpact.cost && <p><span className="font-medium">Cost Impact:</span> {mapping.businessImpact.cost}</p>}
+                                {mapping.businessImpact.productivity && <p><span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>}
+                              </div>
+                            )}
+                            {mapping.technicalSolution && (
+                              <p><span className="font-medium">Solution:</span> {mapping.technicalSolution}</p>
+                            )}
                           </div>
-                        )}
+                        </div>
 
-                        {/* Technical Solution */}
-                        {mapping.technicalSolution && (
-                          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-blue-800 mb-2">Technical Solution</h4>
-                            <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
-                          </div>
-                        )}
-
-                        {/* Business Value Timeline */}
-                        {mapping.businessValue && (
+                        {/* Business Value & ROI */}
+                        {(mapping.businessValue || mapping.metrics) && (
                           <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-green-800 mb-2">Business Value Timeline</h4>
+                            <h4 className="text-xs font-semibold text-green-800 mb-2">Business Value & ROI</h4>
                             <div className="space-y-2">
-                              {mapping.businessValue.immediate && (
-                                <div className="flex items-start space-x-2">
-                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                                  <div>
-                                    <p className="text-xs font-medium text-green-700">0-3 Months</p>
-                                    <p className="text-xs text-green-600">{mapping.businessValue.immediate}</p>
-                                  </div>
-                                </div>
+                              {mapping.businessValue?.immediate && (
+                                <p className="text-xs text-green-700">
+                                  <span className="font-medium">Quick Win:</span> {mapping.businessValue.immediate}
+                                </p>
                               )}
-                              {mapping.businessValue.mediumTerm && (
-                                <div className="flex items-start space-x-2">
-                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                                  <div>
-                                    <p className="text-xs font-medium text-green-700">3-12 Months</p>
-                                    <p className="text-xs text-green-600">{mapping.businessValue.mediumTerm}</p>
-                                  </div>
-                                </div>
+                              {mapping.businessValue?.longTerm && (
+                                <p className="text-xs text-green-700">
+                                  <span className="font-medium">Long-term:</span> {mapping.businessValue.longTerm}
+                                </p>
                               )}
-                              {mapping.businessValue.longTerm && (
-                                <div className="flex items-start space-x-2">
-                                  <div className="w-1 h-1 bg-green-600 rounded-full mt-2"></div>
-                                  <div>
-                                    <p className="text-xs font-medium text-green-700">12+ Months</p>
-                                    <p className="text-xs text-green-600">{mapping.businessValue.longTerm}</p>
-                                  </div>
-                                </div>
+                              {mapping.metrics?.target && (
+                                <p className="text-xs text-green-700">
+                                  <span className="font-medium">Target:</span> {mapping.metrics.target}
+                                </p>
                               )}
                             </div>
                           </div>
                         )}
 
-                        {/* Success Metrics */}
-                        {mapping.metrics && (
+                        {/* Key Stakeholders & Advantage */}
+                        {(mapping.stakeholderBenefit || mapping.competitiveAdvantage) && (
                           <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-purple-800 mb-2">Success Metrics</h4>
-                            <div className="grid grid-cols-2 gap-2 text-xs text-purple-700">
-                              {mapping.metrics.kpi && (
-                                <div>
-                                  <p className="font-medium">KPI:</p>
-                                  <p>{mapping.metrics.kpi}</p>
-                                </div>
+                            <h4 className="text-xs font-semibold text-purple-800 mb-2">Stakeholders & Advantage</h4>
+                            <div className="space-y-2 text-xs text-purple-700">
+                              {mapping.stakeholderBenefit?.executives && (
+                                <p><span className="font-medium">Executives:</span> {mapping.stakeholderBenefit.executives}</p>
                               )}
-                              {mapping.metrics.timeframe && (
-                                <div>
-                                  <p className="font-medium">Timeline:</p>
-                                  <p>{mapping.metrics.timeframe}</p>
-                                </div>
+                              {mapping.stakeholderBenefit?.managers && (
+                                <p><span className="font-medium">Managers:</span> {mapping.stakeholderBenefit.managers}</p>
                               )}
-                              {mapping.metrics.baseline && (
-                                <div>
-                                  <p className="font-medium">Baseline:</p>
-                                  <p>{mapping.metrics.baseline}</p>
-                                </div>
-                              )}
-                              {mapping.metrics.target && (
-                                <div>
-                                  <p className="font-medium">Target:</p>
-                                  <p>{mapping.metrics.target}</p>
-                                </div>
+                              {mapping.competitiveAdvantage && (
+                                <p><span className="font-medium">Advantage:</span> {mapping.competitiveAdvantage}</p>
                               )}
                             </div>
-                          </div>
-                        )}
-
-                        {/* Stakeholder Benefits */}
-                        {mapping.stakeholderBenefit && (
-                          <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-gray-800 mb-2">Stakeholder Benefits</h4>
-                            <div className="space-y-2 text-xs">
-                              {mapping.stakeholderBenefit.executives && (
-                                <div>
-                                  <p className="font-medium text-gray-700">Executives:</p>
-                                  <p className="text-gray-600">{mapping.stakeholderBenefit.executives}</p>
-                                </div>
-                              )}
-                              {mapping.stakeholderBenefit.managers && (
-                                <div>
-                                  <p className="font-medium text-gray-700">Managers:</p>
-                                  <p className="text-gray-600">{mapping.stakeholderBenefit.managers}</p>
-                                </div>
-                              )}
-                              {mapping.stakeholderBenefit.endUsers && (
-                                <div>
-                                  <p className="font-medium text-gray-700">End Users:</p>
-                                  <p className="text-gray-600">{mapping.stakeholderBenefit.endUsers}</p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Competitive Advantage */}
-                        {mapping.competitiveAdvantage && (
-                          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-                            <h4 className="text-xs font-semibold text-yellow-800 mb-2">Competitive Advantage</h4>
-                            <p className="text-xs text-yellow-700">{mapping.competitiveAdvantage}</p>
                           </div>
                         )}
                       </div>
