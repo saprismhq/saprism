@@ -25,6 +25,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
   const [previousMeetingId, setPreviousMeetingId] = useState<number | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [currentMeetingId, setCurrentMeetingId] = useState<number | null>(null);
 
   // Auto-save when content changes
   useEffect(() => {
@@ -61,11 +62,18 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
 
   // Update note content when meeting changes and reset mutation states
   useEffect(() => {
-    // Reset mutation states to prevent phantom loading indicators
-    analyzeNotesMutation.reset();
-    saveNoteMutation.reset();
-    syncToCrmMutation.reset();
-    generateCoachingMutation.reset();
+    const meetingId = meeting?.id || null;
+    
+    // If this is a different meeting, reset mutation states
+    if (currentMeetingId !== meetingId) {
+      setCurrentMeetingId(meetingId);
+      
+      // Reset mutation states to prevent phantom loading indicators
+      analyzeNotesMutation.reset();
+      saveNoteMutation.reset();
+      syncToCrmMutation.reset();
+      generateCoachingMutation.reset();
+    }
     
     if (meeting && meeting.notes && meeting.notes.length > 0) {
       setNoteContent(meeting.notes[0].content);
@@ -74,7 +82,7 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
       setNoteContent("");
       setLastAnalysis(null);
     }
-  }, [meeting]);
+  }, [meeting, currentMeetingId]);
 
   // Keep the coaching mutation for manual triggers (if needed)
   const generateCoachingMutation = useMutation({
@@ -470,18 +478,10 @@ export function NotesPanel({ meeting, isLoading, onAnalyzing }: NotesPanelProps)
         )}
 
         {/* Analysis loading indicator */}
-        {analyzeNotesMutation.isPending && (
+        {(analyzeNotesMutation.isPending && analyzeNotesMutation.variables?.meetingId === meeting?.id) && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
-            <span className="text-sm text-blue-600">
-              AI analyzing your notes...
-              {/* Debug info */}
-              {process.env.NODE_ENV === 'development' && (
-                <span className="block text-xs text-gray-400 mt-1">
-                  (Mutation pending: {analyzeNotesMutation.isPending ? 'true' : 'false'})
-                </span>
-              )}
-            </span>
+            <span className="text-sm text-blue-600">AI analyzing your notes...</span>
           </div>
         )}
       </div>
