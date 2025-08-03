@@ -25,6 +25,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   const [previousMeetingId, setPreviousMeetingId] = useState<number | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [currentMeetingId, setCurrentMeetingId] = useState<number | null>(null);
+  const [isActuallyAnalyzing, setIsActuallyAnalyzing] = useState(false);
 
   // Auto-save when content changes
   useEffect(() => {
@@ -68,6 +69,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       setCurrentMeetingId(meetingId);
       
       // Meeting changed - reset states
+      setIsActuallyAnalyzing(false);
       
       // Reset mutation states to prevent phantom loading indicators
       analyzeNotesMutation.reset();
@@ -117,11 +119,13 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   const analyzeNotesMutation = useMutation({
     mutationFn: async ({ content, meetingId }: { content: string; meetingId: number }) => {
       // Starting analysis
+      setIsActuallyAnalyzing(true);
       const response = await apiRequest("POST", "/api/ai/analyze", { content, meetingId });
       return response.json();
     },
     onSuccess: (result: any) => {
       // Analysis complete
+      setIsActuallyAnalyzing(false);
       // Handle both old format (just analysis) and new format (analysis + coaching)
       if (result.analysis) {
         setLastAnalysis(result.analysis);
@@ -153,8 +157,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       }
     },
     onError: (error) => {
-      // Notify parent that analysis is complete (even on error)
       // Analysis failed
+      setIsActuallyAnalyzing(false);
       if (isUnauthorizedError(error)) {
         toast({
           title: "Unauthorized",
@@ -476,8 +480,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
           </Card>
         )}
 
-        {/* Analysis loading indicator - only show when actively analyzing for this specific meeting */}
-        {analyzeNotesMutation.isPending && analyzeNotesMutation.variables?.meetingId === meeting?.id && (
+        {/* Analysis loading indicator - use local state tracking */}
+        {isActuallyAnalyzing && meeting?.id && currentMeetingId === meeting.id && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
             <span className="text-sm text-blue-600">AI analyzing your notes...</span>
