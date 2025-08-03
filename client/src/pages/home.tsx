@@ -131,7 +131,7 @@ export default function Home() {
           deleteMeetingLoading={deleteMeetingMutation.isPending}
         />
         
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-hidden h-full">
           <NotesPanel
             key={activeMeetingId}
             meeting={activeMeeting}

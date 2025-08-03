@@ -304,7 +304,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
   if (isLoading) {
     return (
-      <section className="flex-1 bg-white border-r border-gray-200 flex flex-col">
+      <section className="flex-1 bg-white border-r border-gray-200 flex flex-col h-full">
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -317,7 +317,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
 
   if (!meeting) {
     return (
-      <section className="flex-1 bg-white border-r border-gray-200 flex flex-col">
+      <section className="flex-1 bg-white border-r border-gray-200 flex flex-col h-full">
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <p className="text-gray-600 mb-4">Select a meeting to start taking notes</p>
