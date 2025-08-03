@@ -163,14 +163,12 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
   return (
     <section className="w-96 bg-gray-50 border-l border-gray-100 flex flex-col h-full">
       {/* Header */}
-      <header className="px-6 py-4 bg-white border-b border-gray-100 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-            <Lightbulb className="w-4 h-4 mr-2 text-primary" />
-            Growth Guide
-          </h3>
-          <UserDropdown />
-        </div>
+      <header className="px-6 py-4 bg-white border-b border-gray-100 flex-shrink-0 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+          <Lightbulb className="w-4 h-4 mr-2 text-primary" />
+          Growth Guide
+        </h3>
+        <UserDropdown />
       </header>
 
       {/* Coaching Content */}
