@@ -121,11 +121,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation Bar */}
-      <div className="absolute top-0 right-0 z-50 p-4">
-        <UserDropdown />
-      </div>
-      
       <div className="flex h-screen">
         <Sidebar
           meetings={meetings || []}

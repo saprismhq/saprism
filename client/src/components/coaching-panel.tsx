@@ -6,6 +6,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Lightbulb, ArrowLeftRight, MessageSquare, Route, Copy, Plus, Check } from "lucide-react";
+import { UserDropdown } from "@/components/user-dropdown";
 import type { MeetingWithNotes, CoachingSuggestionContent } from "@shared/schema";
 
 interface CoachingPanelProps {
@@ -163,10 +164,13 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     <section className="w-96 bg-gray-50 border-l border-gray-100 flex flex-col h-full">
       {/* Header */}
       <header className="px-6 py-4 bg-white border-b border-gray-100 flex-shrink-0">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Lightbulb className="w-4 h-4 mr-2 text-primary" />
-          Growth Guide
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <Lightbulb className="w-4 h-4 mr-2 text-primary" />
+            Growth Guide
+          </h3>
+          <UserDropdown />
+        </div>
       </header>
 
       {/* Coaching Content */}
