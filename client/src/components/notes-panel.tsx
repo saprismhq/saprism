@@ -333,7 +333,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center">Meeting Notes</h2>
           {/* Flyout details trigger */}
           <div className="relative group">
             <button className="flex items-center space-x-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors">

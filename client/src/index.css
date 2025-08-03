@@ -107,6 +107,11 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  /* Ensure header alignment by resetting margins */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+  }
 }
 
 @layer utilities {
