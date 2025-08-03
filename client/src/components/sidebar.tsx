@@ -58,7 +58,7 @@ export function Sidebar({
       </div>
 
       {/* Create Meeting Button */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="px-6 py-4 border-b border-gray-100">
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button className="w-full bg-primary hover:bg-primary/90 h-12 text-sm" disabled={createMeetingLoading}>
