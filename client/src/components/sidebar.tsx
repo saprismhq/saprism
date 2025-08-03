@@ -146,7 +146,11 @@ export function Sidebar({
                     <div className="text-xs text-gray-500 mt-1">{meeting.clientCompany}</div>
                   )}
                   <div className="text-xs text-gray-400 mt-1">
-                    {new Date(meeting.createdAt).toLocaleDateString()}
+                    {new Date(meeting.createdAt).toLocaleDateString()} • {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
                   </div>
                 </button>
                 
