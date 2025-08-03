@@ -336,6 +336,9 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
           Meeting Notes
           <span className="text-sm font-normal text-gray-500 ml-3">
             {meeting.clientName}
+            {meeting.clientCompany && (
+              <span> at {meeting.clientCompany}</span>
+            )}
           </span>
         </h2>
         <div className="flex items-center space-x-3">
