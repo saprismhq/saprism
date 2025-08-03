@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Save, FolderSync, Mic, Clock, Tag, Brain, User, Calendar } from "lucide-react";
+import { Save, FolderSync, Mic, Clock, Tag, Brain, Calendar } from "lucide-react";
 import { RichTextEditor } from "./rich-text-editor";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
@@ -332,18 +332,12 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     <section className="flex-1 bg-white flex flex-col h-full">
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center">Meeting Notes</h2>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <User className="w-4 h-4" />
-            <span>
-              {meeting.clientName}
-              {meeting.clientCompany && (
-                <span className="text-gray-500"> • {meeting.clientCompany}</span>
-              )}
-            </span>
-          </div>
-        </div>
+        <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+          Meeting Notes
+          <span className="text-sm font-normal text-gray-500 ml-3">
+            {meeting.clientName}
+          </span>
+        </h2>
         <div className="flex items-center space-x-3">
             <Button
               variant="outline"
