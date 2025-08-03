@@ -332,15 +332,15 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     <section className="flex-1 bg-white flex flex-col h-full">
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-          Meeting Notes
-          <span className="text-sm font-normal text-gray-500 ml-3">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
+          <p className="text-sm text-gray-500 truncate">
             {meeting.clientName}
             {meeting.clientCompany && (
               <span> at {meeting.clientCompany}</span>
             )}
-          </span>
-        </h2>
+          </p>
+        </div>
         <div className="flex items-center space-x-3">
             <Button
               variant="outline"
