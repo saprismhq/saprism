@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useQuery } from "@tanstack/react-query";
-import { Brain, Plus, History, BarChart3, Settings, User, LogOut, X } from "lucide-react";
+import { Brain, Plus, History, BarChart3, Settings, User, X } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
 import type { Meeting } from "@shared/schema";
 
@@ -208,17 +208,7 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Logout */}
-      <div className="p-4 border-t border-gray-100">
-        <Button
-          variant="outline"
-          className="w-full h-10"
-          onClick={() => window.location.href = "/api/logout"}
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Logout
-        </Button>
-      </div>
+
     </aside>
   );
 }

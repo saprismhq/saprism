@@ -6,6 +6,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { Sidebar } from "@/components/sidebar";
 import { NotesPanel } from "@/components/notes-panel";
 import { CoachingPanel } from "@/components/coaching-panel";
+import { UserDropdown } from "@/components/user-dropdown";
 import type { Meeting, MeetingWithNotes } from "@shared/schema";
 
 export default function Home() {
@@ -120,6 +121,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <div className="absolute top-0 right-0 z-50 p-4">
+        <UserDropdown />
+      </div>
+      
       <div className="flex h-screen">
         <Sidebar
           meetings={meetings || []}
