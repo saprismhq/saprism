@@ -331,48 +331,47 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
   return (
     <section className="flex-1 bg-white flex flex-col h-full">
       {/* Header */}
-      <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
-            {/* Flyout details trigger */}
-            <div className="relative group">
-              <button className="flex items-center space-x-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
-                <User className="w-3.5 h-3.5" />
-                <ChevronDown className="w-3 h-3" />
-              </button>
-              
-              {/* Flyout content */}
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <div className="font-medium text-gray-900">{meeting.clientName}</div>
-                    {meeting.clientCompany && (
-                      <div className="text-gray-500">{meeting.clientCompany}</div>
-                    )}
+      <header className="px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <h2 className="text-lg font-semibold text-gray-900">Meeting Notes</h2>
+          {/* Flyout details trigger */}
+          <div className="relative group">
+            <button className="flex items-center space-x-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors">
+              <User className="w-3.5 h-3.5" />
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            
+            {/* Flyout content */}
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div className="space-y-2 text-sm">
+                <div>
+                  <div className="font-medium text-gray-900">{meeting.clientName}</div>
+                  {meeting.clientCompany && (
+                    <div className="text-gray-500">{meeting.clientCompany}</div>
+                  )}
+                </div>
+                <div className="pt-1 border-t border-gray-100">
+                  <div className="text-gray-600">
+                    {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
+                      weekday: 'short',
+                      month: 'short', 
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
                   </div>
-                  <div className="pt-1 border-t border-gray-100">
-                    <div className="text-gray-600">
-                      {new Date(meeting.createdAt).toLocaleDateString('en-US', { 
-                        weekday: 'short',
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </div>
-                    <div className="text-gray-600">
-                      {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })}
-                    </div>
+                  <div className="text-gray-600">
+                    {new Date(meeting.createdAt).toLocaleTimeString('en-US', { 
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true
+                    })}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
+        </div>
+        <div className="flex items-center space-x-3">
             <Button
               variant="outline"
               onClick={handleSave}
@@ -397,7 +396,6 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
               {syncToCrmMutation.isPending ? "Syncing..." : "Sync to CRM"}
             </Button>
           </div>
-        </div>
       </header>
 
       {/* Notes Input Area */}
