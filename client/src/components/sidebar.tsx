@@ -53,7 +53,7 @@ export function Sidebar({
   return (
     <aside className="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col h-full">
       {/* Logo & Brand */}
-      <div className="px-6 py-3 border-b border-gray-100 flex items-center">
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center">
         <SalespringLogo size="md" />
       </div>
 
