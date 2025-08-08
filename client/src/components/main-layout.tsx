@@ -82,7 +82,7 @@ export function MainLayout({
         className={`fixed bottom-0 left-80 right-0 bg-white border-t border-gray-200 shadow-2xl transition-transform duration-300 ease-in-out z-40 ${
           isCallPanelOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{ height: '60vh' }}
+        style={{ height: '400px' }}
       >
         {/* Call Panel Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
@@ -107,10 +107,12 @@ export function MainLayout({
 
         {/* Call Interface Content */}
         <div className="flex-1 p-4 overflow-hidden">
-          <CallInterface
-            meeting={activeMeeting}
-            isLoading={activeMeetingLoading}
-          />
+          <div className="h-full">
+            <CallInterface
+              meeting={activeMeeting}
+              isLoading={activeMeetingLoading}
+            />
+          </div>
         </div>
 
         {/* Resize Handle */}

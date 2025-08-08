@@ -182,7 +182,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
   }
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className="h-full flex flex-col max-h-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium text-gray-900 flex items-center">
           <Phone className="w-4 h-4 mr-2 text-primary" />
@@ -191,9 +191,9 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col space-y-4">
+      <CardContent className="flex-1 flex flex-col space-y-3 overflow-hidden">
         {/* Video Container */}
-        <div className="flex-1 bg-gray-900 rounded-lg overflow-hidden relative min-h-[300px]">
+        <div className="bg-gray-900 rounded-lg overflow-hidden relative h-48">
           {isConnected ? (
             <>
               {/* Remote video */}
