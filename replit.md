@@ -13,7 +13,7 @@ Branding preference: Use "Growth Guide" instead of "AI Coach" for coaching featu
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript for type safety and modern development
-- **Build Tool**: Vite for fast development and optimized production builds
+- **Build Tool**: Vite for fast development server and optimized production builds
 - **UI Framework**: Tailwind CSS with shadcn/ui components for consistent design
 - **State Management**: TanStack Query (React Query) for server state management with caching and synchronization
 - **Routing**: Wouter for lightweight client-side routing
@@ -22,11 +22,19 @@ Branding preference: Use "Growth Guide" instead of "AI Coach" for coaching featu
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript for API development
+- **Integration**: Vite middleware integrated into Express for seamless development experience
 - **Database**: PostgreSQL with Neon serverless driver for scalable cloud database
 - **ORM**: Prisma ORM for type-safe database operations and migrations
 - **Authentication**: OpenID Connect with Replit authentication provider
 - **Session Management**: Express sessions with PostgreSQL store for persistence
 - **API Design**: RESTful endpoints with JSON responses and proper error handling
+
+### Hybrid Development Architecture
+- **Single Server**: Express.js serves both API routes and frontend assets
+- **Development Mode**: Vite middleware provides hot module replacement through Express
+- **Production Mode**: Vite builds frontend to static files served by Express
+- **Build Process**: ESBuild bundles backend, Vite builds frontend
+- **Port Strategy**: Both frontend and backend served on single port (5000) for simplified deployment
 
 ### Modern Architecture Patterns
 - **SOLID Principles**: Complete refactoring following Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion principles
