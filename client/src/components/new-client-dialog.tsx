@@ -31,7 +31,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
     email: '',
     phone: '',
     industry: '',
-    notes: '',
   });
 
   // Reset form when dialog opens/closes
@@ -42,7 +41,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
       email: '',
       phone: '',
       industry: '',
-      notes: '',
     });
   };
 
@@ -208,18 +206,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
             />
           </div>
 
-          {/* Notes */}
-          <div>
-            <Label htmlFor="clientNotes">Notes</Label>
-            <Textarea
-              id="clientNotes"
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              placeholder="Additional notes about the client..."
-              rows={3}
-              disabled={createClientMutation.isPending}
-            />
-          </div>
+
 
           {/* Form Actions */}
           <div className="flex justify-end space-x-3 pt-4">
