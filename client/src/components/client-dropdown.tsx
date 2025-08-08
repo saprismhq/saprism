@@ -41,6 +41,7 @@ export function ClientDropdown({
       return response.json() as Promise<Client[]>;
     },
     retry: 1,
+    staleTime: 0, // Always fetch fresh data to catch new clients
   });
 
   // Handle client selection

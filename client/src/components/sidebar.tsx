@@ -34,8 +34,6 @@ export function Sidebar({
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showNewClientDialog, setShowNewClientDialog] = useState(false);
-  const [clientName, setClientName] = useState("");
-  const [clientCompany, setClientCompany] = useState("");
 
   // Query system status
   const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
@@ -65,16 +63,8 @@ export function Sidebar({
         clientCompany: selectedClient.company || "",
         clientId: selectedClient.id,
       });
-    } else if (clientName.trim()) {
-      // Create meeting with manual client info (legacy path)
-      onCreateMeeting({
-        clientName: clientName.trim(),
-        clientCompany: clientCompany.trim(),
-      });
-      setClientName("");
-      setClientCompany("");
+      setShowCreateDialog(false);
     }
-    setShowCreateDialog(false);
   };
 
   return (
@@ -117,7 +107,7 @@ export function Sidebar({
           <DialogTrigger asChild>
             <Button 
               className="w-full bg-primary hover:bg-primary/90 h-12 text-sm" 
-              disabled={createMeetingLoading}
+              disabled={createMeetingLoading || !selectedClient}
             >
               <Plus className="w-4 h-4 mr-2" />
               New Meeting
@@ -140,32 +130,16 @@ export function Sidebar({
                   </div>
                 </div>
               ) : (
-                // Show manual client input fields
-                <>
-                  <div>
-                    <Label htmlFor="clientName">Client Name *</Label>
-                    <Input
-                      id="clientName"
-                      value={clientName}
-                      onChange={(e) => setClientName(e.target.value)}
-                      placeholder="John Smith"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="clientCompany">Client Company</Label>
-                    <Input
-                      id="clientCompany"
-                      value={clientCompany}
-                      onChange={(e) => setClientCompany(e.target.value)}
-                      placeholder="Acme Corp"
-                    />
-                  </div>
-                </>
+                // Show message to select a client
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    Please select a client from the dropdown above to create a meeting.
+                  </p>
+                </div>
               )}
               <Button
                 onClick={handleCreateMeeting}
-                disabled={(!selectedClient && !clientName.trim()) || createMeetingLoading}
+                disabled={!selectedClient || createMeetingLoading}
                 className="w-full bg-primary hover:bg-primary/90"
               >
                 {createMeetingLoading ? "Creating..." : "Create Meeting"}
