@@ -64,14 +64,25 @@ export const useCreateMeeting = () => {
   return useMutation({
     mutationFn: meetingsApi.create,
     onSuccess: (newMeeting) => {
+      console.log('Meeting created successfully:', newMeeting);
+      
       // Optimistic update to meetings list
       queryClient.setQueryData<Meeting[]>(
         queryKeys.meetings.lists(),
         (old) => old ? [newMeeting, ...old] : [newMeeting]
       );
       
-      // Invalidate to ensure fresh data
-      invalidateQueries.meetings();
+      // Invalidate all relevant queries
+      queryClient.invalidateQueries({ queryKey: ['/api/meetings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+      
+      // Also invalidate client-specific meeting queries if clientId exists
+      if (newMeeting.clientId) {
+        console.log(`Invalidating meetings for client ${newMeeting.clientId}`);
+        queryClient.invalidateQueries({ 
+          queryKey: ['/api/clients', newMeeting.clientId, 'meetings'] 
+        });
+      }
     },
     onError: (error) => {
       console.error("Failed to create meeting:", handleApiError(error));

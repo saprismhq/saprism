@@ -39,11 +39,15 @@ export function RecentMeetingsList({
     queryKey: ['/api/clients', selectedClient?.id, 'meetings'],
     queryFn: async () => {
       if (!selectedClient?.id) return [];
+      console.log(`Fetching meetings for client ${selectedClient.id}`);
       const response = await apiRequest('GET', `/api/clients/${selectedClient.id}/meetings`);
-      return response.json() as Promise<Meeting[]>;
+      const meetingsData = await response.json() as Meeting[];
+      console.log(`Received ${meetingsData.length} meetings for client ${selectedClient.id}:`, meetingsData);
+      return meetingsData;
     },
     enabled: !!selectedClient?.id, // Only fetch when a client is selected
     retry: 1,
+    staleTime: 0, // Always fetch fresh data
   });
 
   // Delete meeting mutation
@@ -56,6 +60,7 @@ export function RecentMeetingsList({
       // Invalidate relevant queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: ['/api/meetings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/clients', selectedClient?.id, 'meetings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clients'] }); // Also refresh client list
       
       toast({
         title: 'Success',
