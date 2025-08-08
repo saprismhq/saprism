@@ -293,11 +293,12 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       clearTimeout(analysisDebounce);
     }
 
-    // Set new debounce for analysis
-    if (value.trim().length > 50 && meeting?.id) {
+    // Set new debounce for analysis - trigger faster for better real-time feel
+    if (value.trim().length > 30 && meeting?.id) {
       const timeout = setTimeout(() => {
+        console.log("Triggering AI analysis for content:", value.substring(0, 100) + "...");
         analyzeNotesMutation.mutate({ content: value, meetingId: meeting.id });
-      }, 2000);
+      }, 1500); // Reduced from 2000 to 1500ms for faster response
       setAnalysisDebounce(timeout);
     }
   };

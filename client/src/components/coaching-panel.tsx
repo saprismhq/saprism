@@ -130,6 +130,34 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     }
   }, [generateCoachingMutation.isPending, meeting?.id]);
 
+  // Simple approach: Use a more direct method to detect AI analysis loading
+  useEffect(() => {
+    if (!meeting?.id) return;
+
+    // Create a polling mechanism to check if analysis is happening
+    const checkAnalysisStatus = () => {
+      const queries = queryClient.getQueryCache().getAll();
+      const hasAnalysisQuery = queries.some(query => 
+        query.queryKey.some(key => typeof key === 'string' && key.includes('/api/ai/analyze')) &&
+        query.state.status === 'pending'
+      );
+      
+      if (hasAnalysisQuery || generateCoachingMutation.isPending) {
+        setIsLoadingForMeeting(true);
+      } else {
+        // Small delay to prevent flickering
+        setTimeout(() => {
+          if (!generateCoachingMutation.isPending) {
+            setIsLoadingForMeeting(false);
+          }
+        }, 200);
+      }
+    };
+
+    const interval = setInterval(checkAnalysisStatus, 100);
+    return () => clearInterval(interval);
+  }, [meeting?.id, generateCoachingMutation.isPending]);
+
   // Handle copy to clipboard
   const handleCopy = (text: string, itemId: string) => {
     navigator.clipboard.writeText(text).then(() => {
