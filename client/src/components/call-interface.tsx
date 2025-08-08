@@ -196,7 +196,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Video Container */}
-      <div className="bg-gray-900 rounded-lg overflow-hidden relative h-32 mb-3">
+      <div className="bg-gray-900 rounded-lg overflow-hidden relative h-32 mb-2">
           {isConnected ? (
             <>
               {/* Remote video */}
@@ -248,7 +248,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
         </div>
 
       {/* Call Controls */}
-      <div className="flex items-center justify-center space-x-2 mb-2">
+      <div className="flex items-center justify-center space-x-2">
         {!isConnected ? (
           <Button
             onClick={handleStartCall}
@@ -307,7 +307,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
       {/* Participants List - Only show when connected and participants exist */}
       {isConnected && participants.length > 0 && (
-        <div className="border-t pt-2 flex-1">
+        <div className="border-t pt-2 mt-2">
           <h4 className="text-xs font-medium text-gray-700 mb-1">Participants</h4>
           <div className="space-y-1 max-h-16 overflow-y-auto">
             {participants.map((participant) => (

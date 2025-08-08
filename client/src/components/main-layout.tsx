@@ -106,7 +106,7 @@ export function MainLayout({
         </div>
 
         {/* Call Interface Content */}
-        <div className="flex-1 p-2 overflow-hidden">
+        <div className="flex-1 px-4 py-2 overflow-hidden">
           <div className="h-full">
             <CallInterface
               meeting={activeMeeting}
