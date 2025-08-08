@@ -53,6 +53,7 @@ model Meeting {
   notes               Note[]
   coachingSuggestions CoachingSuggestion[]
   crmSyncLogs         CrmSyncLog[]
+  callSessions        CallSession[]
 
   @@map("meetings")
 }
@@ -97,4 +98,24 @@ model CrmSyncLog {
   meeting Meeting @relation(fields: [meetingId], references: [id])
 
   @@map("crm_sync_logs")
+}
+
+model CallSession {
+  id                String    @id @default(cuid())
+  meetingId         Int       @map("meeting_id")
+  liveKitRoomName   String    @map("livekit_room_name") @db.VarChar(255)
+  liveKitToken      String?   @map("livekit_token") @db.Text
+  participants      Json      @default("[]")
+  status            String    @default("waiting") @db.VarChar(50) // waiting, active, ended, failed
+  startedAt         DateTime? @map("started_at")
+  endedAt           DateTime? @map("ended_at")
+  transcription     Json?     @map("transcription")
+  sessionMetadata   Json?     @map("session_metadata")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id])
+
+  @@map("call_sessions")
 }

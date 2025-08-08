@@ -8,6 +8,7 @@ import { UserWhereInputObjectSchema } from './UserWhereInput.schema';
 import { NoteListRelationFilterObjectSchema } from './NoteListRelationFilter.schema';
 import { CoachingSuggestionListRelationFilterObjectSchema } from './CoachingSuggestionListRelationFilter.schema';
 import { CrmSyncLogListRelationFilterObjectSchema } from './CrmSyncLogListRelationFilter.schema';
+import { CallSessionListRelationFilterObjectSchema } from './CallSessionListRelationFilter.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -61,6 +62,9 @@ const Schema: z.ZodType<Prisma.MeetingWhereInput> = z
       .optional(),
     crmSyncLogs: z
       .lazy(() => CrmSyncLogListRelationFilterObjectSchema)
+      .optional(),
+    callSessions: z
+      .lazy(() => CallSessionListRelationFilterObjectSchema)
       .optional(),
   })
   .strict();

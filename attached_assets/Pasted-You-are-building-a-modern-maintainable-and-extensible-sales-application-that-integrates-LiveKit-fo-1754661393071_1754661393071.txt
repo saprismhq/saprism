@@ -1,0 +1,39 @@
+You are building a modern, maintainable, and extensible sales application that integrates LiveKit for real-time audio/video calls and allows sales reps to take manual notes during calls. Both manual notes and telephony features must work together from day one and share the same session context. This context will later be used for AI insights powered by OpenAI.
+Requirements:
+
+Architecture:
+Use a modular, service-oriented architecture.
+Implement a CallService that handles LiveKit connections, events, and participant data.
+Implement a NotesService that stores manual notes in sync with the call session.
+Use dependency injection so components can be swapped without major refactors.
+Separate UI components from business logic.
+UI/UX:
+Build a sleek, modern interface that works on desktop and tablet.
+The main screen should have:
+A call window (LiveKit video/audio).
+A notes panel for the rep to type in during the call.
+A session activity feed merging AI-generated insights and rep notes.
+Minimize the number of clicks to switch between call view and notes.
+Consider a two-column layout with resizable panels.
+LiveKit Integration:
+Use the official LiveKit client SDK.
+Handle connection, disconnection, reconnection, and participant events.
+Support mute/unmute, screen sharing, and camera toggling.
+Include placeholder logic for real-time transcription (to be implemented later).
+Notes Integration:
+Notes should be stored in memory first, then persisted via an API call.
+Notes must be tied to the active call session ID.
+Allow editing and deleting notes during the session.
+AI Integration Prep:
+Provide a unified SessionContext object that stores:
+Call metadata (participants, timestamps).
+Real-time transcription (future).
+Manual notes.
+Make this SessionContext serializable so it can be sent to OpenAI APIs later.
+Technology Stack:
+Make this implementation work within the existing technology stack.
+Deliverables:
+Clean, well-documented code following best practices.
+Clearly separated frontend and backend folders.
+Example environment configuration for LiveKit API keys.
+Mock backend endpoints for persisting session notes.

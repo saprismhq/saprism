@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { NoteUncheckedCreateNestedManyWithoutMeetingInputObjectSchema } from './NoteUncheckedCreateNestedManyWithoutMeetingInput.schema';
 import { CoachingSuggestionUncheckedCreateNestedManyWithoutMeetingInputObjectSchema } from './CoachingSuggestionUncheckedCreateNestedManyWithoutMeetingInput.schema';
 import { CrmSyncLogUncheckedCreateNestedManyWithoutMeetingInputObjectSchema } from './CrmSyncLogUncheckedCreateNestedManyWithoutMeetingInput.schema';
+import { CallSessionUncheckedCreateNestedManyWithoutMeetingInputObjectSchema } from './CallSessionUncheckedCreateNestedManyWithoutMeetingInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -27,6 +28,12 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedCreateInput> = z
       .lazy(
         () =>
           CrmSyncLogUncheckedCreateNestedManyWithoutMeetingInputObjectSchema,
+      )
+      .optional(),
+    callSessions: z
+      .lazy(
+        () =>
+          CallSessionUncheckedCreateNestedManyWithoutMeetingInputObjectSchema,
       )
       .optional(),
   })

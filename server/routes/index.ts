@@ -58,6 +58,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/crm/status', isAuthenticated, (req, res) => crmController.getCrmStatus(req, res));
   app.post('/api/crm/sync', isAuthenticated, (req, res) => crmController.syncToCrm(req, res));
 
+  // Session routes (import inline to avoid module dependency issues)
+  const { registerSessionRoutes } = await import('./sessions');
+  registerSessionRoutes(app);
+
   const httpServer = createServer(app);
   return httpServer;
 }

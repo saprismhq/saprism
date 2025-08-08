@@ -6,6 +6,7 @@ import { UserUpdateOneRequiredWithoutMeetingsNestedInputObjectSchema } from './U
 import { NoteUpdateManyWithoutMeetingNestedInputObjectSchema } from './NoteUpdateManyWithoutMeetingNestedInput.schema';
 import { CoachingSuggestionUpdateManyWithoutMeetingNestedInputObjectSchema } from './CoachingSuggestionUpdateManyWithoutMeetingNestedInput.schema';
 import { CrmSyncLogUpdateManyWithoutMeetingNestedInputObjectSchema } from './CrmSyncLogUpdateManyWithoutMeetingNestedInput.schema';
+import { CallSessionUpdateManyWithoutMeetingNestedInputObjectSchema } from './CallSessionUpdateManyWithoutMeetingNestedInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -55,6 +56,9 @@ const Schema: z.ZodType<Prisma.MeetingUpdateInput> = z
       .optional(),
     crmSyncLogs: z
       .lazy(() => CrmSyncLogUpdateManyWithoutMeetingNestedInputObjectSchema)
+      .optional(),
+    callSessions: z
+      .lazy(() => CallSessionUpdateManyWithoutMeetingNestedInputObjectSchema)
       .optional(),
   })
   .strict();

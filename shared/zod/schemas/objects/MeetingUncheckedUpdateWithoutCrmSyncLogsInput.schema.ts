@@ -5,6 +5,7 @@ import { NullableStringFieldUpdateOperationsInputObjectSchema } from './Nullable
 import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema';
 import { NoteUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './NoteUncheckedUpdateManyWithoutMeetingNestedInput.schema';
 import { CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInput.schema';
+import { CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CallSessionUncheckedUpdateManyWithoutMeetingNestedInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -63,6 +64,12 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedUpdateWithoutCrmSyncLogsInput> =
         .lazy(
           () =>
             CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema,
+        )
+        .optional(),
+      callSessions: z
+        .lazy(
+          () =>
+            CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema,
         )
         .optional(),
     })

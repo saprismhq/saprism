@@ -7,6 +7,7 @@ export type {
   Note,
   CoachingSuggestion,
   CrmSyncLog,
+  CallSession,
   Session,
 } from '@prisma/client';
 
@@ -64,6 +65,21 @@ export const SessionSchema = z.object({
   expire: z.date(),
 });
 
+export const CallSessionSchema = z.object({
+  id: z.string(),
+  meetingId: z.number(),
+  liveKitRoomName: z.string(),
+  liveKitToken: z.string().nullable(),
+  participants: z.any(),
+  status: z.string(),
+  startedAt: z.date().nullable(),
+  endedAt: z.date().nullable(),
+  transcription: z.any().nullable(),
+  sessionMetadata: z.any().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
 // Create insert schemas by omitting auto-generated fields
 export const insertUserSchema = UserSchema.omit({
   createdAt: true,
@@ -96,19 +112,32 @@ export const insertCrmSyncLogSchema = CrmSyncLogSchema.omit({
   createdAt: true,
 });
 
+export const insertCallSessionSchema = CallSessionSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Infer types from schemas
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type InsertMeeting = z.infer<typeof insertMeetingSchema>;
 export type InsertNote = z.infer<typeof insertNoteSchema>;
 export type InsertCoachingSuggestion = z.infer<typeof insertCoachingSuggestionSchema>;
 export type InsertCrmSyncLog = z.infer<typeof insertCrmSyncLogSchema>;
+export type InsertCallSession = z.infer<typeof insertCallSessionSchema>;
 
 // Extended types for queries with relations
-import type { Meeting, Note, CoachingSuggestion } from '@prisma/client';
+import type { Meeting, Note, CoachingSuggestion, CallSession } from '@prisma/client';
 
 export type MeetingWithNotes = Meeting & {
   notes: Note[];
   coachingSuggestions: CoachingSuggestion[];
+};
+
+export type MeetingWithSessions = Meeting & {
+  notes: Note[];
+  coachingSuggestions: CoachingSuggestion[];
+  callSessions: CallSession[];
 };
 
 // AI Analysis types

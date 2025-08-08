@@ -5,6 +5,7 @@ import { UserOrderByWithRelationInputObjectSchema } from './UserOrderByWithRelat
 import { NoteOrderByRelationAggregateInputObjectSchema } from './NoteOrderByRelationAggregateInput.schema';
 import { CoachingSuggestionOrderByRelationAggregateInputObjectSchema } from './CoachingSuggestionOrderByRelationAggregateInput.schema';
 import { CrmSyncLogOrderByRelationAggregateInputObjectSchema } from './CrmSyncLogOrderByRelationAggregateInput.schema';
+import { CallSessionOrderByRelationAggregateInputObjectSchema } from './CallSessionOrderByRelationAggregateInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -31,6 +32,9 @@ const Schema: z.ZodType<Prisma.MeetingOrderByWithRelationInput> = z
       .optional(),
     crmSyncLogs: z
       .lazy(() => CrmSyncLogOrderByRelationAggregateInputObjectSchema)
+      .optional(),
+    callSessions: z
+      .lazy(() => CallSessionOrderByRelationAggregateInputObjectSchema)
       .optional(),
   })
   .strict();
