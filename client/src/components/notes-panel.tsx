@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Save, FolderSync, Mic, Clock, Tag, Brain, Calendar } from "lucide-react";
+import { Save, FolderSync, Mic, Tag, Brain, Calendar } from "lucide-react";
 import { RichTextEditor } from "./rich-text-editor";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
@@ -295,12 +295,6 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     }
   };
 
-  // Add timestamp
-  const addTimestamp = () => {
-    const timestamp = new Date().toLocaleTimeString();
-    const newContent = noteContent + `\n\n[${timestamp}] `;
-    setNoteContent(newContent);
-  };
 
   if (isLoading) {
     return (
@@ -372,14 +366,6 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       <div className="flex-1 flex flex-col p-6 min-h-0 overflow-hidden">
         {/* Quick Actions */}
         <div className="flex items-center space-x-2 mb-4 flex-shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addTimestamp}
-          >
-            <Clock className="w-4 h-4 mr-1" />
-            Timestamp
-          </Button>
           <Button
             variant="outline"
             size="sm"
