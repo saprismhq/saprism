@@ -7,6 +7,7 @@ import { MeetingController } from "../controllers/MeetingController";
 import { NoteController } from "../controllers/NoteController";
 import { AIController } from "../controllers/AIController";
 import { CrmController } from "../controllers/CrmController";
+import { StatusController } from "../controllers/StatusController";
 
 import { IUserService } from "../core/UserService";
 import { IMeetingService } from "../core/MeetingService";
@@ -36,6 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const noteController = new NoteController(noteService, meetingService);
   const aiController = new AIController(noteService, meetingService, coachingService);
   const crmController = new CrmController(meetingService, noteService, crmSyncService);
+  const statusController = new StatusController();
 
   // User routes
   app.get('/api/auth/user', isAuthenticated, (req, res) => userController.getCurrentUser(req, res));
@@ -57,6 +59,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CRM routes
   app.get('/api/crm/status', isAuthenticated, (req, res) => crmController.getCrmStatus(req, res));
   app.post('/api/crm/sync', isAuthenticated, (req, res) => crmController.syncToCrm(req, res));
+
+  // Status routes
+  app.get('/api/status', isAuthenticated, (req, res) => statusController.getSystemStatus(req, res));
 
   // Session routes (import inline to avoid module dependency issues)
   const { registerSessionRoutes } = await import('./sessions');

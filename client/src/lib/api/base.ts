@@ -45,6 +45,12 @@ export const queryKeys = {
     sync: (meetingId: number) => 
       [...queryKeys.crm.all, "sync", meetingId] as const,
   },
+  
+  // System Status
+  status: {
+    all: ["status"] as const,
+    services: () => [...queryKeys.status.all, "services"] as const,
+  },
 } as const;
 
 // Cache invalidation helpers
@@ -67,6 +73,7 @@ export const invalidateQueries = {
     }
   },
   crm: () => queryClient.invalidateQueries({ queryKey: queryKeys.crm.all }),
+  status: () => queryClient.invalidateQueries({ queryKey: queryKeys.status.all }),
 };
 
 // Error handling utility

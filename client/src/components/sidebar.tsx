@@ -5,8 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useQuery } from "@tanstack/react-query";
-import { Brain, Plus, History, BarChart3, Settings, User, X } from "lucide-react";
+import { Brain, Plus, History, BarChart3, Settings, User, X, Activity } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
+import { useSystemStatus, getOverallStatusColor } from "@/lib/api/status";
 import type { Meeting } from "@shared/schema";
 
 interface SidebarProps {
@@ -32,11 +33,8 @@ export function Sidebar({
   const [clientName, setClientName] = useState("");
   const [clientCompany, setClientCompany] = useState("");
 
-  // Query CRM status
-  const { data: crmStatus } = useQuery({
-    queryKey: ["/api/crm/status"],
-    refetchInterval: 30000, // Check every 30 seconds
-  });
+  // Query system status
+  const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
 
   const handleCreateMeeting = () => {
     if (clientName.trim()) {
@@ -192,26 +190,63 @@ export function Sidebar({
         </div>
       </nav>
 
-      {/* CRM Integration Status */}
+      {/* System Status */}
       <div className="p-4 border-t border-gray-100">
-        <div className={`flex items-center justify-between p-3 rounded-lg ${
-          (crmStatus as any)?.connected ? "bg-accent/10" : "bg-red-50"
-        }`}>
-          <div className="flex items-center space-x-2">
-            <div className={`w-2 h-2 rounded-full ${
-              (crmStatus as any)?.connected ? "bg-accent" : "bg-red-500"
-            }`}></div>
-            <span className={`text-sm font-medium ${
-              (crmStatus as any)?.connected ? "text-accent" : "text-red-600"
-            }`}>
-              Salesforce
-            </span>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2 mb-2">
+            <Activity className="w-4 h-4 text-gray-600" />
+            <h4 className="text-sm font-medium text-gray-700">Status</h4>
+            {systemStatus && (
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                getOverallStatusColor(systemStatus)
+              }`}>
+                {systemStatus.overallHealth === 'healthy' ? '●' : 
+                 systemStatus.overallHealth === 'degraded' ? '◐' : '○'}
+              </div>
+            )}
           </div>
-          <div className={`text-xs ${
-            (crmStatus as any)?.connected ? "text-accent" : "text-red-600"
-          }`}>
-            {(crmStatus as any)?.connected ? "Connected" : "Disconnected"}
-          </div>
+          
+          {statusLoading ? (
+            <div className="text-xs text-gray-500">Checking services...</div>
+          ) : systemStatus ? (
+            <div className="space-y-2">
+              {/* Salesforce Status */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    systemStatus.services.salesforce.connected ? "bg-green-500" : "bg-red-500"
+                  }`}></div>
+                  <span className="text-xs text-gray-700">
+                    Salesforce
+                  </span>
+                </div>
+                <div className={`text-xs ${
+                  systemStatus.services.salesforce.connected ? "text-green-600" : "text-red-600"
+                }`}>
+                  {systemStatus.services.salesforce.connected ? "Connected" : "Offline"}
+                </div>
+              </div>
+              
+              {/* OpenAI Status */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    systemStatus.services.openai.connected ? "bg-green-500" : "bg-red-500"
+                  }`}></div>
+                  <span className="text-xs text-gray-700">
+                    OpenAI
+                  </span>
+                </div>
+                <div className={`text-xs ${
+                  systemStatus.services.openai.connected ? "text-green-600" : "text-red-600"
+                }`}>
+                  {systemStatus.services.openai.connected ? "Connected" : "Offline"}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-xs text-red-600">Unable to check status</div>
+          )}
         </div>
       </div>
 
