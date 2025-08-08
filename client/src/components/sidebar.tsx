@@ -123,50 +123,72 @@ export function Sidebar({
             <DialogHeader>
               <DialogTitle>Create New Meeting</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {selectedClient ? (
-                // Show selected client info
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <Label className="text-sm font-medium text-gray-700">Meeting with:</Label>
-                  <div className="mt-1">
-                    <div className="font-medium">{selectedClient.name}</div>
-                    {selectedClient.company && (
-                      <div className="text-sm text-gray-600">{selectedClient.company}</div>
-                    )}
+                // Show selected client info - improved styling
+                <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 p-6 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-semibold text-lg">
+                        {selectedClient.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {selectedClient.name}
+                      </h3>
+                      {selectedClient.company && (
+                        <p className="text-sm text-gray-600 mt-1">{selectedClient.company}</p>
+                      )}
+                      <div className="flex items-center mt-2 text-xs text-primary/70">
+                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                        Ready to create meeting
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
                 // Show message to select a client
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <p className="text-sm text-yellow-800">
-                    Please select a client from the dropdown above to create a meeting.
-                  </p>
+                <div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-yellow-700 text-sm">!</span>
+                    </div>
+                    <p className="text-sm text-yellow-800">
+                      Please select a client from the dropdown above to create a meeting.
+                    </p>
+                  </div>
                 </div>
               )}
 
-              {/* Deal Type Selection */}
+              {/* Deal Type Selection - improved spacing and styling */}
               {selectedClient && (
-                <div>
-                  <Label htmlFor="dealType">Deal Type</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="dealType" className="text-sm font-medium text-gray-700">
+                    Deal Type
+                  </Label>
                   <Select value={selectedDealType} onValueChange={(value) => setSelectedDealType(value as DealType)}>
-                    <SelectTrigger id="dealType">
+                    <SelectTrigger id="dealType" className="h-12 text-base">
                       <SelectValue placeholder="Select deal type" />
                     </SelectTrigger>
                     <SelectContent>
                       {DEAL_TYPES.map((dealType) => (
-                        <SelectItem key={dealType} value={dealType}>
+                        <SelectItem key={dealType} value={dealType} className="py-3">
                           {dealType}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Choose the current stage of this sales opportunity
+                  </p>
                 </div>
               )}
 
               <Button
                 onClick={handleCreateMeeting}
                 disabled={!selectedClient || createMeetingLoading}
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
               >
                 {createMeetingLoading ? "Creating..." : "Create Meeting"}
               </Button>
