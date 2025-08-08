@@ -20,14 +20,6 @@ An intelligent sales enablement platform that transforms sales team performance 
 - **Automated Data Flow**: Meeting notes and insights automatically sync to CRM records
 - **Audit Logging**: Complete tracking of all CRM sync operations
 
-### 🏗️ Modern Hybrid Architecture
-- **Full-Stack TypeScript**: Type safety across the entire application
-- **Vite + Express Integration**: Modern build tools with reliable backend infrastructure
-- **Single Server Design**: Express serves both API routes and frontend assets
-- **Hot Module Replacement**: Seamless development experience with instant updates
-- **PostgreSQL Database**: Reliable, scalable data storage
-- **Replit Authentication**: Secure user management with OpenID Connect
-
 ## Technology Stack
 
 ### Hybrid Build System
