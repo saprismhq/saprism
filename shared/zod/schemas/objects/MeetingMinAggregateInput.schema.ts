@@ -6,6 +6,7 @@ const Schema: z.ZodType<Prisma.MeetingMinAggregateInputType> = z
   .object({
     id: z.literal(true).optional(),
     userId: z.literal(true).optional(),
+    clientId: z.literal(true).optional(),
     clientName: z.literal(true).optional(),
     clientCompany: z.literal(true).optional(),
     status: z.literal(true).optional(),

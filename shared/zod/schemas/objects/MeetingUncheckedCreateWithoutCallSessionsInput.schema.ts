@@ -10,6 +10,7 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedCreateWithoutCallSessionsInput> =
     .object({
       id: z.number().optional(),
       userId: z.string(),
+      clientId: z.number().optional().nullable(),
       clientName: z.string(),
       clientCompany: z.string().optional().nullable(),
       status: z.string().optional(),

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys, invalidateQueries, handleApiError } from "./base";
 import { apiRequest } from "@/lib/queryClient";
-import type { Meeting, MeetingWithSessions, InsertMeeting } from "@shared/schema";
+import type { Meeting, MeetingWithSessions, CreateMeeting } from "@shared/schema";
 
 // Meeting API functions
 export const meetingsApi = {
@@ -25,12 +25,12 @@ export const meetingsApi = {
     return response.json();
   },
 
-  create: async (meeting: Omit<InsertMeeting, "userId" | "status">): Promise<Meeting> => {
+  create: async (meeting: CreateMeeting): Promise<Meeting> => {
     const response = await apiRequest("POST", "/api/meetings", meeting);
     return response.json();
   },
 
-  update: async (id: number, updates: Partial<InsertMeeting>): Promise<Meeting> => {
+  update: async (id: number, updates: Partial<CreateMeeting>): Promise<Meeting> => {
     const response = await apiRequest("PATCH", `/api/meetings/${id}`, updates);
     return response.json();
   },
@@ -83,7 +83,7 @@ export const useUpdateMeeting = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, updates }: { id: number; updates: Partial<InsertMeeting> }) =>
+    mutationFn: ({ id, updates }: { id: number; updates: Partial<CreateMeeting> }) =>
       meetingsApi.update(id, updates),
     onSuccess: (updatedMeeting) => {
       // Update specific meeting cache

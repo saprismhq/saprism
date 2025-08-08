@@ -13,6 +13,12 @@ const Schema: z.ZodType<Prisma.MeetingOrderByWithAggregationInput> = z
   .object({
     id: z.lazy(() => SortOrderSchema).optional(),
     userId: z.lazy(() => SortOrderSchema).optional(),
+    clientId: z
+      .union([
+        z.lazy(() => SortOrderSchema),
+        z.lazy(() => SortOrderInputObjectSchema),
+      ])
+      .optional(),
     clientName: z.lazy(() => SortOrderSchema).optional(),
     clientCompany: z
       .union([

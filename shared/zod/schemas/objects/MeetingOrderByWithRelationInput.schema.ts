@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { SortOrderSchema } from '../enums/SortOrder.schema';
 import { SortOrderInputObjectSchema } from './SortOrderInput.schema';
 import { UserOrderByWithRelationInputObjectSchema } from './UserOrderByWithRelationInput.schema';
+import { ClientOrderByWithRelationInputObjectSchema } from './ClientOrderByWithRelationInput.schema';
 import { NoteOrderByRelationAggregateInputObjectSchema } from './NoteOrderByRelationAggregateInput.schema';
 import { CoachingSuggestionOrderByRelationAggregateInputObjectSchema } from './CoachingSuggestionOrderByRelationAggregateInput.schema';
 import { CrmSyncLogOrderByRelationAggregateInputObjectSchema } from './CrmSyncLogOrderByRelationAggregateInput.schema';
@@ -13,6 +14,12 @@ const Schema: z.ZodType<Prisma.MeetingOrderByWithRelationInput> = z
   .object({
     id: z.lazy(() => SortOrderSchema).optional(),
     userId: z.lazy(() => SortOrderSchema).optional(),
+    clientId: z
+      .union([
+        z.lazy(() => SortOrderSchema),
+        z.lazy(() => SortOrderInputObjectSchema),
+      ])
+      .optional(),
     clientName: z.lazy(() => SortOrderSchema).optional(),
     clientCompany: z
       .union([
@@ -24,6 +31,7 @@ const Schema: z.ZodType<Prisma.MeetingOrderByWithRelationInput> = z
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     updatedAt: z.lazy(() => SortOrderSchema).optional(),
     user: z.lazy(() => UserOrderByWithRelationInputObjectSchema).optional(),
+    client: z.lazy(() => ClientOrderByWithRelationInputObjectSchema).optional(),
     notes: z
       .lazy(() => NoteOrderByRelationAggregateInputObjectSchema)
       .optional(),

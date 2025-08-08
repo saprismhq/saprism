@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { MeetingUncheckedCreateNestedManyWithoutUserInputObjectSchema } from './MeetingUncheckedCreateNestedManyWithoutUserInput.schema';
+import { ClientUncheckedCreateNestedManyWithoutUserInputObjectSchema } from './ClientUncheckedCreateNestedManyWithoutUserInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -14,6 +15,9 @@ const Schema: z.ZodType<Prisma.UserUncheckedCreateInput> = z
     updatedAt: z.coerce.date().optional(),
     meetings: z
       .lazy(() => MeetingUncheckedCreateNestedManyWithoutUserInputObjectSchema)
+      .optional(),
+    clients: z
+      .lazy(() => ClientUncheckedCreateNestedManyWithoutUserInputObjectSchema)
       .optional(),
   })
   .strict();

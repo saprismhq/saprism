@@ -9,6 +9,7 @@ import type { Prisma } from '@prisma/client';
 const Schema: z.ZodType<Prisma.MeetingUncheckedCreateWithoutUserInput> = z
   .object({
     id: z.number().optional(),
+    clientId: z.number().optional().nullable(),
     clientName: z.string(),
     clientCompany: z.string().optional().nullable(),
     status: z.string().optional(),

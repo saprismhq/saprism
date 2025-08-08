@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
+import { IntNullableFilterObjectSchema } from './IntNullableFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema';
 
@@ -28,6 +29,10 @@ const Schema: z.ZodType<Prisma.MeetingScalarWhereInput> = z
     userId: z
       .union([z.lazy(() => StringFilterObjectSchema), z.string()])
       .optional(),
+    clientId: z
+      .union([z.lazy(() => IntNullableFilterObjectSchema), z.number()])
+      .optional()
+      .nullable(),
     clientName: z
       .union([z.lazy(() => StringFilterObjectSchema), z.string()])
       .optional(),

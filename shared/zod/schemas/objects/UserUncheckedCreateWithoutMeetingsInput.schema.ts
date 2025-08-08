@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ClientUncheckedCreateNestedManyWithoutUserInputObjectSchema } from './ClientUncheckedCreateNestedManyWithoutUserInput.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -11,6 +12,9 @@ const Schema: z.ZodType<Prisma.UserUncheckedCreateWithoutMeetingsInput> = z
     profileImageUrl: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
+    clients: z
+      .lazy(() => ClientUncheckedCreateNestedManyWithoutUserInputObjectSchema)
+      .optional(),
   })
   .strict();
 

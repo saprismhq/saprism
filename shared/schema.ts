@@ -10,6 +10,20 @@ export type {
   Session,
 } from '@prisma/client';
 
+// Define Client type since it might not be generated yet
+export type Client = {
+  id: number;
+  userId: string;
+  name: string;
+  company: string | null;
+  email: string | null;
+  phone: string | null;
+  industry: string | null;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 // Define CallSession type manually until Prisma client updates
 export type CallSession = {
   id: string;
@@ -37,9 +51,34 @@ export const UserSchema = z.object({
   updatedAt: z.date(),
 });
 
+export const ClientSchema = z.object({
+  id: z.number(),
+  userId: z.string(),
+  name: z.string(),
+  company: z.string().nullable(),
+  email: z.string().email().nullable(),
+  phone: z.string().nullable(),
+  industry: z.string().nullable(),
+  notes: z.string().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const InsertClientSchema = z.object({
+  name: z.string().min(1, "Client name is required"),
+  company: z.string().optional(),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().optional(),
+  industry: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export type InsertClient = z.infer<typeof InsertClientSchema>;
+
 export const MeetingSchema = z.object({
   id: z.number(),
   userId: z.string(),
+  clientId: z.number().nullable(),
   clientName: z.string(),
   clientCompany: z.string().nullable(),
   status: z.string(),
@@ -140,6 +179,15 @@ export type InsertNote = z.infer<typeof insertNoteSchema>;
 export type InsertCoachingSuggestion = z.infer<typeof insertCoachingSuggestionSchema>;
 export type InsertCrmSyncLog = z.infer<typeof insertCrmSyncLogSchema>;
 export type InsertCallSession = z.infer<typeof insertCallSessionSchema>;
+
+// Add dedicated client insert type for meeting creation
+export const CreateMeetingSchema = z.object({
+  clientName: z.string().min(1, "Client name is required"),
+  clientCompany: z.string().optional(),
+  clientId: z.number().optional(),
+});
+
+export type CreateMeeting = z.infer<typeof CreateMeetingSchema>;
 
 // Extended types for queries with relations
 import type { Meeting, Note, CoachingSuggestion } from '@prisma/client';

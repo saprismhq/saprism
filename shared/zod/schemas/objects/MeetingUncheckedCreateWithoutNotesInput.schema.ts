@@ -9,6 +9,7 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedCreateWithoutNotesInput> = z
   .object({
     id: z.number().optional(),
     userId: z.string(),
+    clientId: z.number().optional().nullable(),
     clientName: z.string(),
     clientCompany: z.string().optional().nullable(),
     status: z.string().optional(),

@@ -80,6 +80,14 @@ export default function Home() {
     });
   };
 
+  // Create meeting function
+  const handleCreateMeeting = (data: { clientName: string; clientCompany: string; clientId?: number }) => {
+    createMeetingMutation.mutate(data, {
+      onSuccess: handleMeetingCreated,
+      onError: handleMeetingError,
+    });
+  };
+
   // Auto-select first meeting if none selected
   useEffect(() => {
     if (meetings && meetings.length > 0 && !activeMeetingId) {
@@ -125,7 +133,7 @@ export default function Home() {
         activeMeeting={activeMeeting}
         activeMeetingLoading={activeMeetingLoading}
         onSelectMeeting={setActiveMeetingId}
-        onCreateMeeting={createMeetingMutation.mutate}
+        onCreateMeeting={handleCreateMeeting}
         onDeleteMeeting={deleteMeetingMutation.mutate}
         createMeetingLoading={createMeetingMutation.isPending}
         deleteMeetingLoading={deleteMeetingMutation.isPending}

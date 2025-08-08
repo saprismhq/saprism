@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IMeetingService } from "../core/MeetingService";
-import { insertMeetingSchema } from "@shared/schema";
+import { CreateMeetingSchema } from "@shared/schema";
 
 export class MeetingController {
   constructor(private meetingService: IMeetingService) {}
@@ -8,11 +8,18 @@ export class MeetingController {
   async createMeeting(req: any, res: Response): Promise<void> {
     try {
       const userId = req.user.claims.sub;
-      const meetingData = insertMeetingSchema.parse({ 
-        ...req.body, 
+      
+      // Parse the request body using the frontend schema
+      const requestData = CreateMeetingSchema.parse(req.body);
+      
+      // Transform to internal meeting format
+      const meetingData = {
         userId,
-        status: "active" // Set default status
-      });
+        clientId: requestData.clientId || null,
+        clientName: requestData.clientName,
+        clientCompany: requestData.clientCompany || null,
+        status: "active"
+      };
       
       const meeting = await this.meetingService.createMeeting(meetingData);
       res.json(meeting);

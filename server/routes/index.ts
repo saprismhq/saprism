@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { Container } from "../container/Container";
+import clientRoutes from "./clients";
 
 import { UserController } from "../controllers/UserController";
 import { MeetingController } from "../controllers/MeetingController";
@@ -63,6 +64,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Status routes
   app.get('/api/status', isAuthenticated, (req, res) => statusController.getSystemStatus(req, res));
+
+  // Client routes
+  app.use('/api/clients', clientRoutes);
 
   // Session routes (import inline to avoid module dependency issues)
   const { registerSessionRoutes } = await import('./sessions');

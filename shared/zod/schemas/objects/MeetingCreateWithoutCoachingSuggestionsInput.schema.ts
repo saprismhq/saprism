@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { UserCreateNestedOneWithoutMeetingsInputObjectSchema } from './UserCreateNestedOneWithoutMeetingsInput.schema';
+import { ClientCreateNestedOneWithoutMeetingsInputObjectSchema } from './ClientCreateNestedOneWithoutMeetingsInput.schema';
 import { NoteCreateNestedManyWithoutMeetingInputObjectSchema } from './NoteCreateNestedManyWithoutMeetingInput.schema';
 import { CrmSyncLogCreateNestedManyWithoutMeetingInputObjectSchema } from './CrmSyncLogCreateNestedManyWithoutMeetingInput.schema';
 import { CallSessionCreateNestedManyWithoutMeetingInputObjectSchema } from './CallSessionCreateNestedManyWithoutMeetingInput.schema';
@@ -14,6 +15,9 @@ const Schema: z.ZodType<Prisma.MeetingCreateWithoutCoachingSuggestionsInput> = z
     createdAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
     user: z.lazy(() => UserCreateNestedOneWithoutMeetingsInputObjectSchema),
+    client: z
+      .lazy(() => ClientCreateNestedOneWithoutMeetingsInputObjectSchema)
+      .optional(),
     notes: z
       .lazy(() => NoteCreateNestedManyWithoutMeetingInputObjectSchema)
       .optional(),

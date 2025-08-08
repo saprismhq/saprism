@@ -6,6 +6,7 @@ import type { Prisma } from '@prisma/client';
 const Schema: z.ZodType<Prisma.MeetingAvgOrderByAggregateInput> = z
   .object({
     id: z.lazy(() => SortOrderSchema).optional(),
+    clientId: z.lazy(() => SortOrderSchema).optional(),
   })
   .strict();
 

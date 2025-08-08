@@ -3,6 +3,7 @@ import { StringFilterObjectSchema } from './StringFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema';
 import { MeetingListRelationFilterObjectSchema } from './MeetingListRelationFilter.schema';
+import { ClientListRelationFilterObjectSchema } from './ClientListRelationFilter.schema';
 
 import type { Prisma } from '@prisma/client';
 
@@ -50,6 +51,7 @@ const Schema: z.ZodType<Prisma.UserWhereInput> = z
       .union([z.lazy(() => DateTimeFilterObjectSchema), z.coerce.date()])
       .optional(),
     meetings: z.lazy(() => MeetingListRelationFilterObjectSchema).optional(),
+    clients: z.lazy(() => ClientListRelationFilterObjectSchema).optional(),
   })
   .strict();
 

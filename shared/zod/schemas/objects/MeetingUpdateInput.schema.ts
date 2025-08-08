@@ -3,6 +3,7 @@ import { StringFieldUpdateOperationsInputObjectSchema } from './StringFieldUpdat
 import { NullableStringFieldUpdateOperationsInputObjectSchema } from './NullableStringFieldUpdateOperationsInput.schema';
 import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema';
 import { UserUpdateOneRequiredWithoutMeetingsNestedInputObjectSchema } from './UserUpdateOneRequiredWithoutMeetingsNestedInput.schema';
+import { ClientUpdateOneWithoutMeetingsNestedInputObjectSchema } from './ClientUpdateOneWithoutMeetingsNestedInput.schema';
 import { NoteUpdateManyWithoutMeetingNestedInputObjectSchema } from './NoteUpdateManyWithoutMeetingNestedInput.schema';
 import { CoachingSuggestionUpdateManyWithoutMeetingNestedInputObjectSchema } from './CoachingSuggestionUpdateManyWithoutMeetingNestedInput.schema';
 import { CrmSyncLogUpdateManyWithoutMeetingNestedInputObjectSchema } from './CrmSyncLogUpdateManyWithoutMeetingNestedInput.schema';
@@ -45,6 +46,9 @@ const Schema: z.ZodType<Prisma.MeetingUpdateInput> = z
       .optional(),
     user: z
       .lazy(() => UserUpdateOneRequiredWithoutMeetingsNestedInputObjectSchema)
+      .optional(),
+    client: z
+      .lazy(() => ClientUpdateOneWithoutMeetingsNestedInputObjectSchema)
       .optional(),
     notes: z
       .lazy(() => NoteUpdateManyWithoutMeetingNestedInputObjectSchema)

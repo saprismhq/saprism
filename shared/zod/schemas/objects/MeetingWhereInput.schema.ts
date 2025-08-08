@@ -1,10 +1,13 @@
 import { z } from 'zod';
 import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
+import { IntNullableFilterObjectSchema } from './IntNullableFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema';
 import { UserRelationFilterObjectSchema } from './UserRelationFilter.schema';
 import { UserWhereInputObjectSchema } from './UserWhereInput.schema';
+import { ClientRelationFilterObjectSchema } from './ClientRelationFilter.schema';
+import { ClientWhereInputObjectSchema } from './ClientWhereInput.schema';
 import { NoteListRelationFilterObjectSchema } from './NoteListRelationFilter.schema';
 import { CoachingSuggestionListRelationFilterObjectSchema } from './CoachingSuggestionListRelationFilter.schema';
 import { CrmSyncLogListRelationFilterObjectSchema } from './CrmSyncLogListRelationFilter.schema';
@@ -34,6 +37,10 @@ const Schema: z.ZodType<Prisma.MeetingWhereInput> = z
     userId: z
       .union([z.lazy(() => StringFilterObjectSchema), z.string()])
       .optional(),
+    clientId: z
+      .union([z.lazy(() => IntNullableFilterObjectSchema), z.number()])
+      .optional()
+      .nullable(),
     clientName: z
       .union([z.lazy(() => StringFilterObjectSchema), z.string()])
       .optional(),
@@ -56,6 +63,13 @@ const Schema: z.ZodType<Prisma.MeetingWhereInput> = z
         z.lazy(() => UserWhereInputObjectSchema),
       ])
       .optional(),
+    client: z
+      .union([
+        z.lazy(() => ClientRelationFilterObjectSchema),
+        z.lazy(() => ClientWhereInputObjectSchema),
+      ])
+      .optional()
+      .nullable(),
     notes: z.lazy(() => NoteListRelationFilterObjectSchema).optional(),
     coachingSuggestions: z
       .lazy(() => CoachingSuggestionListRelationFilterObjectSchema)

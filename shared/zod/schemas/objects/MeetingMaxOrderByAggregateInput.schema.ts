@@ -7,6 +7,7 @@ const Schema: z.ZodType<Prisma.MeetingMaxOrderByAggregateInput> = z
   .object({
     id: z.lazy(() => SortOrderSchema).optional(),
     userId: z.lazy(() => SortOrderSchema).optional(),
+    clientId: z.lazy(() => SortOrderSchema).optional(),
     clientName: z.lazy(() => SortOrderSchema).optional(),
     clientCompany: z.lazy(() => SortOrderSchema).optional(),
     status: z.lazy(() => SortOrderSchema).optional(),
