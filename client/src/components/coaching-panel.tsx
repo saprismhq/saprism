@@ -169,7 +169,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
             <Lightbulb className="w-4 h-4 mr-2 text-primary" />
             Growth Guide
           </h3>
-          <div className="h-5"></div> {/* Spacer to match Notes Panel height */}
+          <p className="text-sm text-transparent truncate invisible">Hidden spacer text</p>
         </div>
         <UserDropdown />
       </header>

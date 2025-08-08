@@ -56,7 +56,7 @@ export function Sidebar({
       <div className="px-6 py-4 border-b border-gray-100 flex items-center">
         <div>
           <SalespringLogo size="md" />
-          <div className="h-5"></div> {/* Spacer to match Notes Panel height */}
+          <p className="text-sm text-transparent truncate invisible">Hidden spacer text</p>
         </div>
       </div>
 
