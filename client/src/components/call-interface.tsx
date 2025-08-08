@@ -76,29 +76,37 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
     try {
       setIsConnecting(true);
       
-      // Create call session
-      const session = await sessionService.createSession(meeting.id);
-      setCurrentSession(session);
+      // Demo mode - simulate connecting to call
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
       
-      // Generate room name and get token from backend
-      const roomName = `meeting-${meeting.id}-${session.id}`;
+      // Simulate successful connection
+      setIsConnected(true);
+      setIsConnecting(false);
       
-      // TODO: Get actual token from backend
-      const token = 'placeholder-token'; // This should come from your backend
-      
-      // Connect to LiveKit room
-      await callService.connect(roomName, token);
-      
-      // Update session status
-      await sessionService.updateSession(session.id, {
+      // Create a mock session for demo
+      setCurrentSession({
+        id: `demo-session-${Date.now()}`,
+        meetingId: meeting.id,
         status: 'active',
-        startedAt: new Date(),
-        liveKitRoomName: roomName
+        startedAt: new Date()
       });
 
+      // Add a demo participant after a short delay
+      setTimeout(() => {
+        setParticipants([{
+          sid: 'demo-participant',
+          identity: meeting.clientName,
+          name: meeting.clientName,
+          isLocal: false,
+          isMuted: false,
+          isVideoEnabled: true,
+          isSpeaking: false
+        }]);
+      }, 3000);
+
       toast({
-        title: "Call Started",
-        description: `Connected to call for ${meeting.clientName}`,
+        title: "Call Started (Demo Mode)",
+        description: `Connected to demo call with ${meeting.clientName}`,
       });
       
     } catch (error) {
@@ -114,12 +122,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
   const handleEndCall = async () => {
     try {
-      await callService.disconnect();
-      
-      if (currentSession) {
-        await sessionService.endSession(currentSession.id);
-        setCurrentSession(null);
-      }
+      // Demo mode - simulate ending call
+      setCurrentSession(null);
       
       // Reset state
       setIsConnected(false);
@@ -129,8 +133,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
       setIsScreenSharing(false);
       
       toast({
-        title: "Call Ended",
-        description: "Call has been disconnected",
+        title: "Call Ended (Demo Mode)",
+        description: "Demo call has been disconnected",
       });
     } catch (error) {
       console.error('Failed to end call:', error);
@@ -139,8 +143,12 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
   const handleToggleMute = async () => {
     try {
-      await callService.toggleMute();
+      // Demo mode - just toggle state
       setIsMuted(!isMuted);
+      toast({
+        title: isMuted ? "Unmuted" : "Muted",
+        description: `Microphone ${isMuted ? 'enabled' : 'disabled'} (demo)`,
+      });
     } catch (error) {
       console.error('Failed to toggle mute:', error);
     }
@@ -148,8 +156,12 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
   const handleToggleVideo = async () => {
     try {
-      await callService.toggleVideo();
+      // Demo mode - just toggle state
       setIsVideoEnabled(!isVideoEnabled);
+      toast({
+        title: isVideoEnabled ? "Video Off" : "Video On",
+        description: `Camera ${isVideoEnabled ? 'disabled' : 'enabled'} (demo)`,
+      });
     } catch (error) {
       console.error('Failed to toggle video:', error);
     }
@@ -157,8 +169,12 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
   const handleToggleScreenShare = async () => {
     try {
-      await callService.toggleScreenShare();
+      // Demo mode - just toggle state
       setIsScreenSharing(!isScreenSharing);
+      toast({
+        title: isScreenSharing ? "Stopped Sharing" : "Screen Sharing",
+        description: `Screen share ${isScreenSharing ? 'disabled' : 'enabled'} (demo)`,
+      });
     } catch (error) {
       console.error('Failed to toggle screen share:', error);
     }
