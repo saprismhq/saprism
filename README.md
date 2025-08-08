@@ -20,33 +20,42 @@ An intelligent sales enablement platform that transforms sales team performance 
 - **Automated Data Flow**: Meeting notes and insights automatically sync to CRM records
 - **Audit Logging**: Complete tracking of all CRM sync operations
 
-### 🏗️ Modern Architecture
+### 🏗️ Modern Hybrid Architecture
 - **Full-Stack TypeScript**: Type safety across the entire application
-- **React Frontend**: Modern, responsive user interface
-- **Express.js Backend**: Robust API with authentication and data validation
+- **Vite + Express Integration**: Modern build tools with reliable backend infrastructure
+- **Single Server Design**: Express serves both API routes and frontend assets
+- **Hot Module Replacement**: Seamless development experience with instant updates
 - **PostgreSQL Database**: Reliable, scalable data storage
 - **Replit Authentication**: Secure user management with OpenID Connect
 
 ## Technology Stack
 
+### Hybrid Build System
+- **Vite**: Modern frontend build tool and development server
+- **Express.js**: Backend API server with Vite middleware integration
+- **Single Port Architecture**: Both frontend and backend served on port 5000
+- **ESBuild**: Backend bundling for production deployment
+
 ### Frontend
 - **React 18** with TypeScript
+- **Vite** for fast development and optimized builds
 - **Tailwind CSS** + shadcn/ui components
 - **TanStack Query** for server state management
 - **TipTap** rich text editor
-- **Wouter** for routing
+- **Wouter** for lightweight routing
 
 ### Backend
 - **Express.js** with TypeScript
-- **Prisma ORM** for database operations
-- **OpenAI GPT-4o** for AI analysis
+- **Vite Middleware**: Integrated for seamless development experience
+- **Prisma ORM** for type-safe database operations
+- **OpenAI GPT-4o** for AI analysis and coaching
 - **Salesforce jsforce** for CRM integration
 - **Express sessions** with PostgreSQL storage
 
 ### Infrastructure
-- **PostgreSQL** database with Neon serverless
-- **Replit** hosting and deployment
-- **OpenID Connect** authentication
+- **PostgreSQL** database with Neon serverless driver
+- **Replit** hosting and deployment platform
+- **OpenID Connect** authentication via Replit
 
 ## Getting Started
 
