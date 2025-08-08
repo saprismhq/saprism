@@ -126,6 +126,17 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       if (result.analysis) {
         setLastAnalysis(result.analysis);
         console.log("AI Analysis completed:", result.analysis);
+        
+        // Automatically trigger coaching suggestions after analysis completes
+        if (meeting?.id && noteContent.trim().length > 50) {
+          const dealStage = result.analysis.dealStage || "discovery";
+          generateCoachingMutation.mutate({ 
+            content: noteContent, 
+            dealStage, 
+            meetingId: meeting.id 
+          });
+        }
+        
         if (result.coachingSuggestions) {
           console.log("Coaching suggestions generated simultaneously:", result.coachingSuggestions);
         }
@@ -133,6 +144,16 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         // Fallback for old format
         setLastAnalysis(result);
         console.log("AI Analysis completed (old format):", result);
+        
+        // Automatically trigger coaching suggestions for old format too
+        if (meeting?.id && noteContent.trim().length > 50) {
+          const dealStage = result.dealStage || "discovery";
+          generateCoachingMutation.mutate({ 
+            content: noteContent, 
+            dealStage, 
+            meetingId: meeting.id 
+          });
+        }
       }
       
       // Invalidate meeting data to refresh both AI analysis and coaching suggestions
@@ -429,8 +450,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
           </Card>
         )}
 
-        {/* Analysis loading indicator - disabled like coaching panel */}
-        {false && (
+        {/* Analysis loading indicator */}
+        {analyzeNotesMutation.isPending && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
             <span className="text-sm text-blue-600">AI analyzing your notes...</span>

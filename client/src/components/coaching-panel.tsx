@@ -112,6 +112,24 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     }
   }, [meeting, currentMeetingId]);
 
+  // Listen for when analysis is being triggered to show loading state
+  const { data: meetingQuery } = useQuery({
+    queryKey: ["/api/meetings", meeting?.id],
+    enabled: false, // Don't fetch automatically, just listen for cache changes
+  });
+
+  // Monitor for AI analysis and coaching generation activity
+  useEffect(() => {
+    if (!meeting?.id) return;
+
+    // Show loading state when coaching suggestions are being generated
+    if (generateCoachingMutation.isPending) {
+      setIsLoadingForMeeting(true);
+    } else {
+      setIsLoadingForMeeting(false);
+    }
+  }, [generateCoachingMutation.isPending, meeting?.id]);
+
   // Handle copy to clipboard
   const handleCopy = (text: string, itemId: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -177,7 +195,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
       {/* Coaching Content */}
       <div className="flex-1 p-4 space-y-4 overflow-y-auto">
         {/* Only show loading if actively generating for this specific meeting */}
-        {false && (
+        {isLoadingForMeeting && (
           <div className="flex items-center justify-center p-8">
             <div className="text-center">
               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
