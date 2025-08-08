@@ -13,6 +13,7 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedCreateInput> = z
     clientId: z.number().optional().nullable(),
     clientName: z.string(),
     clientCompany: z.string().optional().nullable(),
+    dealType: z.string().optional(),
     status: z.string().optional(),
     createdAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),

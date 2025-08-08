@@ -6,6 +6,7 @@ export const MeetingScalarFieldEnumSchema = z.enum([
   'clientId',
   'clientName',
   'clientCompany',
+  'dealType',
   'status',
   'createdAt',
   'updatedAt',

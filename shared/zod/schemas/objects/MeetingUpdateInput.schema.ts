@@ -26,6 +26,12 @@ const Schema: z.ZodType<Prisma.MeetingUpdateInput> = z
       ])
       .optional()
       .nullable(),
+    dealType: z
+      .union([
+        z.string(),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional(),
     status: z
       .union([
         z.string(),

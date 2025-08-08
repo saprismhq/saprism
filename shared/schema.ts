@@ -75,12 +75,27 @@ export const InsertClientSchema = z.object({
 
 export type InsertClient = z.infer<typeof InsertClientSchema>;
 
+// Deal Type Constants
+export const DEAL_TYPES = [
+  'Connect',
+  'Discovery',
+  'Opportunity Stage',
+  'Demo',
+  'Influencer Buy-In',
+  'Decision Maker Buy-In',
+  'Negotiation',
+  'Closing'
+] as const;
+
+export type DealType = typeof DEAL_TYPES[number];
+
 export const MeetingSchema = z.object({
   id: z.number(),
   userId: z.string(),
   clientId: z.number().nullable(),
   clientName: z.string(),
   clientCompany: z.string().nullable(),
+  dealType: z.string(),
   status: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -118,6 +133,16 @@ export const SessionSchema = z.object({
   sess: z.any(),
   expire: z.date(),
 });
+
+// Create Meeting Schema for API requests
+export const CreateMeetingSchema = z.object({
+  clientName: z.string().min(1, "Client name is required"),
+  clientCompany: z.string().optional(),
+  clientId: z.number().optional(),
+  dealType: z.string().optional(),
+});
+
+export type CreateMeeting = z.infer<typeof CreateMeetingSchema>;
 
 export const CallSessionSchema = z.object({
   id: z.string(),
@@ -180,14 +205,7 @@ export type InsertCoachingSuggestion = z.infer<typeof insertCoachingSuggestionSc
 export type InsertCrmSyncLog = z.infer<typeof insertCrmSyncLogSchema>;
 export type InsertCallSession = z.infer<typeof insertCallSessionSchema>;
 
-// Add dedicated client insert type for meeting creation
-export const CreateMeetingSchema = z.object({
-  clientName: z.string().min(1, "Client name is required"),
-  clientCompany: z.string().optional(),
-  clientId: z.number().optional(),
-});
 
-export type CreateMeeting = z.infer<typeof CreateMeetingSchema>;
 
 // Extended types for queries with relations
 import type { Meeting, Note, CoachingSuggestion } from '@prisma/client';

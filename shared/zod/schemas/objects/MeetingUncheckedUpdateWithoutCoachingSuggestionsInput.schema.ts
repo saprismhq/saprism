@@ -45,6 +45,12 @@ const Schema: z.ZodType<Prisma.MeetingUncheckedUpdateWithoutCoachingSuggestionsI
         ])
         .optional()
         .nullable(),
+      dealType: z
+        .union([
+          z.string(),
+          z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+        ])
+        .optional(),
       status: z
         .union([
           z.string(),

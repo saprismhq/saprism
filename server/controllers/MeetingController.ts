@@ -18,6 +18,7 @@ export class MeetingController {
         clientId: requestData.clientId || null,
         clientName: requestData.clientName,
         clientCompany: requestData.clientCompany || null,
+        dealType: requestData.dealType || "Connect",
         status: "active"
       };
       

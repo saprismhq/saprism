@@ -10,6 +10,7 @@ const Schema: z.ZodType<Prisma.MeetingMinOrderByAggregateInput> = z
     clientId: z.lazy(() => SortOrderSchema).optional(),
     clientName: z.lazy(() => SortOrderSchema).optional(),
     clientCompany: z.lazy(() => SortOrderSchema).optional(),
+    dealType: z.lazy(() => SortOrderSchema).optional(),
     status: z.lazy(() => SortOrderSchema).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     updatedAt: z.lazy(() => SortOrderSchema).optional(),

@@ -48,6 +48,9 @@ const Schema: z.ZodType<Prisma.MeetingWhereInput> = z
       .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
       .optional()
       .nullable(),
+    dealType: z
+      .union([z.lazy(() => StringFilterObjectSchema), z.string()])
+      .optional(),
     status: z
       .union([z.lazy(() => StringFilterObjectSchema), z.string()])
       .optional(),

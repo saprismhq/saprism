@@ -81,7 +81,7 @@ export default function Home() {
   };
 
   // Create meeting function
-  const handleCreateMeeting = (data: { clientName: string; clientCompany: string; clientId?: number }) => {
+  const handleCreateMeeting = (data: { clientName: string; clientCompany: string; clientId?: number; dealType?: string }) => {
     createMeetingMutation.mutate(data, {
       onSuccess: handleMeetingCreated,
       onError: handleMeetingError,

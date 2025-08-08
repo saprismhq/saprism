@@ -11,6 +11,7 @@ const Schema: z.ZodType<Prisma.MeetingCreateWithoutCrmSyncLogsInput> = z
   .object({
     clientName: z.string(),
     clientCompany: z.string().optional().nullable(),
+    dealType: z.string().optional(),
     status: z.string().optional(),
     createdAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),

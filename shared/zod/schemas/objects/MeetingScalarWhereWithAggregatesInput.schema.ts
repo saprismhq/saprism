@@ -48,6 +48,9 @@ const Schema: z.ZodType<Prisma.MeetingScalarWhereWithAggregatesInput> = z
       ])
       .optional()
       .nullable(),
+    dealType: z
+      .union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()])
+      .optional(),
     status: z
       .union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()])
       .optional(),

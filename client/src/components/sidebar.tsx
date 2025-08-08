@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Activity } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
@@ -10,12 +11,13 @@ import { NewClientDialog } from "@/components/new-client-dialog";
 import { RecentMeetingsList } from "@/components/recent-meetings-list";
 import { useSystemStatus, getOverallStatusColor } from "@/lib/api/status";
 import type { Meeting, Client } from "@shared/schema";
+import { DEAL_TYPES, type DealType } from "@shared/schema";
 
 interface SidebarProps {
   meetings: Meeting[];
   activeMeetingId: number | null;
   onSelectMeeting: (id: number) => void;
-  onCreateMeeting: (data: { clientName: string; clientCompany: string; clientId?: number }) => void;
+  onCreateMeeting: (data: { clientName: string; clientCompany: string; clientId?: number; dealType?: DealType }) => void;
   onDeleteMeeting: (id: number) => void;
   createMeetingLoading: boolean;
   deleteMeetingLoading: boolean;
@@ -34,6 +36,7 @@ export function Sidebar({
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showNewClientDialog, setShowNewClientDialog] = useState(false);
+  const [selectedDealType, setSelectedDealType] = useState<DealType>("Connect");
 
   // Query system status
   const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
@@ -62,8 +65,11 @@ export function Sidebar({
         clientName: selectedClient.name,
         clientCompany: selectedClient.company || "",
         clientId: selectedClient.id,
+        dealType: selectedDealType,
       });
       setShowCreateDialog(false);
+      // Reset deal type for next meeting
+      setSelectedDealType("Connect");
     }
   };
 
@@ -137,6 +143,26 @@ export function Sidebar({
                   </p>
                 </div>
               )}
+
+              {/* Deal Type Selection */}
+              {selectedClient && (
+                <div>
+                  <Label htmlFor="dealType">Deal Type</Label>
+                  <Select value={selectedDealType} onValueChange={(value) => setSelectedDealType(value as DealType)}>
+                    <SelectTrigger id="dealType">
+                      <SelectValue placeholder="Select deal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DEAL_TYPES.map((dealType) => (
+                        <SelectItem key={dealType} value={dealType}>
+                          {dealType}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <Button
                 onClick={handleCreateMeeting}
                 disabled={!selectedClient || createMeetingLoading}

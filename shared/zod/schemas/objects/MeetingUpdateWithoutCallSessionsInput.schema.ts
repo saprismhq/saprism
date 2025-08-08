@@ -25,6 +25,12 @@ const Schema: z.ZodType<Prisma.MeetingUpdateWithoutCallSessionsInput> = z
       ])
       .optional()
       .nullable(),
+    dealType: z
+      .union([
+        z.string(),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional(),
     status: z
       .union([
         z.string(),
