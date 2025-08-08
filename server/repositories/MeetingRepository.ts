@@ -1,13 +1,13 @@
 import { 
   type Meeting, 
   type InsertMeeting, 
-  type MeetingWithNotes 
+  type MeetingWithSessions 
 } from "@shared/schema";
 import { db } from "../db";
 
 export interface IMeetingRepository {
   create(meeting: InsertMeeting): Promise<Meeting>;
-  getById(id: number): Promise<MeetingWithNotes | undefined>;
+  getById(id: number): Promise<MeetingWithSessions | undefined>;
   getByUserId(userId: string): Promise<Meeting[]>;
   update(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
   delete(id: number): Promise<void>;
@@ -21,7 +21,7 @@ export class MeetingRepository implements IMeetingRepository {
     return newMeeting;
   }
 
-  async getById(id: number): Promise<MeetingWithNotes | undefined> {
+  async getById(id: number): Promise<MeetingWithSessions | undefined> {
     const meeting = await db.meeting.findUnique({
       where: { id },
       include: {
@@ -31,6 +31,9 @@ export class MeetingRepository implements IMeetingRepository {
         coachingSuggestions: {
           orderBy: { createdAt: 'desc' },
         },
+        // callSessions: {
+        //   orderBy: { createdAt: 'desc' },
+        // },
       },
     });
 

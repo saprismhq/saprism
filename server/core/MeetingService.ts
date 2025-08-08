@@ -1,9 +1,9 @@
-import { type Meeting, type InsertMeeting, type MeetingWithNotes } from "@shared/schema";
+import { type Meeting, type InsertMeeting, type MeetingWithSessions } from "@shared/schema";
 import { IMeetingRepository } from "../repositories/MeetingRepository";
 
 export interface IMeetingService {
   createMeeting(meeting: InsertMeeting): Promise<Meeting>;
-  getMeetingById(id: number): Promise<MeetingWithNotes | undefined>;
+  getMeetingById(id: number): Promise<MeetingWithSessions | undefined>;
   getMeetingsByUserId(userId: string): Promise<Meeting[]>;
   updateMeeting(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
   deleteMeeting(id: number): Promise<void>;
@@ -17,7 +17,7 @@ export class MeetingService implements IMeetingService {
     return await this.meetingRepository.create(meeting);
   }
 
-  async getMeetingById(id: number): Promise<MeetingWithNotes | undefined> {
+  async getMeetingById(id: number): Promise<MeetingWithSessions | undefined> {
     return await this.meetingRepository.getById(id);
   }
 

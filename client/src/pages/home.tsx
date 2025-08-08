@@ -3,9 +3,9 @@ import { useAuth } from "@/lib/api/auth";
 import { useMeetings, useMeeting, useCreateMeeting, useDeleteMeeting } from "@/lib/api/meetings";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { ResizableLayout } from "@/components/resizable-layout";
+import { MainLayout } from "@/components/main-layout";
 import { UserDropdown } from "@/components/user-dropdown";
-import type { Meeting, MeetingWithNotes } from "@shared/schema";
+import type { Meeting, MeetingWithSessions } from "@shared/schema";
 
 export default function Home() {
   const { toast } = useToast();
@@ -119,7 +119,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ResizableLayout
+      <MainLayout
         meetings={meetings || []}
         activeMeetingId={activeMeetingId}
         activeMeeting={activeMeeting}

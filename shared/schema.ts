@@ -7,9 +7,24 @@ export type {
   Note,
   CoachingSuggestion,
   CrmSyncLog,
-  CallSession,
   Session,
 } from '@prisma/client';
+
+// Define CallSession type manually until Prisma client updates
+export type CallSession = {
+  id: string;
+  meetingId: number;
+  liveKitRoomName: string;
+  liveKitToken?: string | null;
+  participants: any;
+  status: string;
+  startedAt?: Date | null;
+  endedAt?: Date | null;
+  transcription?: any | null;
+  sessionMetadata?: any | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 // Create validation schemas manually for better control
 export const UserSchema = z.object({
@@ -127,7 +142,7 @@ export type InsertCrmSyncLog = z.infer<typeof insertCrmSyncLogSchema>;
 export type InsertCallSession = z.infer<typeof insertCallSessionSchema>;
 
 // Extended types for queries with relations
-import type { Meeting, Note, CoachingSuggestion, CallSession } from '@prisma/client';
+import type { Meeting, Note, CoachingSuggestion } from '@prisma/client';
 
 export type MeetingWithNotes = Meeting & {
   notes: Note[];
@@ -137,7 +152,7 @@ export type MeetingWithNotes = Meeting & {
 export type MeetingWithSessions = Meeting & {
   notes: Note[];
   coachingSuggestions: CoachingSuggestion[];
-  callSessions: CallSession[];
+  callSessions?: CallSession[];
 };
 
 // AI Analysis types

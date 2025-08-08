@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys, invalidateQueries, handleApiError } from "./base";
 import { apiRequest } from "@/lib/queryClient";
-import type { Meeting, MeetingWithNotes, InsertMeeting } from "@shared/schema";
+import type { Meeting, MeetingWithSessions, InsertMeeting } from "@shared/schema";
 
 // Meeting API functions
 export const meetingsApi = {
@@ -15,7 +15,7 @@ export const meetingsApi = {
     return response.json();
   },
 
-  getById: async (id: number): Promise<MeetingWithNotes> => {
+  getById: async (id: number): Promise<MeetingWithSessions> => {
     const response = await fetch(`/api/meetings/${id}`, {
       credentials: "include",
     });
@@ -89,7 +89,7 @@ export const useUpdateMeeting = () => {
       // Update specific meeting cache
       queryClient.setQueryData(
         queryKeys.meetings.detail(updatedMeeting.id),
-        (old: MeetingWithNotes | undefined) => 
+        (old: MeetingWithSessions | undefined) => 
           old ? { ...old, ...updatedMeeting } : undefined
       );
       
