@@ -62,14 +62,39 @@ Branding preference: Use "Growth Guide" instead of "AI Coach" for coaching featu
 - **AI Analysis**: Automatic analysis of meeting content
 - **Status Tracking**: Meeting lifecycle management
 
+### Telephony Integration
+- **Call Interface**: Collapsible call panel with audio/video controls
+- **Demo Mode**: Simulated call functionality for base tier users
+- **LiveKit Integration**: Full real-time communication for premium tier
+- **Pricing Tiers**: Base tier (notes + demo calls) and Premium tier (notes + live calls)
+- **Call Management**: Session tracking, participant management, and call controls
+
+## Pricing Tier Architecture
+
+The application is designed with a multi-tier pricing strategy:
+
+### Base Tier
+- **Core Features**: Full meeting notes functionality, AI analysis, and coaching suggestions
+- **Telephony**: Demo mode call interface with simulated functionality
+- **Target Users**: Individual sales reps and small teams testing the platform
+- **Technical Implementation**: All call functions work in simulation mode with visual feedback
+
+### Premium Tier  
+- **Core Features**: All base tier functionality
+- **Telephony**: Full LiveKit integration with real audio/video calls
+- **Advanced Features**: Real-time transcription, call recording, CRM sync of call data
+- **Target Users**: Professional sales teams and enterprise customers
+- **Technical Implementation**: Complete LiveKit WebRTC integration with backend infrastructure
+
 ## Data Flow
 
 1. **User Authentication**: Users authenticate through Replit OpenID Connect
 2. **Meeting Creation**: Users create meetings with client information
 3. **Note Taking**: Users input meeting notes with real-time auto-save
 4. **AI Analysis**: Notes are automatically analyzed for insights and coaching suggestions
-5. **CRM Sync**: Meeting data and insights are synchronized with Salesforce
-6. **Coaching Delivery**: AI-generated coaching suggestions are presented to users
+5. **Call Management**: Base tier uses demo mode, Premium tier connects via LiveKit
+6. **CRM Sync**: Meeting data and insights are synchronized with Salesforce
+7. **Coaching Delivery**: AI-generated coaching suggestions are presented to users
 
 ## Database Schema
 

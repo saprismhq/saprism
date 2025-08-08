@@ -100,7 +100,9 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
           isLocal: false,
           isMuted: false,
           isVideoEnabled: true,
-          isSpeaking: false
+          isSpeaking: false,
+          isScreenSharing: false,
+          joinedAt: new Date()
         }]);
       }, 3000);
 
