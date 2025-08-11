@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Send, Loader2, User, Bot } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { MeetingWithNotes, MeetingWithSessions } from "@shared/schema";
 
 interface ChatMessage {
@@ -26,6 +27,7 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
   const [inputValue, setInputValue] = useState("");
   const [isWelcomeShown, setIsWelcomeShown] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   // Chat mutation
@@ -121,12 +123,20 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
     setInputValue("");
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
+
+  // Auto-resize textarea based on content
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [inputValue]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -205,19 +215,25 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
 
       {/* Input */}
       <div className="p-4 border-t border-gray-200 bg-white">
-        <div className="flex space-x-2">
-          <Input
+        <div className="flex items-end space-x-2">
+          <Textarea
+            ref={textareaRef}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Ask about sales strategies, deal analysis, or methodology..."
-            className="flex-1"
+            className={cn(
+              "flex-1 resize-none min-h-[40px] max-h-[120px] overflow-y-auto",
+              "transition-all duration-200 ease-out"
+            )}
             disabled={chatMutation.isPending}
+            rows={1}
           />
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || chatMutation.isPending}
             size="sm"
+            className="h-10 px-3"
           >
             {chatMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
