@@ -140,10 +140,6 @@ export function Sidebar({
                       {selectedClient.company && (
                         <p className="text-sm text-gray-600 mt-1">{selectedClient.company}</p>
                       )}
-                      <div className="flex items-center mt-2 text-xs text-primary/70">
-                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                        Ready to create meeting
-                      </div>
                     </div>
                   </div>
                 </div>
