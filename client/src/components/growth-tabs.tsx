@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, Copy, Check, ArrowLeftRight, Target, CheckSquare } from "lucide-react";
+import { MessageCircle, Copy, Check, ArrowLeftRight, Target, CheckSquare, Lightbulb, BookOpen } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -56,15 +56,36 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
   return (
     <section className="w-96 bg-gray-50 border-l border-gray-200 flex flex-col">
       <div className="p-4 border-b border-gray-200 bg-white">
-        <h2 className="text-lg font-semibold text-gray-900">Growth Center</h2>
-        <p className="text-sm text-gray-600 mt-1">AI-powered sales insights and methodology</p>
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-2 bg-primary rounded-full"></div>
+          <h2 className="text-lg font-semibold text-gray-900">Growth Center</h2>
+        </div>
+        <p className="text-sm text-gray-600">AI-powered sales insights and methodology</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-3 mx-4 mt-4">
-          <TabsTrigger value="guide" className="text-xs">Guide</TabsTrigger>
-          <TabsTrigger value="chat" className="text-xs">Chat</TabsTrigger>
-          <TabsTrigger value="method" className="text-xs">Method</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 mx-4 mt-4 bg-white border border-gray-200 p-1 rounded-lg h-11 shadow-sm">
+          <TabsTrigger 
+            value="guide" 
+            className="text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md flex items-center gap-1.5 px-3"
+          >
+            <Lightbulb className="w-3.5 h-3.5" />
+            Guide
+          </TabsTrigger>
+          <TabsTrigger 
+            value="chat" 
+            className="text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md flex items-center gap-1.5 px-3"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            Chat
+          </TabsTrigger>
+          <TabsTrigger 
+            value="method" 
+            className="text-sm font-medium transition-all duration-200 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md flex items-center gap-1.5 px-3"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Method
+          </TabsTrigger>
         </TabsList>
 
         <div className="flex-1 overflow-hidden">
