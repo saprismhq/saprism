@@ -127,8 +127,8 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         setLastAnalysis(result.analysis);
         console.log("AI Analysis completed:", result.analysis);
         
-        // Automatically trigger coaching suggestions after analysis completes
-        if (meeting?.id && noteContent.trim().length > 50) {
+        // Automatically trigger coaching suggestions after analysis completes (optimized threshold)
+        if (meeting?.id && noteContent.trim().length > 40) { // Reduced threshold for faster response
           const dealStage = result.analysis.dealStage || "discovery";
           generateCoachingMutation.mutate({ 
             content: noteContent, 
@@ -164,11 +164,11 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
         queryClient.invalidateQueries({ queryKey: ["meetings", "detail", meeting?.id] });
         queryClient.invalidateQueries({ queryKey: ["meetings", "list"] });
         
-        // Force refetch after a delay to ensure backend operations complete
+        // Faster refetch for immediate UI updates
         setTimeout(() => {
           console.log("Force refetching meeting data for:", meeting?.id);
           queryClient.refetchQueries({ queryKey: ["meetings", "detail", meeting?.id] }).catch(console.error);
-        }, 1000);
+        }, 300); // Reduced from 1000ms to 300ms
       } catch (error) {
         console.error("Error invalidating queries:", error);
       }
@@ -293,12 +293,12 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
       clearTimeout(analysisDebounce);
     }
 
-    // Set new debounce for analysis - trigger faster for better real-time feel
+    // Set new debounce for analysis - faster trigger and immediate feedback
     if (value.trim().length > 30 && meeting?.id) {
       const timeout = setTimeout(() => {
         console.log("Triggering AI analysis for content:", value.substring(0, 100) + "...");
         analyzeNotesMutation.mutate({ content: value, meetingId: meeting.id });
-      }, 1500); // Reduced from 2000 to 1500ms for faster response
+      }, 800); // Reduced from 1500ms to 800ms for much faster response
       setAnalysisDebounce(timeout);
     }
   };

@@ -118,23 +118,25 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
     enabled: false, // Don't fetch automatically, just listen for cache changes
   });
 
-  // Monitor for AI analysis and coaching generation activity
+  // Monitor for AI analysis and coaching generation activity - immediate response
   useEffect(() => {
     if (!meeting?.id) return;
 
-    // Show loading state when coaching suggestions are being generated
-    if (generateCoachingMutation.isPending) {
-      setIsLoadingForMeeting(true);
-    } else {
-      setIsLoadingForMeeting(false);
-    }
+    // Immediately show loading state when coaching suggestions are being generated
+    setIsLoadingForMeeting(generateCoachingMutation.isPending);
   }, [generateCoachingMutation.isPending, meeting?.id]);
 
-  // Simple approach: Use a more direct method to detect AI analysis loading
+  // Enhanced loading state detection with immediate response
   useEffect(() => {
     if (!meeting?.id) return;
 
-    // Create a polling mechanism to check if analysis is happening
+    // Immediately respond to coaching generation state
+    if (generateCoachingMutation.isPending) {
+      setIsLoadingForMeeting(true);
+      return;
+    }
+
+    // Check for analysis queries with reduced polling frequency
     const checkAnalysisStatus = () => {
       const queries = queryClient.getQueryCache().getAll();
       const hasAnalysisQuery = queries.some(query => 
@@ -142,19 +144,16 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
         query.state.status === 'pending'
       );
       
-      if (hasAnalysisQuery || generateCoachingMutation.isPending) {
+      if (hasAnalysisQuery) {
         setIsLoadingForMeeting(true);
       } else {
-        // Small delay to prevent flickering
-        setTimeout(() => {
-          if (!generateCoachingMutation.isPending) {
-            setIsLoadingForMeeting(false);
-          }
-        }, 200);
+        // Faster response when analysis completes
+        setIsLoadingForMeeting(false);
       }
     };
 
-    const interval = setInterval(checkAnalysisStatus, 100);
+    // Reduced polling frequency to improve performance
+    const interval = setInterval(checkAnalysisStatus, 250);
     return () => clearInterval(interval);
   }, [meeting?.id, generateCoachingMutation.isPending]);
 

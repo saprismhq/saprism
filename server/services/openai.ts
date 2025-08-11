@@ -31,6 +31,8 @@ export class OpenAIService {
           }
         ],
         response_format: { type: "json_object" },
+        temperature: 0.3, // Lower temperature for more consistent, faster responses
+        max_tokens: 800,  // Limit tokens to speed up response
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -117,6 +119,8 @@ export class OpenAIService {
           }
         ],
         response_format: { type: "json_object" },
+        temperature: 0.4, // Lower temperature for faster, more consistent responses
+        max_tokens: 2000, // Limit tokens to improve response time
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -154,6 +158,8 @@ export class OpenAIService {
           }
         ],
         response_format: { type: "json_object" },
+        temperature: 0.3, // Lower temperature for consistent results
+        max_tokens: 500,  // Shorter responses for faster generation
       });
 
       const result = JSON.parse(response.choices[0].message.content || "{}");
