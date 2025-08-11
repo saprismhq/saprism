@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronUp, ChevronDown, Phone } from 'lucide-react';
 import { CallInterface } from './call-interface';
 import { NotesPanel } from './notes-panel';
-import { CoachingPanel } from './coaching-panel';
+import { GrowthTabs } from './growth-tabs';
 import { Sidebar } from './sidebar';
 import type { Meeting, MeetingWithSessions } from '@shared/schema';
 import { Button } from '@/components/ui/button';
@@ -56,14 +56,12 @@ export function MainLayout({
           />
         </div>
 
-        {/* Coaching Panel */}
-        <div className="w-96 border-l border-gray-200">
-          <CoachingPanel
-            key={activeMeetingId}
-            meeting={activeMeeting}
-            isLoading={activeMeetingLoading}
-          />
-        </div>
+        {/* Growth Center Panel */}
+        <GrowthTabs
+          key={activeMeetingId}
+          meeting={activeMeeting}
+          isLoading={activeMeetingLoading}
+        />
       </div>
 
       {/* Call Panel Toggle Button */}

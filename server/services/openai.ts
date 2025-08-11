@@ -141,6 +141,54 @@ export class OpenAIService {
     }
   }
 
+  async generateChatResponse(message: string, meetingContext: string, conversationHistory: any[]): Promise<string> {
+    try {
+      const messages = [
+        {
+          role: "system",
+          content: `You are an expert sales coach and Growth Guide assistant. You help sales professionals with:
+          - Sales strategies and methodologies
+          - Deal analysis and qualification
+          - Objection handling and negotiation tactics
+          - Value proposition development
+          - Relationship building strategies
+          
+          You have access to the current meeting context and should provide specific, actionable advice.
+          Be conversational but professional, and always tie advice back to the specific deal context when possible.
+          
+          Meeting Context: ${meetingContext}`
+        }
+      ];
+
+      // Add conversation history
+      if (conversationHistory && conversationHistory.length > 0) {
+        conversationHistory.forEach(msg => {
+          messages.push({
+            role: msg.role,
+            content: msg.content
+          });
+        });
+      }
+
+      // Add current message
+      messages.push({
+        role: "user",
+        content: message
+      });
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: messages as any,
+        temperature: 0.7, // More creative for conversational responses
+        max_tokens: 1000,
+      });
+
+      return response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
+    } catch (error) {
+      throw new Error("Failed to generate chat response: " + (error as Error).message);
+    }
+  }
+
   async generateFollowUpQuestions(notesContent: string, painPoints: string[]): Promise<string[]> {
     try {
       const response = await openai.chat.completions.create({

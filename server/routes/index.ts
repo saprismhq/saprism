@@ -57,6 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI routes
   app.post('/api/ai/analyze', isAuthenticated, (req, res) => aiController.analyzeNotes(req, res));
   app.post('/api/ai/coaching', isAuthenticated, (req, res) => aiController.generateCoachingSuggestions(req, res));
+  app.post('/api/ai/chat', isAuthenticated, (req, res) => aiController.handleChat(req, res));
 
   // CRM routes
   app.get('/api/crm/status', isAuthenticated, (req, res) => crmController.getCrmStatus(req, res));

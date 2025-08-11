@@ -64,6 +64,29 @@ export class AIController {
     }
   }
 
+  async handleChat(req: any, res: any): Promise<void> {
+    try {
+      const { message, meetingContext, conversationHistory } = req.body;
+
+      if (!message || typeof message !== "string") {
+        res.status(400).json({ error: "Message is required" });
+        return;
+      }
+
+      // Generate AI response using OpenAI service
+      const response = await openaiService.generateChatResponse(
+        message,
+        meetingContext || "",
+        conversationHistory || []
+      );
+
+      res.json({ response });
+    } catch (error) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ error: "Failed to generate chat response" });
+    }
+  }
+
   async generateCoachingSuggestions(req: any, res: Response): Promise<void> {
     try {
       const { meetingId, content, dealStage } = req.body;

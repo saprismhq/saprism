@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { CallInterface } from './call-interface';
 import { NotesPanel } from './notes-panel';
-import { CoachingPanel } from './coaching-panel';
+import { GrowthTabs } from './growth-tabs';
 import { Sidebar } from './sidebar';
 import type { Meeting, MeetingWithSessions } from '@shared/schema';
 
@@ -115,9 +115,9 @@ export function ResizableLayout({
             </>
           )}
 
-          {/* Right Panel - Coaching */}
+          {/* Right Panel - Growth Center */}
           <Panel defaultSize={showCallInterface ? 20 : 40} minSize={20}>
-            <CoachingPanel
+            <GrowthTabs
               key={activeMeetingId}
               meeting={activeMeeting}
               isLoading={activeMeetingLoading}
