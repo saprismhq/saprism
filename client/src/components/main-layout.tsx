@@ -57,11 +57,13 @@ export function MainLayout({
         </div>
 
         {/* Growth Center Panel */}
-        <GrowthTabs
-          key={activeMeetingId}
-          meeting={activeMeeting}
-          isLoading={activeMeetingLoading}
-        />
+        <div className="w-96 border-l border-gray-200">
+          <GrowthTabs
+            key={activeMeetingId}
+            meeting={activeMeeting}
+            isLoading={activeMeetingLoading}
+          />
+        </div>
       </div>
 
       {/* Call Panel Toggle Button */}
