@@ -20,12 +20,12 @@ interface GrowthChatProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   initialContext?: string;
   onContextUsed?: () => void;
+  messages?: ChatMessage[];
+  onMessagesChange?: (messages: ChatMessage[]) => void;
 }
 
-export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function GrowthChat({ meeting, initialContext, onContextUsed, messages = [], onMessagesChange }: GrowthChatProps) {
   const [inputValue, setInputValue] = useState("");
-  const [isWelcomeShown, setIsWelcomeShown] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -47,7 +47,7 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
         content: data.response,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, assistantMessage]);
+      onMessagesChange?.([...messages, assistantMessage]);
     },
     onError: (error) => {
       console.error("Chat error:", error);
@@ -66,34 +66,11 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
 
   // Handle initial context
   useEffect(() => {
-    if (initialContext && !isWelcomeShown) {
+    if (initialContext) {
       setInputValue(initialContext);
-      setIsWelcomeShown(true);
       onContextUsed?.();
     }
-  }, [initialContext, isWelcomeShown, onContextUsed]);
-
-  // Show welcome message when meeting changes
-  useEffect(() => {
-    if (meeting && !isWelcomeShown) {
-      const welcomeMessage: ChatMessage = {
-        id: `welcome-${meeting.id}`,
-        role: "assistant",
-        content: `Hi! I'm your Growth Guide assistant. I can help you with sales strategies, deal analysis, and methodologies for your meeting with ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}. What would you like to discuss?`,
-        timestamp: new Date(),
-      };
-      setMessages([welcomeMessage]);
-      setIsWelcomeShown(true);
-    }
-  }, [meeting, isWelcomeShown]);
-
-  // Reset when meeting changes
-  useEffect(() => {
-    if (meeting) {
-      setMessages([]);
-      setIsWelcomeShown(false);
-    }
-  }, [meeting?.id]);
+  }, [initialContext, onContextUsed]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !meeting) return;
@@ -105,7 +82,7 @@ export function GrowthChat({ meeting, initialContext, onContextUsed }: GrowthCha
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    onMessagesChange?.([...messages, userMessage]);
     
     // Prepare meeting context
     const meetingContext = `

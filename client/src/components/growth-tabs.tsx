@@ -16,15 +16,46 @@ interface GrowthTabsProps {
   isLoading: boolean;
 }
 
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
 export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
   const [activeTab, setActiveTab] = useState("guide");
   const [chatContext, setChatContext] = useState<string>("");
+  const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
+  const [chatWelcomeShown, setChatWelcomeShown] = useState<Record<number, boolean>>({});
 
   // Handle tab routing from Growth Guide
   const handleChatRedirect = (context: string) => {
     setChatContext(context);
     setActiveTab("chat");
   };
+
+  // Initialize chat for new meeting
+  useEffect(() => {
+    if (meeting?.id && !chatWelcomeShown[meeting.id] && !chatMessages[meeting.id]) {
+      const welcomeMessage: ChatMessage = {
+        id: `welcome-${meeting.id}`,
+        role: "assistant",
+        content: `Hi! I'm your Growth Guide assistant. I can help you with sales strategies, deal analysis, and methodologies for your meeting with ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}. What would you like to discuss?`,
+        timestamp: new Date(),
+      };
+      
+      setChatMessages(prev => ({
+        ...prev,
+        [meeting.id]: [welcomeMessage]
+      }));
+      
+      setChatWelcomeShown(prev => ({
+        ...prev,
+        [meeting.id]: true
+      }));
+    }
+  }, [meeting?.id, chatWelcomeShown, chatMessages]);
 
   if (isLoading) {
     return (
@@ -103,6 +134,15 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
               meeting={meeting} 
               initialContext={chatContext}
               onContextUsed={() => setChatContext("")}
+              messages={meeting?.id ? chatMessages[meeting.id] || [] : []}
+              onMessagesChange={(messages) => {
+                if (meeting?.id) {
+                  setChatMessages(prev => ({
+                    ...prev,
+                    [meeting.id]: messages
+                  }));
+                }
+              }}
             />
           </TabsContent>
 
