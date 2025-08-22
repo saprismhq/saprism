@@ -149,11 +149,6 @@ export function ClientDropdown({
                       <span className="font-medium text-sm truncate">
                         {client.company || 'No Company'}
                       </span>
-                      {client.email && (
-                        <span className="text-xs text-gray-400 truncate">
-                          {client.email}
-                        </span>
-                      )}
                     </div>
                   </CommandItem>
                 ))}
