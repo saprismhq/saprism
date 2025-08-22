@@ -16,7 +16,7 @@ router.get('/', isAuthenticated, async (req: any, res) => {
     
     const clients = await prisma.client.findMany({
       where: { userId },
-      orderBy: { name: 'asc' },
+      orderBy: { company: 'asc' },
       include: {
         _count: {
           select: { meetings: true }
@@ -42,17 +42,18 @@ router.post('/', isAuthenticated, async (req: any, res) => {
     // Validate request body
     const validatedData = InsertClientSchema.parse(req.body);
     
-    // Check if client with same name already exists for this user
+    // Check if client with same company and contact name already exists for this user
     const existingClient = await prisma.client.findFirst({
       where: {
         userId,
+        company: validatedData.company,
         name: validatedData.name,
       }
     });
 
     if (existingClient) {
       return res.status(400).json({ 
-        message: 'A client with this name already exists' 
+        message: 'A client with this company and contact name already exists' 
       });
     }
 
@@ -63,7 +64,6 @@ router.post('/', isAuthenticated, async (req: any, res) => {
         userId,
         // Convert empty strings to null for optional fields
         email: validatedData.email || null,
-        company: validatedData.company || null,
         phone: validatedData.phone || null,
         industry: validatedData.industry || null,
         notes: validatedData.notes || null,

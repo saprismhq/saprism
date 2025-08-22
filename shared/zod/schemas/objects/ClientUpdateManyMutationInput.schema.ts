@@ -16,10 +16,9 @@ const Schema: z.ZodType<Prisma.ClientUpdateManyMutationInput> = z
     company: z
       .union([
         z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
+        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
       ])
-      .optional()
-      .nullable(),
+      .optional(),
     email: z
       .union([
         z.string(),

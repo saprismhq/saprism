@@ -7,7 +7,7 @@ const Schema: z.ZodType<Prisma.ClientCreateManyInput> = z
     id: z.number().optional(),
     userId: z.string(),
     name: z.string(),
-    company: z.string().optional().nullable(),
+    company: z.string(),
     email: z.string().optional().nullable(),
     phone: z.string().optional().nullable(),
     industry: z.string().optional().nullable(),

@@ -14,8 +14,8 @@ export type {
 export type Client = {
   id: number;
   userId: string;
-  name: string;
-  company: string | null;
+  name: string; // Contact person name
+  company: string; // Company name (now required)
   email: string | null;
   phone: string | null;
   industry: string | null;
@@ -54,8 +54,8 @@ export const UserSchema = z.object({
 export const ClientSchema = z.object({
   id: z.number(),
   userId: z.string(),
-  name: z.string(),
-  company: z.string().nullable(),
+  name: z.string(), // Contact person name
+  company: z.string(), // Company name (now required)
   email: z.string().email().nullable(),
   phone: z.string().nullable(),
   industry: z.string().nullable(),
@@ -65,8 +65,8 @@ export const ClientSchema = z.object({
 });
 
 export const InsertClientSchema = z.object({
-  name: z.string().min(1, "Client name is required"),
-  company: z.string().optional(),
+  company: z.string().min(1, "Company name is required"),
+  name: z.string().min(1, "Contact name is required"),
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   industry: z.string().optional(),

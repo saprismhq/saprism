@@ -99,10 +99,8 @@ export function Sidebar({
             Current Meeting
           </h3>
           <div className="text-sm">
-            <div className="font-medium text-gray-900">{selectedClient.name}</div>
-            {selectedClient.company && (
-              <div className="text-gray-600 text-xs">{selectedClient.company}</div>
-            )}
+            <div className="font-medium text-gray-900">{selectedClient.company || 'No Company'}</div>
+            <div className="text-gray-600 text-xs">Contact: {selectedClient.name}</div>
           </div>
         </div>
       )}
@@ -130,16 +128,14 @@ export function Sidebar({
                   <div className="flex items-start space-x-3">
                     <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-primary font-semibold text-lg">
-                        {selectedClient.name.charAt(0).toUpperCase()}
+                        {(selectedClient.company || selectedClient.name).charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {selectedClient.name}
+                        {selectedClient.company || 'No Company'}
                       </h3>
-                      {selectedClient.company && (
-                        <p className="text-sm text-gray-600 mt-1">{selectedClient.company}</p>
-                      )}
+                      <p className="text-sm text-gray-600 mt-1">Contact: {selectedClient.name}</p>
                     </div>
                   </div>
                 </div>

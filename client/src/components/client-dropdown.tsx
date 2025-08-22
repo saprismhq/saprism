@@ -60,8 +60,8 @@ export function ClientDropdown({
 
   // Filter clients based on search
   const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    (client.company && client.company.toLowerCase().includes(searchValue.toLowerCase()))
+    (client.company && client.company.toLowerCase().includes(searchValue.toLowerCase())) ||
+    client.name.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   return (
@@ -82,13 +82,11 @@ export function ClientDropdown({
             {selectedClient ? (
               <div className="flex flex-col items-start overflow-hidden">
                 <span className="font-medium text-sm truncate">
-                  {selectedClient.name}
+                  {selectedClient.company || 'No Company'}
                 </span>
-                {selectedClient.company && (
-                  <span className="text-xs text-gray-500 truncate">
-                    {selectedClient.company}
-                  </span>
-                )}
+                <span className="text-xs text-gray-500 truncate">
+                  Contact: {selectedClient.name}
+                </span>
               </div>
             ) : (
               <span className="text-gray-500">
@@ -152,13 +150,11 @@ export function ClientDropdown({
                     />
                     <div className="flex flex-col flex-1 min-w-0">
                       <span className="font-medium text-sm truncate">
-                        {client.name}
+                        {client.company || 'No Company'}
                       </span>
-                      {client.company && (
-                        <span className="text-xs text-gray-500 truncate">
-                          {client.company}
-                        </span>
-                      )}
+                      <span className="text-xs text-gray-500 truncate">
+                        Contact: {client.name}
+                      </span>
                       {client.email && (
                         <span className="text-xs text-gray-400 truncate">
                           {client.email}

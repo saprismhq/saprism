@@ -26,8 +26,8 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
   
   // Form state
   const [formData, setFormData] = useState<InsertClient>({
-    name: '',
     company: '',
+    name: '',
     email: '',
     phone: '',
     industry: '',
@@ -36,8 +36,8 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
   // Reset form when dialog opens/closes
   const resetForm = () => {
     setFormData({
-      name: '',
       company: '',
+      name: '',
       email: '',
       phone: '',
       industry: '',
@@ -66,7 +66,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
       // Show success message
       toast({
         title: 'Success',
-        description: `Client "${newClient.name}" has been created successfully.`,
+        description: `Client "${newClient.company || newClient.name}" has been created successfully.`,
       });
       
       // Close dialog and reset form
@@ -99,10 +99,19 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
     e.preventDefault();
     
     // Basic validation
+    if (!formData.company.trim()) {
+      toast({
+        title: 'Validation Error',
+        description: 'Company name is required.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (!formData.name.trim()) {
       toast({
         title: 'Validation Error',
-        description: 'Client name is required.',
+        description: 'Contact name is required.',
         variant: 'destructive',
       });
       return;
@@ -141,10 +150,25 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Client Name - Required */}
+          {/* Company Name - Required */}
+          <div>
+            <Label htmlFor="clientCompany">
+              Company Name <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="clientCompany"
+              value={formData.company}
+              onChange={(e) => handleInputChange('company', e.target.value)}
+              placeholder="Acme Corp"
+              required
+              disabled={createClientMutation.isPending}
+            />
+          </div>
+
+          {/* Contact Name - Required */}
           <div>
             <Label htmlFor="clientName">
-              Client Name <span className="text-red-500">*</span>
+              Contact Name <span className="text-red-500">*</span>
             </Label>
             <Input
               id="clientName"
@@ -152,18 +176,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder="John Smith"
               required
-              disabled={createClientMutation.isPending}
-            />
-          </div>
-
-          {/* Company */}
-          <div>
-            <Label htmlFor="clientCompany">Company</Label>
-            <Input
-              id="clientCompany"
-              value={formData.company}
-              onChange={(e) => handleInputChange('company', e.target.value)}
-              placeholder="Acme Corp"
               disabled={createClientMutation.isPending}
             />
           </div>
@@ -220,7 +232,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
             </Button>
             <Button
               type="submit"
-              disabled={!formData.name.trim() || createClientMutation.isPending}
+              disabled={!formData.company.trim() || !formData.name.trim() || createClientMutation.isPending}
               className="bg-primary hover:bg-primary/90"
             >
               {createClientMutation.isPending ? 'Creating...' : 'Create Client'}
