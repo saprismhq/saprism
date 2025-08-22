@@ -84,9 +84,6 @@ export function ClientDropdown({
                 <span className="font-medium text-sm truncate">
                   {selectedClient.company || 'No Company'}
                 </span>
-                <span className="text-xs text-gray-500 truncate">
-                  Contact: {selectedClient.name}
-                </span>
               </div>
             ) : (
               <span className="text-gray-500">
@@ -151,9 +148,6 @@ export function ClientDropdown({
                     <div className="flex flex-col flex-1 min-w-0">
                       <span className="font-medium text-sm truncate">
                         {client.company || 'No Company'}
-                      </span>
-                      <span className="text-xs text-gray-500 truncate">
-                        Contact: {client.name}
                       </span>
                       {client.email && (
                         <span className="text-xs text-gray-400 truncate">

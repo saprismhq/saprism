@@ -12,6 +12,9 @@ interface RecentMeetingsListProps {
   activeMeetingId: number | null;
   onSelectMeeting: (meetingId: number) => void;
   className?: string;
+  selectedContactFilter?: string | null;
+  onContactFilter?: (contactName: string | null) => void;
+  compact?: boolean;
 }
 
 /**
@@ -23,7 +26,10 @@ export function RecentMeetingsList({
   selectedClient, 
   activeMeetingId, 
   onSelectMeeting,
-  className 
+  className,
+  selectedContactFilter,
+  onContactFilter,
+  compact = false
 }: RecentMeetingsListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -98,6 +104,14 @@ export function RecentMeetingsList({
     deleteMeetingMutation.mutate(meetingId);
   };
 
+  // Extract unique contact names from meetings
+  const uniqueContacts = Array.from(new Set(meetings.map(m => m.clientName).filter(Boolean)));
+
+  // Filter meetings by contact if a filter is selected
+  const filteredMeetings = selectedContactFilter 
+    ? meetings.filter(meeting => meeting.clientName === selectedContactFilter)
+    : meetings;
+
   // Show empty state when no client is selected
   if (!selectedClient) {
     return (
@@ -158,7 +172,7 @@ export function RecentMeetingsList({
           Recent Meetings
         </h3>
         <div className="text-center py-8 text-gray-400">
-          <p className="text-sm">No meetings found for {selectedClient.name}</p>
+          <p className="text-sm">No meetings found for {selectedClient.company}</p>
           <p className="text-xs mt-1">Create a new meeting to get started</p>
         </div>
       </div>
@@ -167,13 +181,70 @@ export function RecentMeetingsList({
 
   return (
     <div className={className}>
-      <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-        Recent Meetings
-      </h3>
+      {!compact && (
+        <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+          Recent Meetings
+        </h3>
+      )}
       
-      <div className="space-y-1 max-h-72 overflow-y-auto">
-        {meetings.slice(0, 10).map((meeting) => (
-          <div
+      {/* Contact Filter Buttons */}
+      {!compact && uniqueContacts.length > 0 && (
+        <div className="mb-3">
+          <div className="flex flex-wrap gap-1 mb-2">
+            <button
+              onClick={() => onContactFilter?.(null)}
+              className={`px-2 py-1 text-xs rounded-full transition-colors ${
+                !selectedContactFilter 
+                  ? 'bg-primary text-white' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All
+            </button>
+            {uniqueContacts.map((contact) => (
+              <button
+                key={contact}
+                onClick={() => onContactFilter?.(contact)}
+                className={`px-2 py-1 text-xs rounded-full transition-colors ${
+                  selectedContactFilter === contact 
+                    ? 'bg-primary text-white' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {contact}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Compact mode: just show contact buttons for selection */}
+      {compact && uniqueContacts.length > 0 && (
+        <div className="space-y-1">
+          {uniqueContacts.map((contact) => (
+            <button
+              key={contact}
+              onClick={() => onContactFilter?.(contact)}
+              className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
+                selectedContactFilter === contact 
+                  ? 'bg-primary/10 text-primary border border-primary/20' 
+                  : 'hover:bg-gray-100 text-gray-700'
+              }`}
+            >
+              <div className="font-medium">{contact}</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {meetings.filter(m => m.clientName === contact).length} meeting{meetings.filter(m => m.clientName === contact).length !== 1 ? 's' : ''}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+      
+      {/* Meeting List */}
+      {!compact && (
+        <div className="space-y-1 max-h-72 overflow-y-auto">
+          {filteredMeetings.slice(0, 10).map((meeting) => (
+            <div
             key={meeting.id}
             className={`relative group rounded-lg transition-colors ${
               meeting.id === activeMeetingId
@@ -230,13 +301,21 @@ export function RecentMeetingsList({
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
       
-      {meetings.length > 10 && (
+      {!compact && filteredMeetings.length > 10 && (
         <div className="text-xs text-gray-400 text-center mt-2">
-          Showing 10 of {meetings.length} meetings
+          Showing 10 of {filteredMeetings.length} meetings
+          {selectedContactFilter && ` for ${selectedContactFilter}`}
+        </div>
+      )}
+
+      {!compact && filteredMeetings.length === 0 && selectedContactFilter && (
+        <div className="text-center py-4 text-gray-400">
+          <p className="text-sm">No meetings found for {selectedContactFilter}</p>
         </div>
       )}
     </div>

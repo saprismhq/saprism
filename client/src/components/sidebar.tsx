@@ -37,6 +37,8 @@ export function Sidebar({
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showNewClientDialog, setShowNewClientDialog] = useState(false);
   const [selectedDealType, setSelectedDealType] = useState<DealType>("Connect");
+  const [selectedContactFilter, setSelectedContactFilter] = useState<string | null>(null);
+  const [contactName, setContactName] = useState("");
 
   // Query system status
   const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
@@ -44,6 +46,7 @@ export function Sidebar({
   // Handle client selection
   const handleClientSelect = (client: Client | null) => {
     setSelectedClient(client);
+    setSelectedContactFilter(null); // Reset contact filter when client changes
   };
 
   // Handle new client creation
@@ -59,17 +62,17 @@ export function Sidebar({
 
   // Handle meeting creation
   const handleCreateMeeting = () => {
-    if (selectedClient) {
-      // Use selected client data
+    if (selectedClient && contactName.trim()) {
       onCreateMeeting({
-        clientName: selectedClient.name,
+        clientName: contactName.trim(),
         clientCompany: selectedClient.company || "",
         clientId: selectedClient.id,
         dealType: selectedDealType,
       });
       setShowCreateDialog(false);
-      // Reset deal type for next meeting
+      // Reset form
       setSelectedDealType("Connect");
+      setContactName("");
     }
   };
 
@@ -92,16 +95,20 @@ export function Sidebar({
         />
       </div>
 
-      {/* Current Meeting Section */}
+      {/* Contact Selection Section */}
       {selectedClient && (
-        <div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
+        <div className="px-6 py-3 border-b border-gray-100">
           <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-            Current Meeting
+            {selectedClient.company || 'No Company'}
           </h3>
-          <div className="text-sm">
-            <div className="font-medium text-gray-900">{selectedClient.company || 'No Company'}</div>
-            <div className="text-gray-600 text-xs">Contact: {selectedClient.name}</div>
-          </div>
+          <RecentMeetingsList
+            selectedClient={selectedClient}
+            activeMeetingId={activeMeetingId}
+            onSelectMeeting={onSelectMeeting}
+            selectedContactFilter={selectedContactFilter}
+            onContactFilter={setSelectedContactFilter}
+            compact={true}
+          />
         </div>
       )}
 
@@ -135,7 +142,6 @@ export function Sidebar({
                       <h3 className="text-lg font-semibold text-gray-900 truncate">
                         {selectedClient.company || 'No Company'}
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">Contact: {selectedClient.name}</p>
                     </div>
                   </div>
                 </div>
@@ -150,6 +156,25 @@ export function Sidebar({
                       Please select a client from the dropdown above to create a meeting.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Contact Name Input */}
+              {selectedClient && (
+                <div className="space-y-3">
+                  <Label htmlFor="contactName" className="text-sm font-medium text-gray-700">
+                    Contact Name *
+                  </Label>
+                  <Input
+                    id="contactName"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    placeholder="John Smith"
+                    className="h-12 text-base"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enter the name of the person you're meeting with
+                  </p>
                 </div>
               )}
 
@@ -179,7 +204,7 @@ export function Sidebar({
 
               <Button
                 onClick={handleCreateMeeting}
-                disabled={!selectedClient || createMeetingLoading}
+                disabled={!selectedClient || !contactName.trim() || createMeetingLoading}
                 className="w-full bg-primary hover:bg-primary/90 h-12 text-base font-medium"
               >
                 {createMeetingLoading ? "Creating..." : "Create Meeting"}
@@ -195,6 +220,8 @@ export function Sidebar({
           selectedClient={selectedClient}
           activeMeetingId={activeMeetingId}
           onSelectMeeting={onSelectMeeting}
+          selectedContactFilter={selectedContactFilter}
+          onContactFilter={setSelectedContactFilter}
         />
       </nav>
 
