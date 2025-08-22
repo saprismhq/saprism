@@ -218,27 +218,7 @@ export function RecentMeetingsList({
         </div>
       )}
 
-      {/* Compact mode: just show contact buttons for selection */}
-      {compact && uniqueContacts.length > 0 && (
-        <div className="space-y-1">
-          {uniqueContacts.map((contact) => (
-            <button
-              key={contact}
-              onClick={() => onContactFilter?.(contact)}
-              className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
-                selectedContactFilter === contact 
-                  ? 'bg-primary/10 text-primary border border-primary/20' 
-                  : 'hover:bg-gray-100 text-gray-700'
-              }`}
-            >
-              <div className="font-medium">{contact}</div>
-              <div className="text-xs text-gray-500 mt-1">
-                {meetings.filter(m => m.clientName === contact).length} meeting{meetings.filter(m => m.clientName === contact).length !== 1 ? 's' : ''}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+
       
       {/* Meeting List */}
       {!compact && (

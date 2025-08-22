@@ -95,20 +95,16 @@ export function Sidebar({
         />
       </div>
 
-      {/* Contact Selection Section */}
+      {/* Current Meeting Section */}
       {selectedClient && (
-        <div className="px-6 py-3 border-b border-gray-100">
+        <div className="px-6 py-3 border-b border-gray-100 bg-gray-50">
           <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
-            {selectedClient.company || 'No Company'}
+            Current Meeting
           </h3>
-          <RecentMeetingsList
-            selectedClient={selectedClient}
-            activeMeetingId={activeMeetingId}
-            onSelectMeeting={onSelectMeeting}
-            selectedContactFilter={selectedContactFilter}
-            onContactFilter={setSelectedContactFilter}
-            compact={true}
-          />
+          <div className="text-sm">
+            <div className="font-medium text-gray-900">{selectedClient.company || 'No Company'}</div>
+            <div className="text-gray-600 text-xs">Selected Client</div>
+          </div>
         </div>
       )}
 
