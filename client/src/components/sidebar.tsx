@@ -103,7 +103,6 @@ export function Sidebar({
           </h3>
           <div className="text-sm">
             <div className="font-medium text-gray-900">{selectedClient.company || 'No Company'}</div>
-            <div className="text-gray-600 text-xs">Selected Client</div>
           </div>
         </div>
       )}
