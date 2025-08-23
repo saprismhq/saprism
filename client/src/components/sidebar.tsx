@@ -201,10 +201,10 @@ export function Sidebar({
                       {existingContacts.map((contact: string) => (
                         <Button
                           key={contact}
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => setContactName(contact)}
-                          className="h-6 px-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                          className="h-7 px-3 text-xs border-gray-300 text-gray-700 hover:bg-primary hover:text-white hover:border-primary"
                         >
                           {contact}
                         </Button>
