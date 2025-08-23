@@ -125,10 +125,12 @@ export class TranscriptionService {
 
     } catch (error) {
       console.error(`Transcription error for session ${sessionId}:`, error);
+      // Don't broadcast minor transcription errors to avoid UI disruption
+      console.log(`Skipping transcription error broadcast for session ${sessionId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       this.broadcastToSession(sessionId, {
-        type: 'transcription_error',
+        type: 'transcription_error', 
         sessionId,
-        error: 'Failed to process audio chunk'
+        error: 'Audio processing error - continuing...'
       });
     }
   }

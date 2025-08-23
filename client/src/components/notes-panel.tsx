@@ -308,13 +308,19 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
       clearTimeout(analysisDebounce);
     }
 
-    // Set new debounce for analysis - faster trigger and immediate feedback
+    // Set new debounce for analysis - skip for live transcription to prevent delays
     if (value.trim().length > 30 && meeting?.id) {
-      const timeout = setTimeout(() => {
-        console.log("Triggering AI analysis for content:", value.substring(0, 100) + "...");
-        analyzeNotesMutation.mutate({ content: value, meetingId: meeting.id });
-      }, 800); // Reduced from 1500ms to 800ms for much faster response
-      setAnalysisDebounce(timeout);
+      // Skip AI analysis for live transcription updates to maintain real-time performance
+      const isLiveTranscription = value.includes('--- Live Transcription ---') || 
+                                  value.includes('**Live Call Notes:**');
+      
+      if (!isLiveTranscription) {
+        const timeout = setTimeout(() => {
+          console.log("Triggering AI analysis for content:", value.substring(0, 100) + "...");
+          analyzeNotesMutation.mutate({ content: value, meetingId: meeting.id });
+        }, 800);
+        setAnalysisDebounce(timeout);
+      }
     }
   };
 
