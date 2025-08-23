@@ -27,6 +27,9 @@ export function useTranscriptionWebSocket({
   const [accumulatedText, setAccumulatedText] = useState('');
   const wsRef = useRef<WebSocket | null>(null);
   const sessionIdRef = useRef<string | null>(null);
+  
+  // Expose wsRef for audio data sending
+  (window as any).transcriptionWsRef = wsRef;
 
   const connect = useCallback(() => {
     // Prevent multiple connections

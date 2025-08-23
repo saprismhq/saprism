@@ -27,6 +27,23 @@ interface CallInterfaceProps {
   onTranscriptionUpdate?: (text: string) => void;
 }
 
+// Helper function to format transcription into bullet-point notes
+function formatTranscriptionAsNotes(rawTranscription: string): string {
+  if (!rawTranscription) return '';
+  
+  // Split by sentences and format as bullet points
+  const sentences = rawTranscription
+    .replace(/\[\d{2}:\d{2}:\d{2}\]/g, '') // Remove timestamps
+    .split(/[.!?]+/)
+    .filter(sentence => sentence.trim().length > 10)
+    .map(sentence => sentence.trim());
+  
+  // Group related sentences and create bullet points
+  const bulletPoints = sentences.map(sentence => `• ${sentence}`);
+  
+  return `**Live Call Notes:**\n\n${bulletPoints.join('\n')}`;
+}
+
 export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscriptionUpdate }: CallInterfaceProps) {
   const { toast } = useToast();
   const { callService, sessionService } = useServices();
@@ -55,11 +72,15 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
   } = useTranscriptionWebSocket({
     onTranscriptionChunk: (text, accumulatedText) => {
       console.log('Transcription chunk received:', text);
-      onTranscriptionUpdate?.(accumulatedText);
+      // Format transcription as bullet-point notes
+      const formattedNotes = formatTranscriptionAsNotes(accumulatedText);
+      onTranscriptionUpdate?.(formattedNotes);
     },
     onTranscriptionComplete: (finalText, meetingId) => {
       console.log('Transcription completed:', finalText);
-      onTranscriptionUpdate?.(finalText);
+      // Format final transcription as structured notes
+      const formattedNotes = formatTranscriptionAsNotes(finalText);
+      onTranscriptionUpdate?.(formattedNotes);
       toast({
         title: "Transcription Complete",
         description: "Call transcription has been finalized and added to notes",
@@ -159,40 +180,79 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         }]);
       }, 3000);
 
-      // Simulate demo transcription chunks over time with proper accumulation
-      const demoTranscripts = [
-        "[12:30:15] Hello, thank you for joining the call today.",
-        "[12:30:18] How are you doing? I hope you're having a great day.",
-        "[12:30:25] Let's talk about your current challenges and how we can help.",
-        "[12:30:32] I understand you're looking for a solution that can scale with your business.",
-        "[12:30:40] Our platform offers exactly what you need - reliability and growth potential.",
-        "[12:30:48] What specific pain points are you experiencing right now?",
-        "[12:30:55] That's a common challenge many of our clients face initially.",
-        "[12:31:03] We can definitely address that with our enterprise features.",
-        "[12:31:10] The implementation typically takes 2-3 weeks depending on complexity.",
-        "[12:31:18] What's your timeline for getting this implemented?"
-      ];
-
-      // Create accumulated transcription with proper closure handling
-      const simulateTranscription = (index: number) => {
-        if (index >= demoTranscripts.length) return;
+      // Start real audio capture and transcription
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            sampleRate: 16000
+          } 
+        });
         
-        setTimeout(() => {
-          // Build accumulated text up to current index
-          const accumulatedText = demoTranscripts.slice(0, index + 1).join('\n');
-          console.log('Demo transcription update:', accumulatedText);
-          
-          if (onTranscriptionUpdate) {
-            onTranscriptionUpdate(accumulatedText);
+        // Set up MediaRecorder for audio capture
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'audio/webm;codecs=opus'
+        });
+        
+        let audioChunks: BlobPart[] = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
           }
-          
-          // Schedule next transcription
-          simulateTranscription(index + 1);
-        }, index === 0 ? 3000 : 4000); // First after 3s, then every 4s
-      };
-      
-      // Start the simulation
-      simulateTranscription(0);
+        };
+        
+        mediaRecorder.onstop = async () => {
+          if (audioChunks.length > 0) {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            // Send audio to transcription service via WebSocket
+            if (transcriptionConnected && transcriptionSessionId) {
+              try {
+                const arrayBuffer = await audioBlob.arrayBuffer();
+                // Send binary audio data to WebSocket
+                const transcriptionWs = (window as any).transcriptionWsRef?.current;
+                if (transcriptionWs?.readyState === WebSocket.OPEN) {
+                  transcriptionWs.send(arrayBuffer);
+                }
+              } catch (error) {
+                console.error('Error sending audio data:', error);
+              }
+            }
+            audioChunks = [];
+          }
+        };
+        
+        // Record audio in 3-second chunks
+        const recordingInterval = setInterval(() => {
+          if (mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            setTimeout(() => {
+              if (mediaRecorder.state === 'inactive') {
+                mediaRecorder.start();
+              }
+            }, 100);
+          }
+        }, 3000);
+        
+        // Start recording
+        mediaRecorder.start();
+        
+        console.log('Real audio transcription started');
+        
+        // Store references for cleanup
+        (window as any).currentMediaRecorder = mediaRecorder;
+        (window as any).currentRecordingInterval = recordingInterval;
+        (window as any).currentAudioStream = stream;
+        
+      } catch (error) {
+        console.error('Error accessing microphone:', error);
+        toast({
+          title: "Microphone Access Required",
+          description: "Please allow microphone access for real-time transcription",
+          variant: "destructive",
+        });
+      }
 
       toast({
         title: "Call Started (Demo Mode)",
@@ -212,16 +272,36 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
 
   const handleEndCall = async () => {
     try {
+      // Stop audio recording and clean up
+      const mediaRecorder = (window as any).currentMediaRecorder;
+      const recordingInterval = (window as any).currentRecordingInterval;
+      const audioStream = (window as any).currentAudioStream;
+      
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+      
+      if (recordingInterval) {
+        clearInterval(recordingInterval);
+      }
+      
+      if (audioStream) {
+        audioStream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+      }
+      
+      // Clean up global references
+      delete (window as any).currentMediaRecorder;
+      delete (window as any).currentRecordingInterval;
+      delete (window as any).currentAudioStream;
+      
       // End transcription if active
       if (transcriptionSessionId && isTranscribing) {
         endTranscription();
         setTranscriptionSessionId(null);
       }
 
-      // Demo mode - simulate ending call
-      setCurrentSession(null);
-      
       // Reset state
+      setCurrentSession(null);
       setIsConnected(false);
       setParticipants([]);
       setIsMuted(false);
@@ -229,8 +309,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
       setIsScreenSharing(false);
       
       toast({
-        title: "Call Ended (Demo Mode)",
-        description: "Demo call has been disconnected",
+        title: "Call Ended",
+        description: "Call transcription has been saved to your notes",
       });
     } catch (error) {
       console.error('Failed to end call:', error);
