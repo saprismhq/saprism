@@ -50,7 +50,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
     isConnected: transcriptionConnected,
     isTranscribing,
     startTranscription,
-    endTranscription
+    endTranscription,
+    connect: connectTranscription
   } = useTranscriptionWebSocket({
     onTranscriptionChunk: (text, accumulatedText) => {
       console.log('Transcription chunk received:', text);
@@ -66,11 +67,14 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
     },
     onError: (error) => {
       console.error('Transcription error:', error);
-      toast({
-        title: "Transcription Error",
-        description: error,
-        variant: "destructive",
-      });
+      // Only show toast if we're connected to a call
+      if (isConnected) {
+        toast({
+          title: "Transcription Error",
+          description: error,
+          variant: "destructive",
+        });
+      }
     }
   });
 
@@ -125,8 +129,11 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         startedAt: new Date()
       });
 
-      // Start transcription
-      if (transcriptionConnected && meeting.id) {
+      // Connect and start transcription
+      connectTranscription();
+      
+      // Wait a moment for connection then start transcription
+      setTimeout(() => {
         const success = startTranscription(sessionId, meeting.id, 'demo-user');
         if (success) {
           setTranscriptionSessionId(sessionId);
@@ -135,7 +142,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
             description: "Real-time transcription is now active",
           });
         }
-      }
+      }, 1000);
 
       // Add a demo participant after a short delay
       setTimeout(() => {

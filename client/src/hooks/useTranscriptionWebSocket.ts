@@ -29,7 +29,10 @@ export function useTranscriptionWebSocket({
   const sessionIdRef = useRef<string | null>(null);
 
   const connect = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    // Prevent multiple connections
+    if (wsRef.current?.readyState === WebSocket.OPEN || wsRef.current?.readyState === WebSocket.CONNECTING) {
+      return;
+    }
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws/transcription`;
@@ -76,7 +79,10 @@ export function useTranscriptionWebSocket({
             case 'transcription_error':
             case 'error':
               console.error('Transcription error:', message.error);
-              onError?.(message.error || 'Transcription error occurred');
+              // Only show error if we're actually transcribing
+              if (isTranscribing) {
+                onError?.(message.error || 'Transcription error occurred');
+              }
               break;
               
             default:
@@ -95,14 +101,17 @@ export function useTranscriptionWebSocket({
 
       wsRef.current.onerror = (error) => {
         console.error('Transcription WebSocket error:', error);
-        onError?.('WebSocket connection error');
+        // Only show error if we're actively trying to transcribe
+        if (isTranscribing) {
+          onError?.('WebSocket connection error');
+        }
       };
 
     } catch (error) {
       console.error('Failed to create transcription WebSocket:', error);
-      onError?.('Failed to connect to transcription service');
+      // Don't show error on initial connection attempt
     }
-  }, [onTranscriptionChunk, onTranscriptionComplete, onError]);
+  }, [onTranscriptionChunk, onTranscriptionComplete, onError, isTranscribing]);
 
   const disconnect = useCallback(() => {
     if (wsRef.current) {
@@ -166,11 +175,10 @@ export function useTranscriptionWebSocket({
     }));
   }, []);
 
-  // Auto-connect when hook is used
+  // Only connect when explicitly needed, not automatically
   useEffect(() => {
-    connect();
     return () => disconnect();
-  }, [connect, disconnect]);
+  }, [disconnect]);
 
   return {
     isConnected,
