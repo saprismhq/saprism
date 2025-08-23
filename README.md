@@ -1,6 +1,39 @@
-# Salespring - AI-Powered Sales Coaching Platform
+<div align="center">
 
-An intelligent sales enablement platform that transforms sales team performance through AI-driven insights, real-time coaching, and comprehensive analytics.
+# 🌱 Salespring
+### *AI-Powered Sales Coaching Platform*
+
+*Transform your sales team performance through intelligent coaching, real-time insights, and seamless CRM integration*
+
+---
+
+[![Made with React](https://img.shields.io/badge/React-18.2-61dafb?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-4.18-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169e1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.0-2d3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+[![Salesforce](https://img.shields.io/badge/Salesforce-Integration-00a1e0?style=for-the-badge&logo=salesforce&logoColor=white)](https://www.salesforce.com/)
+
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-06b6d4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-4.4-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Replit](https://img.shields.io/badge/Deployed%20on-Replit-f26207?style=for-the-badge&logo=replit&logoColor=white)](https://replit.com/)
+
+---
+
+### 🚀 **Core Features**
+🤖 **AI-Powered Analytics** • 📝 **Rich Text Notes** • 🔗 **CRM Integration** • 📞 **Real-time Transcription**
+
+### 🛠️ **Tech Stack**
+<img src="https://skillicons.dev/icons?i=react,typescript,nodejs,express,postgres,prisma,tailwind,vite,docker" />
+
+---
+
+</div>
+
+An intelligent sales enablement platform that transforms sales team performance through AI-driven insights, real-time coaching, and comprehensive CRM integration.
 
 ## Features
 
