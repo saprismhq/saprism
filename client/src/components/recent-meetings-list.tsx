@@ -222,7 +222,7 @@ export function RecentMeetingsList({
       
       {/* Meeting List */}
       {!compact && (
-        <div className="space-y-1 max-h-72 overflow-y-auto">
+        <div className="space-y-1">
           {filteredMeetings.slice(0, 10).map((meeting) => (
             <div
             key={meeting.id}
