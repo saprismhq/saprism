@@ -1,0 +1,65 @@
+export default {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      useESM: true,
+    }],
+  },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/client/src/$1',
+    '^@shared/(.*)$': '<rootDir>/shared/$1',
+    '^@server/(.*)$': '<rootDir>/server/$1',
+  },
+  setupFilesAfterEnv: [
+    '<rootDir>/test/setup.ts',
+  ],
+  collectCoverageFrom: [
+    'server/**/*.{ts,tsx}',
+    'client/src/**/*.{ts,tsx}',
+    'shared/schema.ts',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/build/**',
+    '!**/coverage/**',
+    '!**/*.config.{js,ts}',
+    '!**/test/**',
+    '!**/__tests__/**',
+    '!**/*.test.{js,ts,tsx}',
+    '!**/*.spec.{js,ts,tsx}',
+    '!**/shared/zod/**',
+    '!**/shared/zod/schemas/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
+  testMatch: [
+    '<rootDir>/test/**/*.test.{js,ts,tsx}',
+    '<rootDir>/server/**/*.test.{js,ts,tsx}',
+    '<rootDir>/client/src/**/*.test.{js,ts,tsx}',
+    '<rootDir>/shared/**/*.test.{js,ts,tsx}',
+  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/build/',
+    '/coverage/',
+    '/shared/zod/',
+  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  testEnvironmentOptions: {
+    url: 'http://localhost',
+  },
+  clearMocks: true,
+  restoreMocks: true,
+  resetMocks: true,
+};

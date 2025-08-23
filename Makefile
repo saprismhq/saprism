@@ -1,6 +1,6 @@
 # Salespring Development Makefile
 
-.PHONY: help dev-setup dev-cleanup dev-services dev-services-stop dev-services-logs dev build start install db-push
+.PHONY: help dev-setup dev-cleanup dev-services dev-services-stop dev-services-logs dev build start install db-push test test-watch test-coverage test-unit test-integration test-e2e
 
 # Default target
 help:
@@ -19,6 +19,14 @@ help:
 	@echo "  make build          - Build for production"
 	@echo "  make start          - Start production server"
 	@echo "  make db-push        - Push database schema changes"
+	@echo ""
+	@echo "Testing:"
+	@echo "  make test           - Run all tests"
+	@echo "  make test-watch     - Run tests in watch mode"
+	@echo "  make test-coverage  - Run tests with coverage report"
+	@echo "  make test-unit      - Run unit tests only"
+	@echo "  make test-integration - Run integration tests only"
+	@echo "  make test-e2e       - Run end-to-end tests only"
 	@echo ""
 	@echo "Quick Start:"
 	@echo "  make dev-setup && make install && make db-push && make dev"
@@ -65,6 +73,31 @@ start:
 db-push:
 	@echo "📊 Pushing database schema..."
 	npx prisma db push
+
+# Testing commands
+test:
+	@echo "🧪 Running all tests..."
+	npm run test
+
+test-watch:
+	@echo "👀 Running tests in watch mode..."
+	npm run test:watch
+
+test-coverage:
+	@echo "📊 Running tests with coverage..."
+	npm run test:coverage
+
+test-unit:
+	@echo "🔬 Running unit tests..."
+	npm run test:unit
+
+test-integration:
+	@echo "🔗 Running integration tests..."
+	npm run test:integration
+
+test-e2e:
+	@echo "🌐 Running end-to-end tests..."
+	npm run test:e2e
 
 # Quick development workflow
 quick-start: dev-setup install db-push
