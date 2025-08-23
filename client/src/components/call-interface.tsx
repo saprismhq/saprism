@@ -47,6 +47,7 @@ function formatTranscriptionAsNotes(rawTranscription: string): string {
     return null;
   }).filter(Boolean);
   
+  // Return with proper line breaks: each bullet point on its own line
   return bulletPoints.join('\n');
 }
 

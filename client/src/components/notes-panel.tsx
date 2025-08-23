@@ -77,6 +77,7 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
         const headerIndex = noteContent.indexOf('--- Live Transcription ---');
         if (headerIndex !== -1) {
           const beforeHeader = noteContent.substring(0, headerIndex);
+          // Format with proper line breaks: header on one line, bullet points below
           updatedContent = beforeHeader + '--- Live Transcription ---\n\n' + transcriptionText;
         } else {
           updatedContent = noteContent + '\n\n--- Live Transcription ---\n\n' + transcriptionText;
