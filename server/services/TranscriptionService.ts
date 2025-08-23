@@ -92,12 +92,14 @@ export class TranscriptionService {
       // Convert to WAV format (simplified - in production you'd use proper audio conversion)
       createWriteStream(tempFilePath).write(combinedBuffer);
 
-      // Process with OpenAI Whisper
+      // Process with OpenAI Whisper with improved settings for better quality
       const transcription = await this.openai.audio.transcriptions.create({
         file: createReadStream(tempFilePath),
         model: 'whisper-1',
         language: 'en',
-        response_format: 'text'
+        response_format: 'text',
+        temperature: 0.2, // Lower temperature for more consistent results
+        prompt: 'This is a business sales meeting conversation. Please transcribe clearly and accurately.' // Context hint for better accuracy
       });
 
       // Clean up temp file

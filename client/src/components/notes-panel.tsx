@@ -64,8 +64,25 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
   // Handle transcription text updates
   useEffect(() => {
     if (transcriptionText && transcriptionText !== noteContent) {
-      const separator = noteContent.trim() ? '\n\n--- Live Transcription ---\n' : '';
-      const updatedContent = noteContent + separator + transcriptionText;
+      // Check if we need to add the header (only add once)
+      const needsHeader = !noteContent.includes('--- Live Transcription ---');
+      const header = needsHeader ? (noteContent.trim() ? '\n\n--- Live Transcription ---\n\n' : '--- Live Transcription ---\n\n') : '';
+      
+      // If header exists, replace the transcription section, otherwise append
+      let updatedContent;
+      if (needsHeader) {
+        updatedContent = noteContent + header + transcriptionText;
+      } else {
+        // Replace existing transcription content after the header
+        const headerIndex = noteContent.indexOf('--- Live Transcription ---');
+        if (headerIndex !== -1) {
+          const beforeHeader = noteContent.substring(0, headerIndex);
+          updatedContent = beforeHeader + '--- Live Transcription ---\n\n' + transcriptionText;
+        } else {
+          updatedContent = noteContent + '\n\n--- Live Transcription ---\n\n' + transcriptionText;
+        }
+      }
+      
       setNoteContent(updatedContent);
       setShowTranscriptionBanner(true);
       

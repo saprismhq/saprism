@@ -27,21 +27,27 @@ interface CallInterfaceProps {
   onTranscriptionUpdate?: (text: string) => void;
 }
 
-// Helper function to format transcription into bullet-point notes
+// Helper function to format transcription into clean bullet-point notes
 function formatTranscriptionAsNotes(rawTranscription: string): string {
   if (!rawTranscription) return '';
   
-  // Split by sentences and format as bullet points
-  const sentences = rawTranscription
-    .replace(/\[\d{2}:\d{2}:\d{2}\]/g, '') // Remove timestamps
-    .split(/[.!?]+/)
-    .filter(sentence => sentence.trim().length > 10)
-    .map(sentence => sentence.trim());
+  // Parse the accumulated transcription text and format as clean bullet points
+  const lines = rawTranscription
+    .split('\n')
+    .filter(line => line.trim() && line.includes(']')) // Only lines with timestamps
+    .map(line => line.trim());
   
-  // Group related sentences and create bullet points
-  const bulletPoints = sentences.map(sentence => `• ${sentence}`);
+  // Convert timestamp lines to bullet points, filtering out empty or meaningless text
+  const bulletPoints = lines.map(line => {
+    // Extract the text after the timestamp
+    const match = line.match(/\[(\d{1,2}:\d{2}:\d{2}\s*[AP]M)\]\s*(.+)/);
+    if (match && match[2] && match[2].trim() && match[2].trim().length > 2) {
+      return `• [${match[1]}] ${match[2].trim()}`;
+    }
+    return null;
+  }).filter(Boolean);
   
-  return `**Live Call Notes:**\n\n${bulletPoints.join('\n')}`;
+  return bulletPoints.join('\n');
 }
 
 export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscriptionUpdate }: CallInterfaceProps) {
@@ -255,7 +261,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
           }
         };
         
-        // Record audio in 3-second chunks
+        // Record audio in 6-second chunks for better transcription quality
         const recordingInterval = setInterval(() => {
           console.log('Recording interval triggered, mediaRecorder state:', mediaRecorder.state);
           if (mediaRecorder.state === 'recording') {
@@ -268,7 +274,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
               }
             }, 100);
           }
-        }, 3000);
+        }, 6000); // Longer chunks for better transcription accuracy
         
         // Start recording
         mediaRecorder.start();
