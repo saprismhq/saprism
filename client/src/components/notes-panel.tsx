@@ -12,13 +12,15 @@ import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 interface NotesPanelProps {
   meeting: MeetingWithNotes | undefined;
   isLoading: boolean;
+  transcriptionText?: string;
 }
 
-export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
+export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanelProps) {
   const { toast } = useToast();
   const [noteContent, setNoteContent] = useState("");
   const [lastAnalysis, setLastAnalysis] = useState<AIAnalysisResult | null>(null);
   const [analysisDebounce, setAnalysisDebounce] = useState<NodeJS.Timeout | null>(null);
+  const [showTranscriptionBanner, setShowTranscriptionBanner] = useState(false);
 
   // Auto-save functionality
   const [autoSaveTimeout, setAutoSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -58,6 +60,19 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
     }
     setPreviousMeetingId(meeting?.id || null);
   }, [meeting?.id]);
+
+  // Handle transcription text updates
+  useEffect(() => {
+    if (transcriptionText && transcriptionText !== noteContent) {
+      const separator = noteContent.trim() ? '\n\n--- Live Transcription ---\n' : '';
+      const updatedContent = noteContent + separator + transcriptionText;
+      setNoteContent(updatedContent);
+      setShowTranscriptionBanner(true);
+      
+      // Auto-hide banner after 3 seconds
+      setTimeout(() => setShowTranscriptionBanner(false), 3000);
+    }
+  }, [transcriptionText]);
 
   // Update note content when meeting changes and reset mutation states
   useEffect(() => {
@@ -384,6 +399,18 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
           </div>
       </header>
 
+      {/* Transcription Banner */}
+      {showTranscriptionBanner && (
+        <div className="bg-green-50 border-l-4 border-green-400 p-3 mx-6 rounded-r-lg">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></div>
+            <p className="text-sm text-green-700 font-medium">
+              Live transcription added to notes
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Notes Input Area */}
       <div className="flex-1 flex flex-col p-6 min-h-0 overflow-hidden">
         {/* Rich Text Editor */}
@@ -391,7 +418,7 @@ export function NotesPanel({ meeting, isLoading }: NotesPanelProps) {
           <RichTextEditor
             content={noteContent}
             onChange={handleNoteChange}
-            placeholder="Start typing your meeting notes here... AI will analyze and provide coaching suggestions in real-time."
+            placeholder="Start typing your meeting notes here... AI will analyze and provide coaching suggestions in real-time. Live call transcription will appear automatically."
             className="h-full"
           />
         </div>

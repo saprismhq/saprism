@@ -17,14 +17,17 @@ import {
 import { useServices } from '@/lib/services/ServiceContainer';
 import type { Participant, SessionContext } from '@/lib/services/types';
 import type { MeetingWithSessions } from '@shared/schema';
+import { useTranscriptionWebSocket } from '@/hooks/useTranscriptionWebSocket';
+import { nanoid } from 'nanoid';
 
 interface CallInterfaceProps {
   meeting: MeetingWithSessions | undefined;
   isLoading: boolean;
   onSessionUpdate?: (context: SessionContext) => void;
+  onTranscriptionUpdate?: (text: string) => void;
 }
 
-export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInterfaceProps) {
+export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscriptionUpdate }: CallInterfaceProps) {
   const { toast } = useToast();
   const { callService, sessionService } = useServices();
   
@@ -36,10 +39,40 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [currentSession, setCurrentSession] = useState<any>(null);
+  const [transcriptionSessionId, setTranscriptionSessionId] = useState<string | null>(null);
   
   // Refs for video elements
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Transcription WebSocket integration
+  const {
+    isConnected: transcriptionConnected,
+    isTranscribing,
+    startTranscription,
+    endTranscription
+  } = useTranscriptionWebSocket({
+    onTranscriptionChunk: (text, accumulatedText) => {
+      console.log('Transcription chunk received:', text);
+      onTranscriptionUpdate?.(accumulatedText);
+    },
+    onTranscriptionComplete: (finalText, meetingId) => {
+      console.log('Transcription completed:', finalText);
+      onTranscriptionUpdate?.(finalText);
+      toast({
+        title: "Transcription Complete",
+        description: "Call transcription has been finalized and added to notes",
+      });
+    },
+    onError: (error) => {
+      console.error('Transcription error:', error);
+      toast({
+        title: "Transcription Error",
+        description: error,
+        variant: "destructive",
+      });
+    }
+  });
 
   // Set up event listeners
   useEffect(() => {
@@ -84,12 +117,25 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
       setIsConnecting(false);
       
       // Create a mock session for demo
+      const sessionId = nanoid();
       setCurrentSession({
         id: `demo-session-${Date.now()}`,
         meetingId: meeting.id,
         status: 'active',
         startedAt: new Date()
       });
+
+      // Start transcription
+      if (transcriptionConnected && meeting.id) {
+        const success = startTranscription(sessionId, meeting.id, 'demo-user');
+        if (success) {
+          setTranscriptionSessionId(sessionId);
+          toast({
+            title: "Transcription Started",
+            description: "Real-time transcription is now active",
+          });
+        }
+      }
 
       // Add a demo participant after a short delay
       setTimeout(() => {
@@ -105,6 +151,13 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
           joinedAt: new Date()
         }]);
       }, 3000);
+
+      // Simulate some demo transcription
+      setTimeout(() => {
+        if (onTranscriptionUpdate) {
+          onTranscriptionUpdate("[Demo] Hello, thank you for joining the call today. How are you doing?");
+        }
+      }, 5000);
 
       toast({
         title: "Call Started (Demo Mode)",
@@ -124,6 +177,12 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate }: CallInter
 
   const handleEndCall = async () => {
     try {
+      // End transcription if active
+      if (transcriptionSessionId && isTranscribing) {
+        endTranscription();
+        setTranscriptionSessionId(null);
+      }
+
       // Demo mode - simulate ending call
       setCurrentSession(null);
       

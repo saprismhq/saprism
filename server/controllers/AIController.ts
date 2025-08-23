@@ -146,4 +146,85 @@ export class AIController {
       res.status(500).json({ message: "Failed to generate coaching suggestions" });
     }
   }
+
+  async finalizeTranscription(req: any, res: Response): Promise<void> {
+    try {
+      const { meetingId, finalText } = req.body;
+      
+      if (!meetingId || !finalText) {
+        res.status(400).json({ message: "Meeting ID and final text are required" });
+        return;
+      }
+
+      // Validate meeting ownership
+      const userId = req.user.claims.sub;
+      const hasAccess = await this.meetingService.validateMeetingOwnership(meetingId, userId);
+      if (!hasAccess) {
+        res.status(403).json({ message: "Access denied" });
+        return;
+      }
+
+      // Get existing notes for this meeting
+      const existingNotes = await this.noteService.getNotesByMeetingId(meetingId);
+      
+      // Prepare transcription content with timestamp
+      const transcriptionSection = `\n\n--- Call Transcription (${new Date().toLocaleString()}) ---\n${finalText}`;
+      
+      let noteId: number;
+      let updatedContent: string;
+
+      if (existingNotes.length > 0) {
+        // Update existing note by appending transcription
+        const existingNote = existingNotes[0];
+        updatedContent = existingNote.content + transcriptionSection;
+        
+        await this.noteService.updateNote(existingNote.id, {
+          content: updatedContent
+        });
+        noteId = existingNote.id;
+      } else {
+        // Create new note with transcription
+        updatedContent = `Meeting Notes\n${transcriptionSection}`;
+        
+        const newNote = await this.noteService.createNote({
+          meetingId,
+          content: updatedContent,
+          aiAnalysis: null
+        });
+        noteId = newNote.id;
+      }
+
+      // Run AI analysis on the updated content
+      console.log("Running AI analysis on finalized transcription...");
+      const startTime = Date.now();
+      
+      const [analysis, coachingSuggestions] = await Promise.all([
+        openaiService.analyzeNotes(updatedContent),
+        openaiService.generateCoachingSuggestions(updatedContent, 'discovery')
+      ]);
+      
+      console.log(`AI analysis completed in ${Date.now() - startTime}ms`);
+
+      // Update note with AI analysis and store coaching suggestions
+      await Promise.all([
+        this.noteService.updateNote(noteId, { aiAnalysis: analysis }),
+        this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
+          meetingId,
+          type: 'transcription_coaching',
+          content: coachingSuggestions
+        }))
+      ]);
+
+      res.json({
+        success: true,
+        analysis,
+        coachingSuggestions,
+        message: "Transcription finalized and analyzed successfully"
+      });
+
+    } catch (error) {
+      console.error("Error finalizing transcription:", error);
+      res.status(500).json({ message: "Failed to finalize transcription" });
+    }
+  }
 }

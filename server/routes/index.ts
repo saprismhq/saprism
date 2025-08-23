@@ -16,6 +16,7 @@ import { INoteService } from "../core/NoteService";
 import { ICoachingService } from "../core/CoachingService";
 import { ICrmSyncService } from "../core/CrmSyncService";
 import { IAuthenticationService } from "../core/AuthenticationService";
+import { setupWebSocketServer } from "./websocket";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get dependencies from container
@@ -58,6 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/ai/analyze', isAuthenticated, (req, res) => aiController.analyzeNotes(req, res));
   app.post('/api/ai/coaching', isAuthenticated, (req, res) => aiController.generateCoachingSuggestions(req, res));
   app.post('/api/ai/chat', isAuthenticated, (req, res) => aiController.handleChat(req, res));
+  app.post('/api/ai/transcription/finalize', isAuthenticated, (req, res) => aiController.finalizeTranscription(req, res));
 
   // CRM routes
   app.get('/api/crm/status', isAuthenticated, (req, res) => crmController.getCrmStatus(req, res));
@@ -74,5 +76,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerSessionRoutes(app);
 
   const httpServer = createServer(app);
+  
+  // Setup WebSocket server for real-time transcription
+  setupWebSocketServer(httpServer);
+  
   return httpServer;
 }

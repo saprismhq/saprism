@@ -31,6 +31,7 @@ export function MainLayout({
   deleteMeetingLoading,
 }: MainLayoutProps) {
   const [isCallPanelOpen, setIsCallPanelOpen] = useState(false);
+  const [transcriptionText, setTranscriptionText] = useState<string>('');
 
   return (
     <div className="h-screen bg-gray-50 flex relative">
@@ -53,6 +54,7 @@ export function MainLayout({
             key={activeMeetingId}
             meeting={activeMeeting}
             isLoading={activeMeetingLoading}
+            transcriptionText={transcriptionText}
           />
         </div>
 
@@ -111,6 +113,7 @@ export function MainLayout({
             <CallInterface
               meeting={activeMeeting}
               isLoading={activeMeetingLoading}
+              onTranscriptionUpdate={setTranscriptionText}
             />
           </div>
         </div>
