@@ -19,7 +19,6 @@
 
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-06b6d4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-4.4-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Replit](https://img.shields.io/badge/Deployed%20on-Replit-f26207?style=for-the-badge&logo=replit&logoColor=white)](https://replit.com/)
 
 ---
 
