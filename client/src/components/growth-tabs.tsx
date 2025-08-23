@@ -178,6 +178,7 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
                 }
               }}
               useAllMeetingsContext={useAllMeetingsContext}
+              clientMeetings={clientMeetings}
             />
           </TabsContent>
 

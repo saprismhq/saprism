@@ -23,7 +23,7 @@ interface GrowthChatProps {
   messages?: ChatMessage[];
   onMessagesChange?: (messages: ChatMessage[]) => void;
   useAllMeetingsContext?: boolean;
-  onContextToggle?: (enabled: boolean) => void;
+  clientMeetings?: any[];
 }
 
 export function GrowthChat({ 
@@ -33,7 +33,7 @@ export function GrowthChat({
   messages = [], 
   onMessagesChange,
   useAllMeetingsContext = true,
-  onContextToggle
+  clientMeetings = []
 }: GrowthChatProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
