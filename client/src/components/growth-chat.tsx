@@ -226,8 +226,8 @@ export function GrowthChat({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-gray-200 bg-white">
+      {/* Input - with padding to avoid Call button overlap */}
+      <div className="p-4 pb-20 border-t border-gray-200 bg-white">
         <div className="flex items-end space-x-2">
           <Textarea
             ref={textareaRef}
