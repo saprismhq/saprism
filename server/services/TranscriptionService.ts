@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { createWriteStream, createReadStream, unlinkSync } from 'fs';
+import { createReadStream, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { WebSocket } from 'ws';
@@ -66,9 +66,9 @@ export class TranscriptionService {
     console.log(`Adding audio chunk to session ${sessionId}, size: ${audioData.length}`);
     session.audioBuffer.push(audioData);
     
-    // Process audio chunks when we have enough data (every 3 seconds worth)
+    // Process audio chunks when we have enough data (every 4 seconds worth for better context)
     const now = Date.now();
-    if (now - session.lastProcessed > 3000 && session.audioBuffer.length > 0) {
+    if (now - session.lastProcessed > 4000 && session.audioBuffer.length > 0) {
       console.log(`Processing accumulated audio for session ${sessionId}, buffer count: ${session.audioBuffer.length}`);
       await this.processAudioBuffer(sessionId);
     }
@@ -86,11 +86,11 @@ export class TranscriptionService {
       session.audioBuffer = [];
       session.lastProcessed = Date.now();
 
-      // Save to temporary file for OpenAI Whisper
-      const tempFilePath = join(tmpdir(), `audio_${sessionId}_${Date.now()}.wav`);
+      // Save to temporary file for OpenAI Whisper with proper WebM format
+      const tempFilePath = join(tmpdir(), `audio_${sessionId}_${Date.now()}.webm`);
       
-      // Convert to WAV format (simplified - in production you'd use proper audio conversion)
-      createWriteStream(tempFilePath).write(combinedBuffer);
+      // Write the WebM audio data directly (no conversion needed)
+      writeFileSync(tempFilePath, combinedBuffer);
 
       // Process with OpenAI Whisper with improved settings for better quality
       const transcription = await this.openai.audio.transcriptions.create({

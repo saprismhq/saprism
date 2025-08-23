@@ -208,10 +208,29 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
           } 
         });
         
-        // Set up MediaRecorder for audio capture
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: 'audio/webm;codecs=opus'
-        });
+        // Set up MediaRecorder for audio capture with better settings
+        let mediaRecorder;
+        const options = [
+          { mimeType: 'audio/webm;codecs=opus', container: 'webm' },
+          { mimeType: 'audio/mp4;codecs=mp4a.40.2', container: 'mp4' },
+          { mimeType: 'audio/ogg;codecs=opus', container: 'ogg' },
+          { mimeType: 'audio/webm', container: 'webm' }
+        ];
+        
+        for (const option of options) {
+          if (MediaRecorder.isTypeSupported(option.mimeType)) {
+            mediaRecorder = new MediaRecorder(stream, {
+              mimeType: option.mimeType,
+              audioBitsPerSecond: 128000
+            });
+            console.log('Using audio format:', option.mimeType);
+            break;
+          }
+        }
+        
+        if (!mediaRecorder) {
+          throw new Error('No supported audio format found');
+        }
         
         let audioChunks: BlobPart[] = [];
         
