@@ -159,12 +159,29 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         }]);
       }, 3000);
 
-      // Simulate some demo transcription
-      setTimeout(() => {
-        if (onTranscriptionUpdate) {
-          onTranscriptionUpdate("[Demo] Hello, thank you for joining the call today. How are you doing?");
-        }
-      }, 5000);
+      // Simulate demo transcription chunks over time
+      let demoTranscripts = [
+        "[12:30:15] Hello, thank you for joining the call today.",
+        "[12:30:18] How are you doing? I hope you're having a great day.",
+        "[12:30:25] Let's talk about your current challenges and how we can help.",
+        "[12:30:32] I understand you're looking for a solution that can scale with your business.",
+        "[12:30:40] Our platform offers exactly what you need - reliability and growth potential.",
+        "[12:30:48] What specific pain points are you experiencing right now?",
+        "[12:30:55] That's a common challenge many of our clients face initially.",
+        "[12:31:03] We can definitely address that with our enterprise features.",
+        "[12:31:10] The implementation typically takes 2-3 weeks depending on complexity.",
+        "[12:31:18] What's your timeline for getting this implemented?"
+      ];
+
+      let accumulatedDemo = "";
+      demoTranscripts.forEach((transcript, index) => {
+        setTimeout(() => {
+          accumulatedDemo += (accumulatedDemo ? '\n' : '') + transcript;
+          if (onTranscriptionUpdate) {
+            onTranscriptionUpdate(accumulatedDemo);
+          }
+        }, 5000 + (index * 3000)); // Start after 5s, then every 3s
+      });
 
       toast({
         title: "Call Started (Demo Mode)",

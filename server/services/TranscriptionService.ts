@@ -3,6 +3,11 @@ import { createWriteStream, createReadStream, unlinkSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { WebSocket } from 'ws';
+import { Container } from '../container/Container';
+import { INoteService } from '../core/NoteService';
+import { ICoachingService } from '../core/CoachingService';
+import { openaiService } from './openai';
+import { insertCoachingSuggestionSchema } from '@shared/schema';
 
 interface TranscriptionSession {
   meetingId: number;
@@ -140,27 +145,66 @@ export class TranscriptionService {
     // Clean up and finalize transcription
     const finalText = await this.finalizeTranscription(session.accumulatedText);
     
-    // Call API to save and analyze the finalized transcription
+    // Save and analyze the finalized transcription directly
     try {
-      const response = await fetch('http://localhost:5000/api/ai/transcription/finalize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          meetingId: session.meetingId,
-          finalText
-        })
-      });
+      const container = Container.getInstance();
+      const noteService = container.get<INoteService>('NoteService');
+      const coachingService = container.get<ICoachingService>('CoachingService');
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Transcription finalized and analyzed:', result);
+      // Get existing notes for this meeting
+      const existingNotes = await noteService.getNotesByMeetingId(session.meetingId);
+      
+      // Prepare transcription content with timestamp
+      const transcriptionSection = `\n\n--- Call Transcription (${new Date().toLocaleString()}) ---\n${finalText}`;
+      
+      let noteId: number;
+      let updatedContent: string;
+
+      if (existingNotes.length > 0) {
+        // Update existing note by appending transcription
+        const existingNote = existingNotes[0];
+        updatedContent = existingNote.content + transcriptionSection;
+        
+        await noteService.updateNote(existingNote.id, {
+          content: updatedContent
+        });
+        noteId = existingNote.id;
       } else {
-        console.error('Failed to finalize transcription:', response.statusText);
+        // Create new note with transcription
+        updatedContent = `Meeting Notes\n${transcriptionSection}`;
+        
+        const newNote = await noteService.createNote({
+          meetingId: session.meetingId,
+          content: updatedContent,
+          aiAnalysis: null
+        });
+        noteId = newNote.id;
       }
+
+      // Run AI analysis on the updated content
+      console.log("Running AI analysis on finalized transcription...");
+      const startTime = Date.now();
+      
+      const [analysis, coachingSuggestions] = await Promise.all([
+        openaiService.analyzeNotes(updatedContent),
+        openaiService.generateCoachingSuggestions(updatedContent, 'discovery')
+      ]);
+      
+      console.log(`AI analysis completed in ${Date.now() - startTime}ms`);
+
+      // Update note with AI analysis and store coaching suggestions
+      await Promise.all([
+        noteService.updateNote(noteId, { aiAnalysis: analysis }),
+        coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
+          meetingId: session.meetingId,
+          type: 'transcription_coaching',
+          content: coachingSuggestions
+        }))
+      ]);
+
+      console.log('Transcription finalized and analyzed successfully');
     } catch (error) {
-      console.error('Error calling finalize transcription API:', error);
+      console.error('Error finalizing transcription:', error);
     }
     
     // Broadcast completion
@@ -268,9 +312,9 @@ export class TranscriptionService {
     }
     
     // End all active sessions
-    for (const [sessionId] of Array.from(this.sessions.keys())) {
+    Array.from(this.sessions.keys()).forEach(sessionId => {
       this.endTranscription(sessionId);
-    }
+    });
   }
 }
 
