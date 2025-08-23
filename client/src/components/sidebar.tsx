@@ -181,32 +181,6 @@ export function Sidebar({
                 </div>
               )}
 
-              {/* Quick Contact Selection */}
-              {selectedClient && existingContacts.length > 0 && (
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Quick Select Contact
-                  </Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {existingContacts.map((contact: string) => (
-                      <Button
-                        key={contact}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setContactName(contact)}
-                        className="justify-start h-10 text-left text-sm"
-                      >
-                        <User className="w-3 h-3 mr-2 flex-shrink-0" />
-                        <span className="truncate">{contact}</span>
-                      </Button>
-                    ))}
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Click to select from previous contacts
-                  </p>
-                </div>
-              )}
-
               {/* Contact Name Input */}
               {selectedClient && (
                 <div className="space-y-3">
@@ -220,6 +194,24 @@ export function Sidebar({
                     placeholder="John Smith"
                     className="h-12 text-base"
                   />
+                  
+                  {/* Quick Contact Buttons */}
+                  {existingContacts.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {existingContacts.map((contact: string) => (
+                        <Button
+                          key={contact}
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setContactName(contact)}
+                          className="h-6 px-2 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        >
+                          {contact}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  
                   <p className="text-xs text-gray-500 mt-1">
                     Enter the name of the person you're meeting with
                   </p>
