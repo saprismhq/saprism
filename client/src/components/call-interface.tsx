@@ -155,6 +155,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
       
       // Set session ID immediately for audio capture
       setTranscriptionSessionId(sessionId);
+      // Store globally for MediaRecorder callbacks
+      (window as any).currentTranscriptionSessionId = sessionId;
       console.log('Set transcription session ID:', sessionId);
       
       // Wait a moment for connection then start transcription
@@ -221,34 +223,32 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
             console.log('Created audio blob, size:', audioBlob.size);
             
             // Send audio to transcription service via WebSocket
-            console.log('Audio capture check:', { transcriptionConnected, transcriptionSessionId, wsConnected: !!transcriptionConnected });
-            if (transcriptionConnected && transcriptionSessionId) {
+            // Use global references instead of stale closure variables
+            const globalSessionId = (window as any).currentTranscriptionSessionId;
+            const transcriptionWs = (window as any).transcriptionWsRef?.current;
+            
+            console.log('Audio capture check:', { 
+              hasGlobalSession: !!globalSessionId, 
+              hasWsRef: !!transcriptionWs,
+              wsState: transcriptionWs?.readyState,
+              isOpen: transcriptionWs?.readyState === WebSocket.OPEN
+            });
+            
+            if (transcriptionWs?.readyState === WebSocket.OPEN && globalSessionId) {
               try {
                 const arrayBuffer = await audioBlob.arrayBuffer();
-                console.log('Sending audio chunk, size:', arrayBuffer.byteLength, 'session:', transcriptionSessionId);
+                console.log('Sending audio chunk, size:', arrayBuffer.byteLength, 'session:', globalSessionId);
                 
-                // Send binary audio data to WebSocket
-                const transcriptionWs = (window as any).transcriptionWsRef?.current;
-                console.log('WebSocket ref check:', {
-                  hasRef: !!transcriptionWs,
-                  readyState: transcriptionWs?.readyState,
-                  isOpen: transcriptionWs?.readyState === WebSocket.OPEN,
-                  sessionId: transcriptionSessionId
-                });
-                
-                if (transcriptionWs?.readyState === WebSocket.OPEN) {
-                  transcriptionWs.send(arrayBuffer);
-                  console.log('Audio data sent successfully');
-                } else {
-                  console.log('WebSocket not ready for audio data, state:', transcriptionWs?.readyState);
-                }
+                transcriptionWs.send(arrayBuffer);
+                console.log('Audio data sent successfully');
               } catch (error) {
                 console.error('Error sending audio data:', error);
               }
             } else {
-              console.log('Transcription not connected or no session ID', {
-                transcriptionConnected,
-                transcriptionSessionId
+              console.log('Cannot send audio - missing WebSocket or session:', {
+                hasWs: !!transcriptionWs,
+                wsState: transcriptionWs?.readyState,
+                hasSession: !!globalSessionId
               });
             }
             audioChunks = [];
