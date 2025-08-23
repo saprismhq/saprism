@@ -18,6 +18,18 @@ export function setupWebSocketServer(httpServer: Server): void {
 
     ws.on('message', async (data: Buffer) => {
       try {
+        // Handle binary audio data directly
+        if (data.length > 100 && !data.toString().startsWith('{')) {
+          console.log('Received binary audio data, size:', data.length);
+          if (sessionId) {
+            await transcriptionService.addAudioChunk(sessionId, data);
+          } else {
+            console.log('No active session for binary audio data');
+          }
+          return;
+        }
+
+        // Handle JSON control messages
         const message = JSON.parse(data.toString());
 
         switch (message.type) {

@@ -210,10 +210,13 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
             if (transcriptionConnected && transcriptionSessionId) {
               try {
                 const arrayBuffer = await audioBlob.arrayBuffer();
+                console.log('Sending audio chunk, size:', arrayBuffer.byteLength);
                 // Send binary audio data to WebSocket
                 const transcriptionWs = (window as any).transcriptionWsRef?.current;
                 if (transcriptionWs?.readyState === WebSocket.OPEN) {
                   transcriptionWs.send(arrayBuffer);
+                } else {
+                  console.log('WebSocket not ready for audio data, state:', transcriptionWs?.readyState);
                 }
               } catch (error) {
                 console.error('Error sending audio data:', error);

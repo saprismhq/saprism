@@ -59,14 +59,17 @@ export class TranscriptionService {
   async addAudioChunk(sessionId: string, audioData: Buffer): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session || !session.isActive) {
+      console.log(`Session ${sessionId} not found or inactive for audio chunk`);
       return;
     }
 
+    console.log(`Adding audio chunk to session ${sessionId}, size: ${audioData.length}`);
     session.audioBuffer.push(audioData);
     
     // Process audio chunks when we have enough data (every 3 seconds worth)
     const now = Date.now();
     if (now - session.lastProcessed > 3000 && session.audioBuffer.length > 0) {
+      console.log(`Processing accumulated audio for session ${sessionId}, buffer count: ${session.audioBuffer.length}`);
       await this.processAudioBuffer(sessionId);
     }
   }
