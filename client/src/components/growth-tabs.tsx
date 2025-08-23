@@ -110,27 +110,18 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
         </div>
         
         {/* Global Context Toggle */}
-        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <History className="w-5 h-5 text-blue-600" />
-            <div>
-              <p className="text-sm font-semibold text-blue-900">Meeting Context</p>
-              <p className="text-xs text-blue-700">
-                {useAllMeetingsContext 
-                  ? `Using all ${clientMeetings.length || 0} meetings with this client`
-                  : 'Using current meeting only'
-                }
-              </p>
-            </div>
+        <div className="flex items-center justify-between py-2">
+          <div className="flex items-center space-x-2">
+            <History className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-700">Meeting Context</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-xs text-blue-700 font-medium">
+            <span className="text-xs text-gray-500">
               {useAllMeetingsContext ? 'All' : 'Current'}
             </span>
             <Switch
               checked={useAllMeetingsContext}
               onCheckedChange={setUseAllMeetingsContext}
-              className="data-[state=checked]:bg-blue-600"
             />
           </div>
         </div>
