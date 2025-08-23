@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { MessageCircle, Send, Loader2, User, Bot, History } from "lucide-react";
+import { MessageCircle, Send, Loader2, User, Bot } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -41,16 +40,6 @@ export function GrowthChat({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
-  // Fetch all meetings for this client when toggle is enabled
-  const { data: clientMeetings = [] } = useQuery({
-    queryKey: ['/api/clients', meeting?.clientId, 'meetings'],
-    queryFn: async () => {
-      if (!meeting?.clientId || !useAllMeetingsContext) return [];
-      const response = await apiRequest('GET', `/api/clients/${meeting.clientId}/meetings`);
-      return response.json();
-    },
-    enabled: !!meeting?.clientId && useAllMeetingsContext,
-  });
 
   // Chat mutation
   const chatMutation = useMutation({
@@ -181,42 +170,12 @@ export function GrowthChat({
   return (
     <div className="flex-1 flex flex-col h-full">
       {/* Chat Header */}
-      <div className="p-4 border-b border-gray-200 bg-white space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-gray-900">Growth Chat</h3>
-            <p className="text-sm text-gray-600">
-              Discussing: {meeting.clientName}
-              {meeting.clientCompany && ` (${meeting.clientCompany})`}
-            </p>
-          </div>
-        </div>
-        
-        {/* Context Toggle */}
-        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <History className="w-5 h-5 text-blue-600" />
-            <div>
-              <p className="text-sm font-semibold text-blue-900">Meeting Context</p>
-              <p className="text-xs text-blue-700">
-                {useAllMeetingsContext 
-                  ? `Using all ${clientMeetings.length || 0} meetings with this client`
-                  : 'Using current meeting only'
-                }
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-blue-700 font-medium">
-              {useAllMeetingsContext ? 'All' : 'Current'}
-            </span>
-            <Switch
-              checked={useAllMeetingsContext}
-              onCheckedChange={onContextToggle}
-              className="data-[state=checked]:bg-blue-600"
-            />
-          </div>
-        </div>
+      <div className="p-4 border-b border-gray-200 bg-white">
+        <h3 className="font-medium text-gray-900">Growth Chat</h3>
+        <p className="text-sm text-gray-600">
+          Discussing: {meeting.clientName}
+          {meeting.clientCompany && ` (${meeting.clientCompany})`}
+        </p>
       </div>
 
       {/* Messages */}

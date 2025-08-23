@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageCircle, Copy, Check, ArrowLeftRight, Target, CheckSquare, Lightbulb, BookOpen } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { MessageCircle, Copy, Check, ArrowLeftRight, Target, CheckSquare, Lightbulb, BookOpen, History } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +31,17 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
   const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
   const [chatWelcomeShown, setChatWelcomeShown] = useState<Record<number, boolean>>({});
   const [useAllMeetingsContext, setUseAllMeetingsContext] = useState(true);
+
+  // Fetch all meetings for context toggle description
+  const { data: clientMeetings = [] } = useQuery({
+    queryKey: ['/api/clients', meeting?.clientId, 'meetings'],
+    queryFn: async () => {
+      if (!meeting?.clientId) return [];
+      const response = await apiRequest('GET', `/api/clients/${meeting.clientId}/meetings`);
+      return response.json();
+    },
+    enabled: !!meeting?.clientId,
+  });
 
   // Handle tab routing from Growth Guide
   const handleChatRedirect = (context: string) => {
@@ -87,12 +100,40 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
 
   return (
     <section className="h-full bg-gray-50 flex flex-col">
-      <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 bg-primary rounded-full"></div>
-          <h2 className="text-lg font-semibold text-gray-900">Growth Center</h2>
+      <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0 space-y-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <h2 className="text-lg font-semibold text-gray-900">Growth Center</h2>
+          </div>
+          <p className="text-sm text-gray-600">AI-powered sales insights and methodology</p>
         </div>
-        <p className="text-sm text-gray-600">AI-powered sales insights and methodology</p>
+        
+        {/* Global Context Toggle */}
+        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <History className="w-5 h-5 text-blue-600" />
+            <div>
+              <p className="text-sm font-semibold text-blue-900">Meeting Context</p>
+              <p className="text-xs text-blue-700">
+                {useAllMeetingsContext 
+                  ? `Using all ${clientMeetings.length || 0} meetings with this client`
+                  : 'Using current meeting only'
+                }
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-blue-700 font-medium">
+              {useAllMeetingsContext ? 'All' : 'Current'}
+            </span>
+            <Switch
+              checked={useAllMeetingsContext}
+              onCheckedChange={setUseAllMeetingsContext}
+              className="data-[state=checked]:bg-blue-600"
+            />
+          </div>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
@@ -146,7 +187,6 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
                 }
               }}
               useAllMeetingsContext={useAllMeetingsContext}
-              onContextToggle={setUseAllMeetingsContext}
             />
           </TabsContent>
 
