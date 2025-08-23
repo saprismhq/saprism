@@ -153,14 +153,24 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
       // Connect and start transcription
       connectTranscription();
       
+      // Set session ID immediately for audio capture
+      setTranscriptionSessionId(sessionId);
+      console.log('Set transcription session ID:', sessionId);
+      
       // Wait a moment for connection then start transcription
       setTimeout(() => {
         const success = startTranscription(sessionId, meeting.id, 'demo-user');
+        console.log('Transcription start result:', success, 'Session ID:', sessionId);
         if (success) {
-          setTranscriptionSessionId(sessionId);
           toast({
             title: "Transcription Started",
             description: "Real-time transcription is now active",
+          });
+        } else {
+          toast({
+            title: "Transcription Error",
+            description: "Could not start transcription service",
+            variant: "destructive"
           });
         }
       }, 1000);
@@ -211,6 +221,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
             console.log('Created audio blob, size:', audioBlob.size);
             
             // Send audio to transcription service via WebSocket
+            console.log('Audio capture check:', { transcriptionConnected, transcriptionSessionId, wsConnected: !!transcriptionConnected });
             if (transcriptionConnected && transcriptionSessionId) {
               try {
                 const arrayBuffer = await audioBlob.arrayBuffer();
