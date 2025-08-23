@@ -193,24 +193,29 @@ export function GrowthChat({
         </div>
         
         {/* Context Toggle */}
-        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <History className="w-4 h-4 text-gray-500" />
+        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <History className="w-5 h-5 text-blue-600" />
             <div>
-              <p className="text-sm font-medium text-gray-700">Use Meeting History</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-semibold text-blue-900">Meeting Context</p>
+              <p className="text-xs text-blue-700">
                 {useAllMeetingsContext 
-                  ? `Include context from all ${clientMeetings.length || 0} meetings with this client`
-                  : 'Only use notes from current meeting'
+                  ? `Using all ${clientMeetings.length || 0} meetings with this client`
+                  : 'Using current meeting only'
                 }
               </p>
             </div>
           </div>
-          <Switch
-            checked={useAllMeetingsContext}
-            onCheckedChange={onContextToggle}
-            className="data-[state=checked]:bg-primary"
-          />
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-blue-700 font-medium">
+              {useAllMeetingsContext ? 'All' : 'Current'}
+            </span>
+            <Switch
+              checked={useAllMeetingsContext}
+              onCheckedChange={onContextToggle}
+              className="data-[state=checked]:bg-blue-600"
+            />
+          </div>
         </div>
       </div>
 
