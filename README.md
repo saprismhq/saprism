@@ -133,14 +133,6 @@ npm run db:push
 npm run dev
 ```
 
-## Usage
-
-1. **Create Meeting**: Start a new client meeting with basic information
-2. **Take Notes**: Use the rich text editor with formatting capabilities
-3. **AI Analysis**: Get automatic insights on deal stage, pain points, and next steps
-4. **Growth Guide**: Receive contextual coaching suggestions
-5. **CRM Sync**: Automatically sync data to your Salesforce CRM
-
 ## Contributing
 
 1. Fork the repository
