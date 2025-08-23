@@ -27,12 +27,12 @@ describe('API Integration Tests', () => {
         claims: { sub: 'test-user-id' },
         expires_at: Math.floor(Date.now() / 1000) + 3600,
       };
-      req.isAuthenticated = () => true;
+      (req as any).isAuthenticated = () => true;
       next();
     });
 
     // Register routes
-    await registerRoutes(app);
+    await registerRoutes(app as any);
   });
 
   afterAll(async () => {

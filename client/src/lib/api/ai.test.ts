@@ -1,6 +1,8 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { renderHook, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import { aiApi, useAnalyzeNotes, useGenerateCoaching, useGenerateFollowUp, useAnalysisResult, useCoachingSuggestions } from './ai';
 
 // Mock the apiRequest function
@@ -42,7 +44,7 @@ describe('AI API', () => {
             confidence: 0.8,
           }),
         };
-        (apiRequest as jest.Mock).mockResolvedValue(mockResponse);
+        (apiRequest as any).mockResolvedValue(mockResponse);
 
         const result = await aiApi.analyzeNotes(1);
 
@@ -60,7 +62,7 @@ describe('AI API', () => {
 
       it('should handle API errors', async () => {
         const error = new Error('API Error');
-        (apiRequest as jest.Mock).mockRejectedValue(error);
+        (apiRequest as any).mockRejectedValue(error);
 
         await expect(aiApi.analyzeNotes(1)).rejects.toThrow('API Error');
         expect(apiRequest).toHaveBeenCalledWith('POST', '/api/ai/analyze', { meetingId: 1 });
@@ -82,7 +84,7 @@ describe('AI API', () => {
             nextSteps: [],
           }),
         };
-        (apiRequest as jest.Mock).mockResolvedValue(mockResponse);
+        (apiRequest as any).mockResolvedValue(mockResponse);
 
         const result = await aiApi.generateCoaching(1);
 
@@ -102,7 +104,7 @@ describe('AI API', () => {
 
       it('should handle API errors', async () => {
         const error = new Error('API Error');
-        (apiRequest as jest.Mock).mockRejectedValue(error);
+        (apiRequest as any).mockRejectedValue(error);
 
         await expect(aiApi.generateCoaching(1)).rejects.toThrow('API Error');
         expect(apiRequest).toHaveBeenCalledWith('POST', '/api/ai/coaching', { meetingId: 1 });
@@ -116,7 +118,7 @@ describe('AI API', () => {
             questions: ['follow-up1', 'follow-up2', 'follow-up3'],
           }),
         };
-        (apiRequest as jest.Mock).mockResolvedValue(mockResponse);
+        (apiRequest as any).mockResolvedValue(mockResponse);
 
         const result = await aiApi.generateFollowUp(1);
 
@@ -128,7 +130,7 @@ describe('AI API', () => {
 
       it('should handle API errors', async () => {
         const error = new Error('API Error');
-        (apiRequest as jest.Mock).mockRejectedValue(error);
+        (apiRequest as any).mockRejectedValue(error);
 
         await expect(aiApi.generateFollowUp(1)).rejects.toThrow('API Error');
         expect(apiRequest).toHaveBeenCalledWith('POST', '/api/ai/follow-up', { meetingId: 1 });

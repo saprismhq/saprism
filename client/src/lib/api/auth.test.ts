@@ -1,11 +1,13 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { renderHook, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 import { authApi, useAuth, useRequireAuth } from './auth';
-import { createMockUser } from '../../../test/utils/test-utils';
+import { createMockUser } from '../../../../test/utils/test-utils';
 
 // Mock fetch globally
-global.fetch = jest.fn();
+global.fetch = jest.fn() as any;
 
 // Mock window.location
 Object.defineProperty(window, 'location', {
@@ -31,7 +33,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('Auth API', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockClear();
+    (global.fetch as any).mockClear();
     window.location.href = '';
   });
 
@@ -43,7 +45,7 @@ describe('Auth API', () => {
           ok: true,
           json: jest.fn().mockResolvedValue(mockUser),
         };
-        (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+        (global.fetch as any).mockResolvedValue(mockResponse);
 
         const result = await authApi.getCurrentUser();
 
@@ -57,7 +59,7 @@ describe('Auth API', () => {
           status: 401,
           statusText: 'Unauthorized',
         };
-        (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+        (global.fetch as any).mockResolvedValue(mockResponse);
 
         await expect(authApi.getCurrentUser()).rejects.toThrow('401: Unauthorized');
         expect(global.fetch).toHaveBeenCalledWith('/api/auth/user');
@@ -65,7 +67,7 @@ describe('Auth API', () => {
 
       it('should handle network errors', async () => {
         const error = new Error('Network error');
-        (global.fetch as jest.Mock).mockRejectedValue(error);
+        (global.fetch as any).mockRejectedValue(error);
 
         await expect(authApi.getCurrentUser()).rejects.toThrow('Network error');
         expect(global.fetch).toHaveBeenCalledWith('/api/auth/user');
@@ -96,7 +98,7 @@ describe('Auth API', () => {
         ok: true,
         json: jest.fn().mockResolvedValue(mockUser),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+      (global.fetch as any).mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -117,7 +119,7 @@ describe('Auth API', () => {
         status: 401,
         statusText: 'Unauthorized',
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+      (global.fetch as any).mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -140,7 +142,7 @@ describe('Auth API', () => {
 
     it('should handle network errors', async () => {
       const error = new Error('Network error');
-      (global.fetch as jest.Mock).mockRejectedValue(error);
+      (global.fetch as any).mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -161,7 +163,7 @@ describe('Auth API', () => {
         ok: true,
         json: jest.fn().mockResolvedValue(mockUser),
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+      (global.fetch as any).mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useRequireAuth(), { wrapper });
 
@@ -180,7 +182,7 @@ describe('Auth API', () => {
         status: 401,
         statusText: 'Unauthorized',
       };
-      (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+      (global.fetch as any).mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useRequireAuth(), { wrapper });
 
