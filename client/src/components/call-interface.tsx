@@ -199,28 +199,41 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         
         mediaRecorder.ondataavailable = (event) => {
           if (event.data.size > 0) {
+            console.log('MediaRecorder data available, size:', event.data.size);
             audioChunks.push(event.data);
           }
         };
         
         mediaRecorder.onstop = async () => {
+          console.log('MediaRecorder stopped, audioChunks length:', audioChunks.length);
           if (audioChunks.length > 0) {
             const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            console.log('Created audio blob, size:', audioBlob.size);
+            
             // Send audio to transcription service via WebSocket
             if (transcriptionConnected && transcriptionSessionId) {
               try {
                 const arrayBuffer = await audioBlob.arrayBuffer();
-                console.log('Sending audio chunk, size:', arrayBuffer.byteLength);
+                console.log('Sending audio chunk, size:', arrayBuffer.byteLength, 'session:', transcriptionSessionId);
+                
                 // Send binary audio data to WebSocket
                 const transcriptionWs = (window as any).transcriptionWsRef?.current;
+                console.log('WebSocket ref:', !!transcriptionWs, 'readyState:', transcriptionWs?.readyState);
+                
                 if (transcriptionWs?.readyState === WebSocket.OPEN) {
                   transcriptionWs.send(arrayBuffer);
+                  console.log('Audio data sent successfully');
                 } else {
                   console.log('WebSocket not ready for audio data, state:', transcriptionWs?.readyState);
                 }
               } catch (error) {
                 console.error('Error sending audio data:', error);
               }
+            } else {
+              console.log('Transcription not connected or no session ID', {
+                transcriptionConnected,
+                transcriptionSessionId
+              });
             }
             audioChunks = [];
           }
@@ -228,10 +241,13 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         
         // Record audio in 3-second chunks
         const recordingInterval = setInterval(() => {
+          console.log('Recording interval triggered, mediaRecorder state:', mediaRecorder.state);
           if (mediaRecorder.state === 'recording') {
+            console.log('Stopping recorder to process chunk');
             mediaRecorder.stop();
             setTimeout(() => {
               if (mediaRecorder.state === 'inactive') {
+                console.log('Restarting recorder for next chunk');
                 mediaRecorder.start();
               }
             }, 100);
@@ -240,7 +256,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         
         // Start recording
         mediaRecorder.start();
-        
+        console.log('MediaRecorder started, state:', mediaRecorder.state);
         console.log('Real audio transcription started');
         
         // Store references for cleanup
