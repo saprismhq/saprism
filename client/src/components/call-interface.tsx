@@ -159,8 +159,8 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         }]);
       }, 3000);
 
-      // Simulate demo transcription chunks over time
-      let demoTranscripts = [
+      // Simulate demo transcription chunks over time with proper accumulation
+      const demoTranscripts = [
         "[12:30:15] Hello, thank you for joining the call today.",
         "[12:30:18] How are you doing? I hope you're having a great day.",
         "[12:30:25] Let's talk about your current challenges and how we can help.",
@@ -173,15 +173,26 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
         "[12:31:18] What's your timeline for getting this implemented?"
       ];
 
-      let accumulatedDemo = "";
-      demoTranscripts.forEach((transcript, index) => {
+      // Create accumulated transcription with proper closure handling
+      const simulateTranscription = (index: number) => {
+        if (index >= demoTranscripts.length) return;
+        
         setTimeout(() => {
-          accumulatedDemo += (accumulatedDemo ? '\n' : '') + transcript;
+          // Build accumulated text up to current index
+          const accumulatedText = demoTranscripts.slice(0, index + 1).join('\n');
+          console.log('Demo transcription update:', accumulatedText);
+          
           if (onTranscriptionUpdate) {
-            onTranscriptionUpdate(accumulatedDemo);
+            onTranscriptionUpdate(accumulatedText);
           }
-        }, 5000 + (index * 3000)); // Start after 5s, then every 3s
-      });
+          
+          // Schedule next transcription
+          simulateTranscription(index + 1);
+        }, index === 0 ? 3000 : 4000); // First after 3s, then every 4s
+      };
+      
+      // Start the simulation
+      simulateTranscription(0);
 
       toast({
         title: "Call Started (Demo Mode)",
