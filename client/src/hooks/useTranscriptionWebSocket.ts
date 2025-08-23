@@ -83,10 +83,12 @@ export function useTranscriptionWebSocket({
               
             case 'transcription_error':
             case 'error':
-              console.error('Transcription error:', message.error);
-              // Only show error if we're actually transcribing
-              if (isTranscribing) {
-                onError?.(message.error || 'Transcription error occurred');
+              // Only log significant transcription errors, ignore minor audio processing issues
+              if (message.error && !message.error.includes('Audio processing error - continuing')) {
+                console.warn('Transcription warning:', message.error);
+                if (isTranscribing) {
+                  onError?.(message.error);
+                }
               }
               break;
               
