@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Activity } from "lucide-react";
+import { Plus, Activity, User } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
 import { ClientDropdown } from "@/components/client-dropdown";
 import { NewClientDialog } from "@/components/new-client-dialog";
 import { RecentMeetingsList } from "@/components/recent-meetings-list";
 import { useSystemStatus, getOverallStatusColor } from "@/lib/api/status";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import type { Meeting, Client } from "@shared/schema";
 import { DEAL_TYPES, type DealType } from "@shared/schema";
 
@@ -43,6 +45,22 @@ export function Sidebar({
   // Query system status
   const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
 
+  // Fetch existing contacts for the selected client
+  const { data: clientMeetings = [] } = useQuery({
+    queryKey: ['/api/clients', selectedClient?.id, 'meetings'],
+    queryFn: async () => {
+      if (!selectedClient?.id) return [];
+      const response = await apiRequest('GET', `/api/clients/${selectedClient.id}/meetings`);
+      return response.json();
+    },
+    enabled: !!selectedClient?.id && showCreateDialog,
+  });
+
+  // Extract unique contact names from past meetings
+  const existingContacts = Array.from(new Set(
+    clientMeetings.map((m: any) => m.clientName).filter(Boolean)
+  )).slice(0, 6) as string[]; // Limit to 6 most recent contacts
+
   // Handle client selection
   const handleClientSelect = (client: Client | null) => {
     setSelectedClient(client);
@@ -73,6 +91,15 @@ export function Sidebar({
       // Reset form
       setSelectedDealType("Connect");
       setContactName("");
+    }
+  };
+
+  // Handle dialog close - reset contact name
+  const handleDialogOpenChange = (open: boolean) => {
+    setShowCreateDialog(open);
+    if (!open) {
+      setContactName("");
+      setSelectedDealType("Connect");
     }
   };
 
@@ -109,7 +136,7 @@ export function Sidebar({
 
       {/* Create Meeting Button */}
       <div className="px-6 py-3 border-b border-gray-100">
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <Dialog open={showCreateDialog} onOpenChange={handleDialogOpenChange}>
           <DialogTrigger asChild>
             <Button 
               className="w-full bg-primary hover:bg-primary/90 h-12 text-sm" 
@@ -151,6 +178,32 @@ export function Sidebar({
                       Please select a client from the dropdown above to create a meeting.
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Quick Contact Selection */}
+              {selectedClient && existingContacts.length > 0 && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Quick Select Contact
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {existingContacts.map((contact: string) => (
+                      <Button
+                        key={contact}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setContactName(contact)}
+                        className="justify-start h-10 text-left text-sm"
+                      >
+                        <User className="w-3 h-3 mr-2 flex-shrink-0" />
+                        <span className="truncate">{contact}</span>
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Click to select from previous contacts
+                  </p>
                 </div>
               )}
 
