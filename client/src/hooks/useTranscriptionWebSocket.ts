@@ -44,8 +44,10 @@ export function useTranscriptionWebSocket({
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('Transcription WebSocket connected');
+        console.log('Transcription WebSocket connected successfully');
         setIsConnected(true);
+        // Store the WebSocket reference globally for audio data sending
+        (window as any).transcriptionWsRef = wsRef;
       };
 
       wsRef.current.onmessage = (event) => {

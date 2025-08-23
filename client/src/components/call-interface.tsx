@@ -229,7 +229,12 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
                 
                 // Send binary audio data to WebSocket
                 const transcriptionWs = (window as any).transcriptionWsRef?.current;
-                console.log('WebSocket ref:', !!transcriptionWs, 'readyState:', transcriptionWs?.readyState);
+                console.log('WebSocket ref check:', {
+                  hasRef: !!transcriptionWs,
+                  readyState: transcriptionWs?.readyState,
+                  isOpen: transcriptionWs?.readyState === WebSocket.OPEN,
+                  sessionId: transcriptionSessionId
+                });
                 
                 if (transcriptionWs?.readyState === WebSocket.OPEN) {
                   transcriptionWs.send(arrayBuffer);

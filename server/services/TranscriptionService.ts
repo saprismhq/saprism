@@ -111,6 +111,7 @@ export class TranscriptionService {
         session.accumulatedText += formattedText;
 
         // Broadcast real-time transcription to connected clients
+        console.log(`Broadcasting transcription chunk for session ${sessionId}: "${formattedText}"`);
         this.broadcastToSession(sessionId, {
           type: 'transcription_chunk',
           sessionId,
