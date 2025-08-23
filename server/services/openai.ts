@@ -143,18 +143,26 @@ export class OpenAIService {
 
   async generateChatResponse(message: string, meetingContext: string, conversationHistory: any[]): Promise<string> {
     try {
+      // Detect if this is from a section button (extended response allowed) vs general chat
+      const isFromSectionButton = message.includes("Strategic Questions") || 
+                                  message.includes("Strategic Question") ||
+                                  message.includes("Pain-to-Value Mapping") || 
+                                  message.includes("Strategic Framing & Positioning") || 
+                                  message.includes("Next Steps") ||
+                                  message.length > 200; // Assume longer initial messages are from sections
+
+      const conciseInstruction = isFromSectionButton 
+        ? "Provide comprehensive guidance for this specific section."
+        : "Keep responses concise - maximum 3 sentences unless critical information requires more. Focus on key insights without filler text.";
+
       const messages = [
         {
           role: "system",
-          content: `You are an expert sales coach and Growth Guide assistant. You help sales professionals with:
-          - Sales strategies and methodologies
-          - Deal analysis and qualification
-          - Objection handling and negotiation tactics
-          - Value proposition development
-          - Relationship building strategies
+          content: `You are an expert sales coach and Growth Guide assistant. You help sales professionals with sales strategies, deal analysis, objection handling, value proposition development, and relationship building.
           
-          You have access to the current meeting context and should provide specific, actionable advice.
-          Be conversational but professional, and always tie advice back to the specific deal context when possible.
+          ${conciseInstruction}
+          
+          Provide specific, actionable advice tied to the deal context when possible. Be conversational but professional.
           
           Meeting Context: ${meetingContext}`
         }
@@ -179,8 +187,8 @@ export class OpenAIService {
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: messages as any,
-        temperature: 0.7, // More creative for conversational responses
-        max_tokens: 1000,
+        temperature: 0.7,
+        max_tokens: isFromSectionButton ? 800 : 300, // Shorter for general chat, longer for section responses
       });
 
       return response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
