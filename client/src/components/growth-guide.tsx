@@ -10,9 +10,10 @@ import type { MeetingWithNotes, MeetingWithSessions, CoachingSuggestionContent }
 interface GrowthGuideProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   onChatRedirect: (context: string) => void;
+  useAllMeetingsContext?: boolean;
 }
 
-export function GrowthGuide({ meeting, onChatRedirect }: GrowthGuideProps) {
+export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = true }: GrowthGuideProps) {
   const [coachingSuggestions, setCoachingSuggestions] = useState<CoachingSuggestionContent | null>(null);
   const [currentMeetingId, setCurrentMeetingId] = useState<number | null>(null);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());

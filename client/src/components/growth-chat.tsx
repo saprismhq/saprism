@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageCircle, Send, Loader2, User, Bot } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { MessageCircle, Send, Loader2, User, Bot, History } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -22,13 +23,34 @@ interface GrowthChatProps {
   onContextUsed?: () => void;
   messages?: ChatMessage[];
   onMessagesChange?: (messages: ChatMessage[]) => void;
+  useAllMeetingsContext?: boolean;
+  onContextToggle?: (enabled: boolean) => void;
 }
 
-export function GrowthChat({ meeting, initialContext, onContextUsed, messages = [], onMessagesChange }: GrowthChatProps) {
+export function GrowthChat({ 
+  meeting, 
+  initialContext, 
+  onContextUsed, 
+  messages = [], 
+  onMessagesChange,
+  useAllMeetingsContext = true,
+  onContextToggle
+}: GrowthChatProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  // Fetch all meetings for this client when toggle is enabled
+  const { data: clientMeetings = [] } = useQuery({
+    queryKey: ['/api/clients', meeting?.clientId, 'meetings'],
+    queryFn: async () => {
+      if (!meeting?.clientId || !useAllMeetingsContext) return [];
+      const response = await apiRequest('GET', `/api/clients/${meeting.clientId}/meetings`);
+      return response.json();
+    },
+    enabled: !!meeting?.clientId && useAllMeetingsContext,
+  });
 
   // Chat mutation
   const chatMutation = useMutation({
@@ -84,13 +106,38 @@ export function GrowthChat({ meeting, initialContext, onContextUsed, messages = 
 
     onMessagesChange?.([...messages, userMessage]);
     
-    // Prepare meeting context
-    const meetingContext = `
+    // Prepare meeting context based on toggle setting
+    let meetingContext = `
       Meeting with: ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}
       Deal Type: ${meeting.dealType || 'Not specified'}
-      Recent Notes: ${meeting.notes?.[0]?.content || 'No notes yet'}
-      AI Analysis: ${meeting.notes?.[0]?.aiAnalysis ? JSON.stringify(meeting.notes[0].aiAnalysis) : 'No analysis yet'}
     `;
+
+    if (useAllMeetingsContext && clientMeetings.length > 0) {
+      // Build context from all client meetings
+      meetingContext += `\n\nMeeting History (${clientMeetings.length} meetings):`;
+      
+      clientMeetings
+        .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .forEach((mtg: any, index: number) => {
+          meetingContext += `\n\n--- Meeting ${index + 1} (${new Date(mtg.createdAt).toLocaleDateString()}) ---`;
+          if (mtg.notes && mtg.notes.length > 0) {
+            mtg.notes.forEach((note: any) => {
+              if (note.content) {
+                meetingContext += `\nNotes: ${note.content}`;
+              }
+              if (note.aiAnalysis) {
+                meetingContext += `\nAnalysis: ${JSON.stringify(note.aiAnalysis)}`;
+              }
+            });
+          }
+        });
+    } else {
+      // Only use current meeting context
+      meetingContext += `
+        Current Meeting Notes: ${meeting.notes?.[0]?.content || 'No notes yet'}
+        AI Analysis: ${meeting.notes?.[0]?.aiAnalysis ? JSON.stringify(meeting.notes[0].aiAnalysis) : 'No analysis yet'}
+      `;
+    }
 
     chatMutation.mutate({
       message: inputValue.trim(),
@@ -134,12 +181,37 @@ export function GrowthChat({ meeting, initialContext, onContextUsed, messages = 
   return (
     <div className="flex-1 flex flex-col h-full">
       {/* Chat Header */}
-      <div className="p-4 border-b border-gray-200 bg-white">
-        <h3 className="font-medium text-gray-900">Growth Chat</h3>
-        <p className="text-sm text-gray-600">
-          Discussing: {meeting.clientName}
-          {meeting.clientCompany && ` (${meeting.clientCompany})`}
-        </p>
+      <div className="p-4 border-b border-gray-200 bg-white space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-medium text-gray-900">Growth Chat</h3>
+            <p className="text-sm text-gray-600">
+              Discussing: {meeting.clientName}
+              {meeting.clientCompany && ` (${meeting.clientCompany})`}
+            </p>
+          </div>
+        </div>
+        
+        {/* Context Toggle */}
+        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <History className="w-4 h-4 text-gray-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-700">Use Meeting History</p>
+              <p className="text-xs text-gray-500">
+                {useAllMeetingsContext 
+                  ? `Include context from all ${clientMeetings.length || 0} meetings with this client`
+                  : 'Only use notes from current meeting'
+                }
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={useAllMeetingsContext}
+            onCheckedChange={onContextToggle}
+            className="data-[state=checked]:bg-primary"
+          />
+        </div>
       </div>
 
       {/* Messages */}

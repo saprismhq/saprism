@@ -89,7 +89,7 @@ export class AIController {
 
   async generateCoachingSuggestions(req: any, res: Response): Promise<void> {
     try {
-      const { meetingId, content, dealStage } = req.body;
+      const { meetingId, content, dealStage, useAllMeetingsContext = false } = req.body;
       
       // Validate meeting ownership
       const userId = req.user.claims.sub;
@@ -99,7 +99,37 @@ export class AIController {
         return;
       }
 
-      const suggestions = await openaiService.generateCoachingSuggestions(content, dealStage);
+      let contextContent = content;
+
+      // If using all meetings context, build accumulated context
+      if (useAllMeetingsContext) {
+        const currentMeeting = await this.meetingService.getMeetingById(meetingId);
+        if (currentMeeting) {
+          // Get all meetings for this client
+          const allMeetings = await this.meetingService.getMeetingsByUserId(userId);
+          const clientMeetings = allMeetings.filter(m => m.clientId === currentMeeting.clientId);
+          
+          // Build accumulated context from all meetings
+          let accumulatedContext = `Client: ${currentMeeting.clientName}${currentMeeting.clientCompany ? ` from ${currentMeeting.clientCompany}` : ''}\n`;
+          accumulatedContext += `Deal Type: ${currentMeeting.dealType || 'Not specified'}\n\n`;
+          accumulatedContext += `Meeting History (${clientMeetings.length} meetings):\n`;
+          
+          clientMeetings
+            .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+            .forEach((meeting: any, index: number) => {
+              accumulatedContext += `\n--- Meeting ${index + 1} (${new Date(meeting.createdAt).toLocaleDateString()}) ---\n`;
+              // Get notes for this meeting
+              // Note: We'd need to modify this to include notes, but for now use available content
+              if (meeting.id === meetingId) {
+                accumulatedContext += `Notes: ${content}\n`;
+              }
+            });
+          
+          contextContent = accumulatedContext;
+        }
+      }
+
+      const suggestions = await openaiService.generateCoachingSuggestions(contextContent, dealStage);
       
       // Store coaching suggestions
       const coachingSuggestionData = insertCoachingSuggestionSchema.parse({

@@ -28,6 +28,7 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
   const [chatContext, setChatContext] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
   const [chatWelcomeShown, setChatWelcomeShown] = useState<Record<number, boolean>>({});
+  const [useAllMeetingsContext, setUseAllMeetingsContext] = useState(true);
 
   // Handle tab routing from Growth Guide
   const handleChatRedirect = (context: string) => {
@@ -126,6 +127,7 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
             <GrowthGuideComponent 
               meeting={meeting} 
               onChatRedirect={handleChatRedirect}
+              useAllMeetingsContext={useAllMeetingsContext}
             />
           </TabsContent>
 
@@ -143,6 +145,8 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
                   }));
                 }
               }}
+              useAllMeetingsContext={useAllMeetingsContext}
+              onContextToggle={setUseAllMeetingsContext}
             />
           </TabsContent>
 
