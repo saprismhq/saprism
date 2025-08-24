@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoImage from "@assets/saprism_logo_withouttext Background Removed_1756062206616.png";
+import logoImage from "../assets/saprism-logo.png";
 
 interface SaprismLogoProps {
   className?: string;
@@ -8,9 +8,9 @@ interface SaprismLogoProps {
 
 export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
   const sizeClasses = {
-    sm: "h-6 w-6",
-    md: "h-8 w-8",
-    lg: "h-12 w-12"
+    sm: "h-8 w-8",
+    md: "h-10 w-10", 
+    lg: "h-16 w-16"
   };
 
   return (
