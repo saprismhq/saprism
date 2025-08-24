@@ -1,8 +1,6 @@
-<div align="center">
 
-<img src="assets/saprism-logo.png" alt="Saprism Logo" width="80" height="80">
 
-# Saprism
+<img src="assets/saprism-logo.png" alt="Saprism Logo" width="80" height="80"> # Saprism
 ### *AI-Powered Sales Coaching Platform*
 
 *Transform your sales team performance through intelligent coaching, real-time insights, and seamless CRM integration*
