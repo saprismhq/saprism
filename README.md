@@ -1,4 +1,6 @@
+<div align="center" />
 <img src="assets/saprism-logo.png" alt="Saprism Logo" width="80" height="80">
+
 # Saprism
 ### *AI-Powered Sales Coaching Platform*
 
