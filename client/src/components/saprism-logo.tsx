@@ -8,9 +8,9 @@ interface SaprismLogoProps {
 
 export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
   const sizeClasses = {
-    sm: "h-8 w-8",
-    md: "h-10 w-10", 
-    lg: "h-16 w-16"
+    sm: "h-7 w-7",
+    md: "h-9 w-9", 
+    lg: "h-14 w-14"
   };
 
   return (
