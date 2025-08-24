@@ -14,16 +14,14 @@ export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
   };
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <div className={cn("relative flex items-center justify-center", sizeClasses[size])}>
-        <img
-          src={logoImage}
-          alt="Saprism Logo"
-          className="h-full w-full object-contain"
-        />
-      </div>
+    <div className={cn("flex items-center gap-3", className)}>
+      <img
+        src={logoImage}
+        alt="Saprism Logo"
+        className={cn("object-contain flex-shrink-0", sizeClasses[size])}
+      />
       <span className={cn(
-        "font-bold tracking-tight bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent",
+        "font-bold tracking-tight bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent leading-none",
         size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl"
       )}>
         Saprism
