@@ -72,7 +72,7 @@ export class CrmController {
           noteId: result.noteId,
           meetingData
         } : null,
-        error: result.error
+        error: result.error || null
       });
 
       res.json(result);
