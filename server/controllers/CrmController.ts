@@ -72,7 +72,7 @@ export class CrmController {
           noteId: result.noteId,
           meetingData
         } : null,
-        errorMessage: result.error
+        error: result.error
       });
 
       res.json(result);
@@ -83,7 +83,7 @@ export class CrmController {
         meetingId: req.body.meetingId,
         status: 'failed',
         syncData: null,
-        errorMessage
+        error: errorMessage
       });
       res.status(500).json({ message: "Failed to sync to CRM" });
     }
