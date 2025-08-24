@@ -21,55 +21,68 @@ export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Prism crystal design */}
+          <defs>
+            <linearGradient id="sapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4FC3F7" />
+              <stop offset="50%" stopColor="#29B6F6" />
+              <stop offset="100%" stopColor="#0288D1" />
+            </linearGradient>
+            <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4FC3F7" opacity="0.8" />
+              <stop offset="100%" stopColor="#0288D1" opacity="0.6" />
+            </linearGradient>
+          </defs>
+          
+          {/* Main oval container */}
+          <ellipse
+            cx="16"
+            cy="16"
+            rx="12"
+            ry="14"
+            fill="url(#sapGradient)"
+            className="drop-shadow-sm"
+          />
+          
+          {/* Flowing curves creating S pattern */}
           <path
-            d="M16 4 L26 14 L16 24 L6 14 Z"
-            stroke="currentColor"
+            d="M10 8 Q16 12 22 8 Q16 16 10 20 Q16 20 22 24"
+            stroke="#1A237E"
+            strokeWidth="2.5"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            opacity="0.7"
+          />
+          
+          <path
+            d="M8 10 Q14 14 20 10 Q14 18 8 22"
+            stroke="#1A237E"
             strokeWidth="2"
             fill="none"
-            className="text-primary"
-          />
-          <path
-            d="M16 4 L16 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="text-primary opacity-60"
-          />
-          <path
-            d="M6 14 L26 14"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            className="text-primary opacity-60"
-          />
-          
-          {/* Light refraction effect */}
-          <path
-            d="M16 14 L19 11 L22 14 L19 17 Z"
-            fill="currentColor"
-            className="text-accent opacity-70"
-          />
-          <path
-            d="M16 14 L13 11 L10 14 L13 17 Z"
-            fill="currentColor"
-            className="text-accent opacity-50"
-          />
-          
-          {/* Light beam effect */}
-          <path
-            d="M26 14 L28 12 M26 14 L28 16"
-            stroke="currentColor"
-            strokeWidth="2"
             strokeLinecap="round"
-            className="text-accent"
+            strokeLinejoin="round"
+            opacity="0.5"
+          />
+          
+          {/* Sparkle/diamond accent */}
+          <path
+            d="M24 6 L25.5 7.5 L24 9 L22.5 7.5 Z"
+            fill="#4FC3F7"
+            className="animate-pulse"
+          />
+          <path
+            d="M24 7.5 L24.7 7.5 M24 7.5 L23.3 7.5 M24 7.5 L24 6.8 M24 7.5 L24 8.2"
+            stroke="#4FC3F7"
+            strokeWidth="0.8"
+            strokeLinecap="round"
           />
         </svg>
       </div>
       <span className={cn(
-        "font-bold tracking-tight",
+        "font-bold tracking-tight bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent",
         size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl"
       )}>
-        <span className="text-primary">Sap</span>
-        <span className="text-accent">rism</span>
+        Saprism
       </span>
     </div>
   );
