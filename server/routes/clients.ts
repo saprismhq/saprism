@@ -50,92 +50,95 @@ router.post('/', isAuthenticated, async (req: any, res) => {
       const { salesforceService } = await import('../services/salesforce');
       
       try {
-        // Check if client exists in Salesforce
-        const existingSfClient = await salesforceService.findExistingClient({
-          company: clientData.company,
-          name: clientData.name,
-          email: clientData.email || undefined
-        });
-
-        if (existingSfClient.error) {
-          return res.status(400).json({ 
-            message: 'Salesforce sync failed', 
-            error: existingSfClient.error 
-          });
-        }
-
-        if (existingSfClient.exists) {
-          // Client exists in Salesforce - prevent duplicate creation locally
-          const existingLocalClient = await prisma.client.findFirst({
-            where: {
-              userId,
-              company: clientData.company,
-              name: clientData.name,
-            }
-          });
-
-          if (existingLocalClient) {
-            return res.status(400).json({ 
-              message: 'Client already exists both locally and in Salesforce',
-              suggestion: 'This client is already synced with Salesforce'
-            });
-          }
-
-          // Merge Salesforce data with local data (prefer local data)
-          const sfContact = existingSfClient.contact;
-          const sfAccount = existingSfClient.account;
-          
-          const mergedData = {
-            ...clientData,
-            email: clientData.email || sfContact.Email || null,
-            phone: clientData.phone || sfContact.Phone || null,
-            industry: clientData.industry || sfAccount.Industry || null,
-          };
-
-          // Update Salesforce with any missing fields
-          salesforceResult = await salesforceService.createOrUpdateClient(mergedData);
-          
-          // Create local client with merged data
-          const client = await prisma.client.create({
-            data: {
-              ...mergedData,
-              userId,
-              notes: clientData.notes || null,
-            },
-            include: {
-              _count: {
-                select: { meetings: true }
-              }
-            }
-          });
-
-          return res.status(201).json({
-            ...client,
-            salesforceSync: {
-              success: true,
-              action: 'updated_existing',
-              wasUpdated: salesforceResult.wasUpdated,
-              contactId: salesforceResult.contactId,
-              accountId: salesforceResult.accountId
-            }
-          });
+        // Test connection first
+        const connectionTest = await salesforceService.testConnection();
+        
+        if (!connectionTest.connected) {
+          // Salesforce not configured - continue with local creation only
+          console.warn('Salesforce not configured, creating client locally only:', connectionTest.error);
+          // Continue to local creation below
         } else {
-          // Create new client in Salesforce
-          salesforceResult = await salesforceService.createOrUpdateClient(clientData);
-          
-          if (!salesforceResult.success) {
-            return res.status(400).json({ 
-              message: 'Failed to create client in Salesforce', 
-              error: salesforceResult.error 
+          // Check if client exists in Salesforce
+          const existingSfClient = await salesforceService.findExistingClient({
+            company: clientData.company,
+            name: clientData.name,
+            email: clientData.email || undefined
+          });
+
+          if (existingSfClient.error) {
+            console.warn('Salesforce search failed, creating client locally only:', existingSfClient.error);
+            // Continue to local creation below
+          } else {
+
+          if (existingSfClient.exists) {
+            // Client exists in Salesforce - prevent duplicate creation locally
+            const existingLocalClient = await prisma.client.findFirst({
+              where: {
+                userId,
+                company: clientData.company,
+                name: clientData.name,
+              }
             });
+
+            if (existingLocalClient) {
+              return res.status(400).json({ 
+                message: 'Client already exists both locally and in Salesforce',
+                suggestion: 'This client is already synced with Salesforce'
+              });
+            }
+
+            // Merge Salesforce data with local data (prefer local data)
+            const sfContact = existingSfClient.contact;
+            const sfAccount = existingSfClient.account;
+            
+            const mergedData = {
+              ...clientData,
+              email: clientData.email || sfContact.Email || null,
+              phone: clientData.phone || sfContact.Phone || null,
+              industry: clientData.industry || sfAccount.Industry || null,
+            };
+
+            // Update Salesforce with any missing fields
+            salesforceResult = await salesforceService.createOrUpdateClient(mergedData);
+            
+            // Create local client with merged data
+            const client = await prisma.client.create({
+              data: {
+                ...mergedData,
+                userId,
+                notes: clientData.notes || null,
+              },
+              include: {
+                _count: {
+                  select: { meetings: true }
+                }
+              }
+            });
+
+            return res.status(201).json({
+              ...client,
+              salesforceSync: {
+                success: true,
+                action: 'updated_existing',
+                wasUpdated: salesforceResult.wasUpdated,
+                contactId: salesforceResult.contactId,
+                accountId: salesforceResult.accountId
+              }
+            });
+          } else {
+            // Create new client in Salesforce
+            salesforceResult = await salesforceService.createOrUpdateClient(clientData);
+            
+            if (!salesforceResult.success) {
+              console.warn('Failed to create client in Salesforce, creating locally only:', salesforceResult.error);
+              // Continue to local creation below
+            }
+          }
           }
         }
       } catch (sfError) {
-        console.error('Salesforce integration error:', sfError);
-        return res.status(400).json({ 
-          message: 'Salesforce integration failed', 
-          error: sfError.message 
-        });
+        console.error('Salesforce integration error, creating client locally only:', sfError);
+        // Continue to local creation below
       }
     }
 

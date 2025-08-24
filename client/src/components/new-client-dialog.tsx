@@ -74,10 +74,10 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
           if (newClient.salesforceSync.action === 'updated_existing') {
             description += ` Synced with existing Salesforce contact${newClient.salesforceSync.wasUpdated ? ' and updated missing fields' : ''}.`;
           } else {
-            description += ' Created new contact in Salesforce.';
+            description += ' Also created in Salesforce.';
           }
         } else {
-          description += ' Note: Salesforce sync failed.';
+          description += ' Salesforce sync was skipped due to configuration.';
         }
       }
       
@@ -252,11 +252,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
               Sync with Salesforce
             </Label>
           </div>
-          {formData.syncWithSalesforce && (
-            <p className="text-xs text-gray-600 ml-6 -mt-1">
-              Checks for existing clients and prevents duplicates
-            </p>
-          )}
 
           {/* Form Actions */}
           <div className="flex justify-end space-x-3 pt-4">
