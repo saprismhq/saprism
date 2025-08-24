@@ -144,6 +144,398 @@ export class SalesforceService {
     return description;
   }
 
+  async syncMeetingToSalesforce(meetingData: {
+    id: number;
+    clientName: string;
+    clientCompany: string | null;
+    dealType: string;
+    notes: string;
+    aiAnalysis: any;
+    coachingSuggestions: any[];
+    createdAt: Date;
+  }): Promise<{
+    success: boolean;
+    opportunityId?: string;
+    contactId?: string;
+    accountId?: string;
+    taskId?: string;
+    noteId?: string;
+    error?: string;
+  }> {
+    try {
+      // Test authentication first
+      const authTest = await this.testConnection();
+      if (!authTest.connected) {
+        return { 
+          success: false, 
+          error: `Salesforce not configured: ${authTest.error}` 
+        };
+      }
+
+      // Find or create Account and Contact
+      const clientResult = await this.findOrCreateClientInSalesforce({
+        company: meetingData.clientCompany || meetingData.clientName,
+        name: meetingData.clientName,
+        email: undefined // We don't have email from meeting data
+      });
+
+      if (!clientResult.success) {
+        return { success: false, error: clientResult.error };
+      }
+
+      const accountId = clientResult.accountId!;
+      const contactId = clientResult.contactId!;
+
+      // Create or update Opportunity
+      const opportunityResult = await this.createOrUpdateOpportunity({
+        accountId,
+        contactId,
+        meetingData,
+        aiAnalysis: meetingData.aiAnalysis
+      });
+
+      if (!opportunityResult.success) {
+        return { success: false, error: opportunityResult.error };
+      }
+
+      // Create Task for the meeting
+      const taskResult = await this.createMeetingTask({
+        opportunityId: opportunityResult.opportunityId!,
+        contactId,
+        meetingData
+      });
+
+      // Create Note with AI analysis
+      const noteResult = await this.createAnalysisNote({
+        opportunityId: opportunityResult.opportunityId!,
+        contactId,
+        meetingData
+      });
+
+      return {
+        success: true,
+        opportunityId: opportunityResult.opportunityId,
+        contactId,
+        accountId,
+        taskId: taskResult.taskId,
+        noteId: noteResult.noteId
+      };
+
+    } catch (error) {
+      return { 
+        success: false, 
+        error: `Meeting sync failed: ${error.message}` 
+      };
+    }
+  }
+
+  private async findOrCreateClientInSalesforce(clientData: {
+    company: string;
+    name: string;
+    email?: string;
+  }): Promise<{
+    success: boolean;
+    accountId?: string;
+    contactId?: string;
+    error?: string;
+  }> {
+    try {
+      // Try to find existing client first
+      const existing = await this.findExistingClient(clientData);
+      
+      if (existing.error) {
+        return { success: false, error: existing.error };
+      }
+
+      if (existing.exists && existing.contact && existing.account) {
+        return {
+          success: true,
+          accountId: existing.account.Id,
+          contactId: existing.contact.Id
+        };
+      }
+
+      // Create new account and contact
+      const createResult = await this.createOrUpdateClient({
+        company: clientData.company,
+        name: clientData.name,
+        email: clientData.email,
+        phone: undefined,
+        industry: undefined
+      });
+
+      if (!createResult.success) {
+        return { success: false, error: createResult.error };
+      }
+
+      return {
+        success: true,
+        accountId: createResult.accountId,
+        contactId: createResult.contactId
+      };
+
+    } catch (error) {
+      return { 
+        success: false, 
+        error: `Client lookup/creation failed: ${error.message}` 
+      };
+    }
+  }
+
+  private async createOrUpdateOpportunity(params: {
+    accountId: string;
+    contactId: string;
+    meetingData: any;
+    aiAnalysis: any;
+  }): Promise<{
+    success: boolean;
+    opportunityId?: string;
+    error?: string;
+  }> {
+    try {
+      const { accountId, contactId, meetingData, aiAnalysis } = params;
+
+      // Check if opportunity already exists for this account
+      const existingOpps = await this.conn.sobject("Opportunity").find({
+        AccountId: accountId,
+        StageName: { $ne: "Closed Won" },
+        StageName: { $ne: "Closed Lost" }
+      });
+
+      const opportunityData: any = {
+        Name: `${meetingData.clientCompany || meetingData.clientName} - ${meetingData.dealType}`,
+        AccountId: accountId,
+        CloseDate: this.calculateCloseDate(aiAnalysis?.timeline),
+        StageName: this.mapDealStageToSalesforce(aiAnalysis?.dealStage || meetingData.dealType),
+        Type: "New Customer",
+        LeadSource: "Salespring Meeting"
+      };
+
+      // Add budget if available
+      if (aiAnalysis?.budget && aiAnalysis.budget !== "Not specified") {
+        const budgetAmount = this.extractBudgetAmount(aiAnalysis.budget);
+        if (budgetAmount > 0) {
+          opportunityData.Amount = budgetAmount;
+        }
+      }
+
+      // Set probability based on stage and sentiment
+      opportunityData.Probability = this.calculateProbability(
+        aiAnalysis?.dealStage, 
+        aiAnalysis?.sentiment
+      );
+
+      let opportunityId: string;
+
+      if (existingOpps.length > 0) {
+        // Update existing opportunity
+        opportunityId = existingOpps[0].Id;
+        await this.conn.sobject("Opportunity").update({
+          Id: opportunityId,
+          ...opportunityData
+        });
+      } else {
+        // Create new opportunity
+        const result = await this.conn.sobject("Opportunity").create(opportunityData);
+        opportunityId = result.id;
+      }
+
+      return { success: true, opportunityId };
+
+    } catch (error) {
+      return { 
+        success: false, 
+        error: `Opportunity creation failed: ${error.message}` 
+      };
+    }
+  }
+
+  private async createMeetingTask(params: {
+    opportunityId: string;
+    contactId: string;
+    meetingData: any;
+  }): Promise<{
+    success: boolean;
+    taskId?: string;
+    error?: string;
+  }> {
+    try {
+      const { opportunityId, contactId, meetingData } = params;
+
+      const taskData = {
+        Subject: `Meeting: ${meetingData.dealType} with ${meetingData.clientName}`,
+        Description: this.formatMeetingNotes(meetingData),
+        WhatId: opportunityId, // Link to Opportunity
+        WhoId: contactId, // Link to Contact
+        ActivityDate: meetingData.createdAt.toISOString().split('T')[0],
+        Status: "Completed",
+        Type: "Meeting",
+        Priority: "Normal"
+      };
+
+      const result = await this.conn.sobject("Task").create(taskData);
+
+      return { success: true, taskId: result.id };
+
+    } catch (error) {
+      return { 
+        success: false, 
+        error: `Task creation failed: ${error.message}` 
+      };
+    }
+  }
+
+  private async createAnalysisNote(params: {
+    opportunityId: string;
+    contactId: string;
+    meetingData: any;
+  }): Promise<{
+    success: boolean;
+    noteId?: string;
+    error?: string;
+  }> {
+    try {
+      const { opportunityId, contactId, meetingData } = params;
+
+      const analysisContent = this.formatAnalysisNote(meetingData.aiAnalysis, meetingData.coachingSuggestions);
+
+      const noteData = {
+        Title: `AI Analysis - ${meetingData.dealType} Meeting`,
+        Body: analysisContent,
+        ParentId: opportunityId // Link to Opportunity
+      };
+
+      const result = await this.conn.sobject("Note").create(noteData);
+
+      return { success: true, noteId: result.id };
+
+    } catch (error) {
+      return { 
+        success: false, 
+        error: `Analysis note creation failed: ${error.message}` 
+      };
+    }
+  }
+
+  private formatMeetingNotes(meetingData: any): string {
+    let description = `Meeting Type: ${meetingData.dealType}\n`;
+    description += `Date: ${meetingData.createdAt.toLocaleDateString()}\n\n`;
+    description += `Meeting Notes:\n${meetingData.notes}\n\n`;
+    description += `Generated by Salespring AI Sales Platform`;
+    
+    return description;
+  }
+
+  private formatAnalysisNote(aiAnalysis: any, coachingSuggestions: any[]): string {
+    if (!aiAnalysis) return "No AI analysis available for this meeting.";
+
+    let content = "=== AI ANALYSIS SUMMARY ===\n\n";
+    
+    content += `Deal Stage: ${aiAnalysis.dealStage}\n`;
+    content += `Budget: ${aiAnalysis.budget}\n`;
+    content += `Timeline: ${aiAnalysis.timeline}\n`;
+    content += `Sentiment Score: ${Math.round((aiAnalysis.sentiment || 0) * 100)}%\n`;
+    content += `Analysis Confidence: ${Math.round((aiAnalysis.confidence || 0) * 100)}%\n\n`;
+    
+    if (aiAnalysis.painPoints && aiAnalysis.painPoints.length > 0) {
+      content += "Pain Points Identified:\n";
+      aiAnalysis.painPoints.forEach((point: string, index: number) => {
+        content += `${index + 1}. ${point}\n`;
+      });
+      content += "\n";
+    }
+    
+    if (aiAnalysis.keyStakeholders && aiAnalysis.keyStakeholders.length > 0) {
+      content += "Key Stakeholders:\n";
+      aiAnalysis.keyStakeholders.forEach((stakeholder: string, index: number) => {
+        content += `${index + 1}. ${stakeholder}\n`;
+      });
+      content += "\n";
+    }
+    
+    if (coachingSuggestions && coachingSuggestions.length > 0) {
+      content += "AI Coaching Suggestions:\n";
+      coachingSuggestions.forEach((suggestion: any, index: number) => {
+        const status = suggestion.isUsed ? " ✓" : "";
+        content += `${index + 1}. [${suggestion.type}] ${suggestion.content}${status}\n`;
+      });
+      content += "\n";
+    }
+    
+    content += "Generated by Salespring Growth Guide";
+    
+    return content;
+  }
+
+  private calculateCloseDate(timeline: string): string {
+    const today = new Date();
+    let daysToAdd = 90; // Default 90 days
+
+    if (timeline) {
+      const timelineLower = timeline.toLowerCase();
+      if (timelineLower.includes('week')) {
+        const weeks = parseInt(timelineLower.match(/\d+/)?.[0] || '4');
+        daysToAdd = weeks * 7;
+      } else if (timelineLower.includes('month')) {
+        const months = parseInt(timelineLower.match(/\d+/)?.[0] || '3');
+        daysToAdd = months * 30;
+      } else if (timelineLower.includes('quarter')) {
+        daysToAdd = 90;
+      } else if (timelineLower.includes('immediate') || timelineLower.includes('asap')) {
+        daysToAdd = 30;
+      }
+    }
+
+    const closeDate = new Date(today);
+    closeDate.setDate(closeDate.getDate() + daysToAdd);
+    
+    return closeDate.toISOString().split('T')[0];
+  }
+
+  private extractBudgetAmount(budget: string): number {
+    if (!budget) return 0;
+    
+    const budgetLower = budget.toLowerCase();
+    const numberMatch = budgetLower.match(/[\d,]+/);
+    
+    if (!numberMatch) return 0;
+    
+    const number = parseInt(numberMatch[0].replace(/,/g, ''));
+    
+    // Handle K, M suffixes
+    if (budgetLower.includes('k')) {
+      return number * 1000;
+    } else if (budgetLower.includes('m')) {
+      return number * 1000000;
+    }
+    
+    return number;
+  }
+
+  private calculateProbability(dealStage: string, sentiment: number): number {
+    const baseStage = dealStage?.toLowerCase() || '';
+    let baseProbability = 10;
+
+    // Map deal stages to probabilities
+    const stageMap: { [key: string]: number } = {
+      'discovery': 20,
+      'qualification': 30,
+      'proposal': 50,
+      'negotiation': 75,
+      'closing': 90
+    };
+
+    baseProbability = stageMap[baseStage] || 10;
+
+    // Adjust based on sentiment
+    if (sentiment) {
+      const sentimentAdjustment = (sentiment - 0.5) * 40; // -20 to +20
+      baseProbability = Math.max(5, Math.min(95, baseProbability + sentimentAdjustment));
+    }
+
+    return Math.round(baseProbability);
+  }
+
   private mapDealStageToSalesforce(stage: string): string {
     const stageMap: { [key: string]: string } = {
       "discovery": "Prospecting",

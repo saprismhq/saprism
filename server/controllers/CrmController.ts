@@ -47,30 +47,31 @@ export class CrmController {
         return;
       }
 
-      // Prepare sync data
-      const analysis = latestNote.aiAnalysis as any;
-      const syncData = {
-        accountName: meeting.clientCompany || meeting.clientName,
-        contactName: meeting.clientName,
-        subject: `Meeting with ${meeting.clientName}`,
-        description: latestNote.content,
-        painPoints: analysis?.painPoints || [],
-        budget: analysis?.budget || "",
-        timeline: analysis?.timeline || "",
-        nextSteps: meeting.coachingSuggestions
-          .filter(s => s.type === 'next_steps')
-          .flatMap(s => {
-            const content = s.content as any;
-            return content?.nextSteps?.map((step: any) => step.step) || [];
-          })
+      // Prepare comprehensive meeting data for Salesforce sync
+      const meetingData = {
+        id: meeting.id,
+        clientName: meeting.clientName,
+        clientCompany: meeting.clientCompany,
+        dealType: meeting.dealType,
+        notes: latestNote.content,
+        aiAnalysis: latestNote.aiAnalysis,
+        coachingSuggestions: meeting.coachingSuggestions,
+        createdAt: meeting.createdAt
       };
 
-      const result = await salesforceService.syncMeetingNotes(syncData);
+      const result = await salesforceService.syncMeetingToSalesforce(meetingData);
       
       await this.crmSyncService.createCrmSyncLog({
         meetingId,
         status: result.success ? 'success' : 'failed',
-        syncData: result.success ? syncData : null,
+        syncData: result.success ? {
+          opportunityId: result.opportunityId,
+          contactId: result.contactId,
+          accountId: result.accountId,
+          taskId: result.taskId,
+          noteId: result.noteId,
+          meetingData
+        } : null,
         errorMessage: result.error
       });
 
