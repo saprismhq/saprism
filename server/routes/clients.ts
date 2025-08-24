@@ -45,19 +45,15 @@ router.post('/', isAuthenticated, async (req: any, res) => {
     
     let salesforceResult = null;
 
-    // If sync with Salesforce is enabled, check for existing client first
+    // If sync with Salesforce is enabled, try to integrate but fall back gracefully
     if (syncWithSalesforce) {
-      const { salesforceService } = await import('../services/salesforce');
-      
       try {
+        const { salesforceService } = await import('../services/salesforce');
+        
         // Test connection first
         const connectionTest = await salesforceService.testConnection();
         
-        if (!connectionTest.connected) {
-          // Salesforce not configured - continue with local creation only
-          console.warn('Salesforce not configured, creating client locally only:', connectionTest.error);
-          // Continue to local creation below
-        } else {
+        if (connectionTest.connected) {
           // Check if client exists in Salesforce
           const existingSfClient = await salesforceService.findExistingClient({
             company: clientData.company,
@@ -65,12 +61,7 @@ router.post('/', isAuthenticated, async (req: any, res) => {
             email: clientData.email || undefined
           });
 
-          if (existingSfClient.error) {
-            console.warn('Salesforce search failed, creating client locally only:', existingSfClient.error);
-            // Continue to local creation below
-          } else {
-
-          if (existingSfClient.exists) {
+          if (!existingSfClient.error && existingSfClient.exists) {
             // Client exists in Salesforce - prevent duplicate creation locally
             const existingLocalClient = await prisma.client.findFirst({
               where: {
@@ -125,19 +116,22 @@ router.post('/', isAuthenticated, async (req: any, res) => {
                 accountId: salesforceResult.accountId
               }
             });
-          } else {
+          } else if (!existingSfClient.error) {
             // Create new client in Salesforce
             salesforceResult = await salesforceService.createOrUpdateClient(clientData);
-            
-            if (!salesforceResult.success) {
-              console.warn('Failed to create client in Salesforce, creating locally only:', salesforceResult.error);
-              // Continue to local creation below
+            if (salesforceResult.success) {
+              console.log('Created new client in Salesforce');
+            } else {
+              console.warn('Failed to create client in Salesforce:', salesforceResult.error);
             }
+          } else {
+            console.warn('Salesforce search failed:', existingSfClient.error);
           }
-          }
+        } else {
+          console.warn('Salesforce not configured:', connectionTest.error);
         }
       } catch (sfError) {
-        console.error('Salesforce integration error, creating client locally only:', sfError);
+        console.warn('Salesforce integration error:', sfError);
         // Continue to local creation below
       }
     }
