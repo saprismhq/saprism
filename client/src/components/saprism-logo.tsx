@@ -14,7 +14,7 @@ export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
   };
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2", className)}>
       <img
         src={logoImage}
         alt="Saprism Logo"
