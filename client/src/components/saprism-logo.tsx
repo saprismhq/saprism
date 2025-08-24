@@ -22,60 +22,48 @@ export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="sapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4FC3F7" />
-              <stop offset="50%" stopColor="#29B6F6" />
-              <stop offset="100%" stopColor="#0288D1" />
-            </linearGradient>
-            <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4FC3F7" opacity="0.8" />
-              <stop offset="100%" stopColor="#0288D1" opacity="0.6" />
+            <linearGradient id="ovalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#7DD3FC" />
+              <stop offset="50%" stopColor="#0EA5E9" />
+              <stop offset="100%" stopColor="#0284C7" />
             </linearGradient>
           </defs>
           
-          {/* Main oval container */}
+          {/* Main oval shape */}
           <ellipse
             cx="16"
             cy="16"
-            rx="12"
-            ry="14"
-            fill="url(#sapGradient)"
-            className="drop-shadow-sm"
+            rx="10"
+            ry="13"
+            fill="url(#ovalGradient)"
           />
           
-          {/* Flowing curves creating S pattern */}
+          {/* S-shaped flowing lines */}
           <path
-            d="M10 8 Q16 12 22 8 Q16 16 10 20 Q16 20 22 24"
-            stroke="#1A237E"
-            strokeWidth="2.5"
+            d="M11 8 Q16 11 21 8 Q18 12 16 16 Q14 20 11 24"
+            stroke="#1E293B"
+            strokeWidth="2.8"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity="0.7"
           />
           
           <path
-            d="M8 10 Q14 14 20 10 Q14 18 8 22"
-            stroke="#1A237E"
-            strokeWidth="2"
+            d="M9 10 Q14 13 19 10 Q16 14 14 18 Q12 22 9 26"
+            stroke="#1E293B"
+            strokeWidth="2.2"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
-            opacity="0.5"
           />
           
-          {/* Sparkle/diamond accent */}
-          <path
-            d="M24 6 L25.5 7.5 L24 9 L22.5 7.5 Z"
-            fill="#4FC3F7"
-            className="animate-pulse"
-          />
-          <path
-            d="M24 7.5 L24.7 7.5 M24 7.5 L23.3 7.5 M24 7.5 L24 6.8 M24 7.5 L24 8.2"
-            stroke="#4FC3F7"
-            strokeWidth="0.8"
-            strokeLinecap="round"
-          />
+          {/* Four-pointed star/sparkle */}
+          <g transform="translate(23, 7)">
+            <path
+              d="M0 -3 L1 -1 L3 0 L1 1 L0 3 L-1 1 L-3 0 L-1 -1 Z"
+              fill="#67E8F9"
+            />
+          </g>
         </svg>
       </div>
       <span className={cn(
