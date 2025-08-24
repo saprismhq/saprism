@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Users, BarChart3, Zap, Sparkles, Prism } from "lucide-react";
+import { Brain, Users, BarChart3, Zap, Sparkles, Diamond } from "lucide-react";
 import { SaprismLogo } from "@/components/saprism-logo";
 
 export default function Landing() {
@@ -27,7 +27,7 @@ export default function Landing() {
           <div className="flex justify-center mb-8">
             <div className="relative">
               <Sparkles className="w-16 h-16 text-cyan-400 opacity-30 absolute -top-4 -right-4 animate-pulse" />
-              <Prism className="w-20 h-20 text-blue-600" />
+              <Diamond className="w-20 h-20 text-blue-600" />
             </div>
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
