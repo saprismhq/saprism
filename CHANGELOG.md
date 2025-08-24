@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Salespring will be documented in this file.
+All notable changes to Saprism will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Complete rebrand from "SalesCoach AI" to "Salespring" with spring-inspired theme
+- Complete rebrand from "SalesCoach AI" to "Saprism" with prism-inspired theme
 - Custom SVG logo with spring coil design and leaf accents
 - Fresh green color palette reflecting growth and new beginnings
 - Growth-oriented content strategy with nurturing metaphors
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated theme colors to green-based scheme (hsl(142, 76%, 36%) primary, hsl(95, 60%, 88%) accent)
-- Rebranded all UI components and pages with Salespring identity
+- Rebranded all UI components and pages with Saprism identity
 - Updated landing page with spring-themed messaging
 - Modified sidebar to use new logo component
 - Reorganized documentation structure with separate README and CHANGELOG

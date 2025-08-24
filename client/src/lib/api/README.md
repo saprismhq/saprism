@@ -1,6 +1,6 @@
 # API Organization Structure
 
-This directory contains the organized API layer for the Salespring application, providing a clean, structured approach to state management with TanStack Query.
+This directory contains the organized API layer for the Saprism application, providing a clean, structured approach to state management with TanStack Query.
 
 ## Architecture Overview
 

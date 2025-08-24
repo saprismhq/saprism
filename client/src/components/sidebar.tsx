@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Activity, User } from "lucide-react";
-import { SalespringLogo } from "@/components/salespring-logo";
+import { SaprismLogo } from "@/components/saprism-logo";
 import { ClientDropdown } from "@/components/client-dropdown";
 import { NewClientDialog } from "@/components/new-client-dialog";
 import { EditClientDialog } from "@/components/edit-client-dialog";
@@ -126,7 +126,7 @@ export function Sidebar({
       {/* Logo & Brand */}
       <div className="px-6 py-4 border-b border-gray-100 flex items-center">
         <div>
-          <SalespringLogo size="md" />
+          <SaprismLogo size="md" />
           <p className="text-sm text-transparent truncate invisible">Hidden spacer text</p>
         </div>
       </div>

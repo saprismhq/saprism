@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌱 Salespring
+# 🌱 Saprism
 ### *AI-Powered Sales Coaching Platform*
 
 *Transform your sales team performance through intelligent coaching, real-time insights, and seamless CRM integration*

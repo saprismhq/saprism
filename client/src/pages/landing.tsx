@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Users, BarChart3, Zap, Leaf, TrendingUp } from "lucide-react";
-import { SalespringLogo } from "@/components/salespring-logo";
+import { SaprismLogo } from "@/components/saprism-logo";
 
 export default function Landing() {
   return (
@@ -10,7 +10,7 @@ export default function Landing() {
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <SalespringLogo size="md" />
+            <SaprismLogo size="md" />
             <Button 
               onClick={() => window.location.href = '/api/login'}
               className="bg-primary hover:bg-primary/90"
@@ -31,19 +31,19 @@ export default function Landing() {
             </div>
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
-            Watch Your Sales
-            <span className="text-primary"> Spring</span> to Life
+            Refract Your Sales
+            <span className="text-primary"> Through Success</span>
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Nurture every opportunity with AI-powered insights, real-time coaching, 
-            and seamless CRM integration. Transform prospects into flourishing deals.
+            Break down complex deals into brilliant opportunities with AI-powered insights, real-time coaching, 
+            and seamless CRM integration. Transform prospects through focused clarity.
           </p>
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary/90 text-lg px-8 py-3"
             onClick={() => window.location.href = '/api/login'}
           >
-            Start Growing Today
+            Start Refracting Today
           </Button>
         </div>
       </section>
@@ -52,7 +52,7 @@ export default function Landing() {
       <section className="py-20 bg-gradient-to-br from-green-50/50 to-emerald-50/50">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Everything You Need to Cultivate Success
+            Everything You Need to Focus Success
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card>
@@ -60,7 +60,7 @@ export default function Landing() {
                 <Brain className="w-8 h-8 text-primary mb-2" />
                 <CardTitle>Smart Insights</CardTitle>
                 <CardDescription>
-                  Plant the seeds of success with AI-powered note analysis that identifies growth opportunities
+                  Focus your insights with AI-powered note analysis that clarifies opportunities
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -70,7 +70,7 @@ export default function Landing() {
                 <Zap className="w-8 h-8 text-accent mb-2" />
                 <CardTitle>Real-Time Coaching</CardTitle>
                 <CardDescription>
-                  Nurture every conversation with contextual prompts that help deals bloom
+                  Sharpen every conversation with contextual prompts that bring deals into focus
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -135,7 +135,7 @@ export default function Landing() {
                 <CardHeader>
                   <CardTitle className="text-center">Ready to Transform Your Sales Process?</CardTitle>
                   <CardDescription className="text-center">
-                    Join thousands of sales professionals who are already using SalesCoach AI
+                    Join thousands of sales professionals who are already using Saprism
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -156,10 +156,10 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center space-x-3 mb-8">
-            <SalespringLogo size="sm" className="text-white" />
+            <SaprismLogo size="sm" className="text-white" />
           </div>
           <div className="text-center text-gray-400">
-            <p>&copy; 2024 Salespring. All rights reserved.</p>
+            <p>&copy; 2024 Saprism. All rights reserved.</p>
           </div>
         </div>
       </footer>

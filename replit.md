@@ -1,8 +1,8 @@
-# Salespring - AI-Powered Sales Coaching Platform
+# Saprism - AI-Powered Sales Coaching Platform
 
 ## Overview
 
-Salespring is a full-stack web application that provides AI-powered sales coaching and meeting management. The application features intelligent note-taking, real-time coaching suggestions, AI-driven analysis, and CRM integration to help sales professionals improve their performance and close more deals.
+Saprism is a full-stack web application that provides AI-powered sales coaching and meeting management. The application features intelligent note-taking, real-time coaching suggestions, AI-driven analysis, and CRM integration to help sales professionals improve their performance and close more deals.
 
 ## User Preferences
 
@@ -164,7 +164,7 @@ The application supports multiple deployment options:
 
 ## Brand Identity
 
-The application has been rebranded to "Salespring" with a spring-themed design:
+The application has been rebranded to "Saprism" with a prism-themed design:
 - **Color Palette**: Green-based scheme (hsl(142, 76%, 36%) primary, hsl(95, 60%, 88%) accent)
 - **Logo**: Custom SVG with spring coil design and leaf accents
 - **Messaging**: Growth-oriented content with nurturing metaphors

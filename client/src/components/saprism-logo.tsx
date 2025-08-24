@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
-interface SalespringLogoProps {
+interface SaprismLogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
 }
 
-export function SalespringLogo({ className, size = "md" }: SalespringLogoProps) {
+export function SaprismLogo({ className, size = "md" }: SaprismLogoProps) {
   const sizeClasses = {
     sm: "h-6 w-6",
     md: "h-8 w-8",
@@ -21,44 +21,46 @@ export function SalespringLogo({ className, size = "md" }: SalespringLogoProps) 
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Spring coil design */}
+          {/* Prism crystal design */}
           <path
-            d="M8 16c0-4.4 3.6-8 8-8s8 3.6 8 8c0 2.2-0.9 4.2-2.3 5.7"
+            d="M16 4 L26 14 L16 24 L6 14 Z"
             stroke="currentColor"
             strokeWidth="2"
             fill="none"
             className="text-primary"
           />
           <path
-            d="M12 16c0-2.2 1.8-4 4-4s4 1.8 4 4c0 1.1-0.4 2.1-1.2 2.8"
+            d="M16 4 L16 24"
             stroke="currentColor"
-            strokeWidth="2"
-            fill="none"
-            className="text-primary"
+            strokeWidth="1.5"
+            className="text-primary opacity-60"
           />
           <path
-            d="M14 16c0-1.1 0.9-2 2-2s2 0.9 2 2c0 0.6-0.2 1.1-0.6 1.4"
+            d="M6 14 L26 14"
             stroke="currentColor"
-            strokeWidth="2"
-            fill="none"
-            className="text-primary"
+            strokeWidth="1.5"
+            className="text-primary opacity-60"
           />
           
-          {/* Growth arrow */}
+          {/* Light refraction effect */}
           <path
-            d="M16 20l3 3m0 0l-3 3m3-3H8"
+            d="M16 14 L19 11 L22 14 L19 17 Z"
+            fill="currentColor"
+            className="text-accent opacity-70"
+          />
+          <path
+            d="M16 14 L13 11 L10 14 L13 17 Z"
+            fill="currentColor"
+            className="text-accent opacity-50"
+          />
+          
+          {/* Light beam effect */}
+          <path
+            d="M26 14 L28 12 M26 14 L28 16"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
-            strokeLinejoin="round"
             className="text-accent"
-          />
-          
-          {/* Leaf accent */}
-          <path
-            d="M20 8c2 0 4 1.5 4 3.5s-2 3.5-4 3.5c-1 0-1.8-0.5-2.5-1.2"
-            fill="currentColor"
-            className="text-accent opacity-70"
           />
         </svg>
       </div>
@@ -66,8 +68,8 @@ export function SalespringLogo({ className, size = "md" }: SalespringLogoProps) 
         "font-bold tracking-tight",
         size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl"
       )}>
-        <span className="text-primary">Sale</span>
-        <span className="text-accent">spring</span>
+        <span className="text-primary">Sap</span>
+        <span className="text-accent">rism</span>
       </span>
     </div>
   );
