@@ -1,15 +1,19 @@
 import jsforce from "jsforce";
 
+type JSForceConnection = any;
+
 export class SalesforceService {
-  private conn: jsforce.Connection;
+  private conn: JSForceConnection;
 
   constructor() {
     this.conn = new jsforce.Connection({
       instanceUrl: process.env.SALESFORCE_INSTANCE_URL || process.env.SF_INSTANCE_URL || "https://login.salesforce.com",
       accessToken: process.env.SALESFORCE_ACCESS_TOKEN || process.env.SF_ACCESS_TOKEN,
       refreshToken: process.env.SALESFORCE_REFRESH_TOKEN || process.env.SF_REFRESH_TOKEN,
-      clientId: process.env.SALESFORCE_CLIENT_ID || process.env.SF_CLIENT_ID,
-      clientSecret: process.env.SALESFORCE_CLIENT_SECRET || process.env.SF_CLIENT_SECRET,
+      oauth2: {
+        clientId: process.env.SALESFORCE_CLIENT_ID || process.env.SF_CLIENT_ID,
+        clientSecret: process.env.SALESFORCE_CLIENT_SECRET || process.env.SF_CLIENT_SECRET
+      }
     });
   }
 
@@ -31,7 +35,7 @@ export class SalesforceService {
 
       await this.conn.login(username, password + (securityToken || ""));
     } catch (error) {
-      throw new Error("Failed to authenticate with Salesforce: " + error.message);
+      throw new Error("Failed to authenticate with Salesforce: " + (error as Error).message);
     }
   }
 
@@ -70,7 +74,7 @@ export class SalesforceService {
         return { success: false, error: "Failed to create Salesforce record" };
       }
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -118,7 +122,7 @@ export class SalesforceService {
         return { success: false, error: "Failed to create opportunity" };
       }
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
   }
 
@@ -126,7 +130,7 @@ export class SalesforceService {
     let description = meetingData.description + "\n\n";
     
     if (meetingData.painPoints.length > 0) {
-      description += "Pain Points:\n" + meetingData.painPoints.map(p => `• ${p}`).join("\n") + "\n\n";
+      description += "Pain Points:\n" + meetingData.painPoints.map((p: string) => `• ${p}`).join("\n") + "\n\n";
     }
     
     if (meetingData.budget) {
@@ -138,7 +142,7 @@ export class SalesforceService {
     }
     
     if (meetingData.nextSteps.length > 0) {
-      description += "\nNext Steps:\n" + meetingData.nextSteps.map(s => `• ${s}`).join("\n");
+      description += "\nNext Steps:\n" + meetingData.nextSteps.map((s: string) => `• ${s}`).join("\n");
     }
     
     return description;
@@ -224,7 +228,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         success: false, 
-        error: `Meeting sync failed: ${error.message}` 
+        error: `Meeting sync failed: ${(error as Error).message}` 
       };
     }
   }
@@ -277,7 +281,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         success: false, 
-        error: `Client lookup/creation failed: ${error.message}` 
+        error: `Client lookup/creation failed: ${(error as Error).message}` 
       };
     }
   }
@@ -298,8 +302,7 @@ export class SalesforceService {
       // Check if opportunity already exists for this account
       const existingOpps = await this.conn.sobject("Opportunity").find({
         AccountId: accountId,
-        StageName: { $ne: "Closed Won" },
-        StageName: { $ne: "Closed Lost" }
+        StageName: { $nin: ["Closed Won", "Closed Lost"] }
       });
 
       const opportunityData: any = {
@@ -345,7 +348,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         success: false, 
-        error: `Opportunity creation failed: ${error.message}` 
+        error: `Opportunity creation failed: ${(error as Error).message}` 
       };
     }
   }
@@ -380,7 +383,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         success: false, 
-        error: `Task creation failed: ${error.message}` 
+        error: `Task creation failed: ${(error as Error).message}` 
       };
     }
   }
@@ -412,7 +415,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         success: false, 
-        error: `Analysis note creation failed: ${error.message}` 
+        error: `Analysis note creation failed: ${(error as Error).message}` 
       };
     }
   }
@@ -613,7 +616,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         exists: false, 
-        error: `Salesforce search failed: ${error.message}` 
+        error: `Salesforce search failed: ${(error as Error).message}` 
       };
     }
   }
@@ -722,7 +725,7 @@ export class SalesforceService {
         wasUpdated: false
       };
     } catch (error) {
-      return { success: false, error: `Failed to create/update client in Salesforce: ${error.message}` };
+      return { success: false, error: `Failed to create/update client in Salesforce: ${(error as Error).message}` };
     }
   }
 
@@ -742,7 +745,7 @@ export class SalesforceService {
       const identity = await this.conn.identity();
       return { connected: true };
     } catch (error) {
-      return { connected: false, error: error.message };
+      return { connected: false, error: (error as Error).message };
     }
   }
 }
