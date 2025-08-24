@@ -26,6 +26,7 @@ interface SalesMethodology {
 
 interface GrowthMethodProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
+  selectedClient?: any;
 }
 
 const METHODOLOGIES: SalesMethodology[] = [
@@ -263,15 +264,32 @@ const METHODOLOGIES: SalesMethodology[] = [
   }
 ];
 
-export function GrowthMethod({ meeting }: GrowthMethodProps) {
+export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
   const [selectedMethodology, setSelectedMethodology] = useState<string>("");
   const [methodology, setMethodology] = useState<SalesMethodology | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
 
-  // Auto-select methodology based on client industry/company
+  // Auto-select methodology based on client's selected methodology
   useEffect(() => {
-    if (meeting?.clientCompany && !selectedMethodology) {
-      // Simple industry detection logic - in a real app, this would be more sophisticated
+    if (selectedClient?.salesMethodology && !selectedMethodology) {
+      // Map client's sales methodology to our component methodology ids
+      const methodologyMap: { [key: string]: string } = {
+        'MEDDIC': 'meddpicc',
+        'Challenger Sale': 'challenger', 
+        'SPIN Selling': 'spin',
+        'Value Selling': 'meddpicc', // Use MEDDPICC as fallback
+        'Solution Selling': 'meddpicc',
+        'Consultative Selling': 'challenger',
+        'NEAT Selling': 'spin',
+        'Sandler Selling': 'challenger', 
+        'Miller Heiman': 'meddpicc',
+        'Custom Methodology': 'meddpicc' // Default fallback
+      };
+      
+      const methodologyId = methodologyMap[selectedClient.salesMethodology] || 'meddpicc';
+      setSelectedMethodology(methodologyId);
+    } else if (meeting?.clientCompany && !selectedMethodology && !selectedClient?.salesMethodology) {
+      // Fallback to old auto-detection if no client methodology is set
       const company = meeting.clientCompany.toLowerCase();
       
       if (company.includes('tech') || company.includes('software') || company.includes('saas')) {
@@ -282,7 +300,7 @@ export function GrowthMethod({ meeting }: GrowthMethodProps) {
         setSelectedMethodology("meddpicc"); // Default to MEDDPICC for B2B
       }
     }
-  }, [meeting, selectedMethodology]);
+  }, [meeting, selectedClient, selectedMethodology]);
 
   useEffect(() => {
     if (selectedMethodology) {

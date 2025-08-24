@@ -8,6 +8,7 @@ export const ClientScalarFieldEnumSchema = z.enum([
   'email',
   'phone',
   'industry',
+  'salesMethodology',
   'notes',
   'createdAt',
   'updatedAt',

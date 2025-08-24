@@ -19,6 +19,7 @@ export type Client = {
   email: string | null;
   phone: string | null;
   industry: string | null;
+  salesMethodology: string | null;
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -59,6 +60,7 @@ export const ClientSchema = z.object({
   email: z.string().email().nullable(),
   phone: z.string().nullable(),
   industry: z.string().nullable(),
+  salesMethodology: z.string().nullable(),
   notes: z.string().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -70,11 +72,28 @@ export const InsertClientSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   industry: z.string().optional(),
+  salesMethodology: z.string().optional(),
   notes: z.string().optional(),
   syncWithSalesforce: z.boolean().optional().default(false),
 });
 
 export type InsertClient = z.infer<typeof InsertClientSchema>;
+
+// Sales Methodology Constants
+export const SALES_METHODOLOGIES = [
+  'SPIN Selling',
+  'Challenger Sale',
+  'MEDDIC',
+  'Value Selling',
+  'Solution Selling',
+  'Consultative Selling',
+  'NEAT Selling',
+  'Sandler Selling',
+  'Miller Heiman',
+  'Custom Methodology'
+] as const;
+
+export type SalesMethodology = typeof SALES_METHODOLOGIES[number];
 
 // Deal Type Constants
 export const DEAL_TYPES = [

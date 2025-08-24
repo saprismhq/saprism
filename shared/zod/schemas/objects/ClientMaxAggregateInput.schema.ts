@@ -11,6 +11,7 @@ const Schema: z.ZodType<Prisma.ClientMaxAggregateInputType> = z
     email: z.literal(true).optional(),
     phone: z.literal(true).optional(),
     industry: z.literal(true).optional(),
+    salesMethodology: z.literal(true).optional(),
     notes: z.literal(true).optional(),
     createdAt: z.literal(true).optional(),
     updatedAt: z.literal(true).optional(),

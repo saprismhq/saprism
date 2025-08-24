@@ -30,6 +30,12 @@ const Schema: z.ZodType<Prisma.ClientOrderByWithRelationInput> = z
         z.lazy(() => SortOrderInputObjectSchema),
       ])
       .optional(),
+    salesMethodology: z
+      .union([
+        z.lazy(() => SortOrderSchema),
+        z.lazy(() => SortOrderInputObjectSchema),
+      ])
+      .optional(),
     notes: z
       .union([
         z.lazy(() => SortOrderSchema),

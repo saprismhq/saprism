@@ -12,6 +12,7 @@ const Schema: z.ZodType<Prisma.ClientMaxOrderByAggregateInput> = z
     email: z.lazy(() => SortOrderSchema).optional(),
     phone: z.lazy(() => SortOrderSchema).optional(),
     industry: z.lazy(() => SortOrderSchema).optional(),
+    salesMethodology: z.lazy(() => SortOrderSchema).optional(),
     notes: z.lazy(() => SortOrderSchema).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     updatedAt: z.lazy(() => SortOrderSchema).optional(),

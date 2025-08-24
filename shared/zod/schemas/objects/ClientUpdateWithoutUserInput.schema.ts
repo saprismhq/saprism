@@ -41,6 +41,13 @@ const Schema: z.ZodType<Prisma.ClientUpdateWithoutUserInput> = z
       ])
       .optional()
       .nullable(),
+    salesMethodology: z
+      .union([
+        z.string(),
+        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
+      ])
+      .optional()
+      .nullable(),
     notes: z
       .union([
         z.string(),

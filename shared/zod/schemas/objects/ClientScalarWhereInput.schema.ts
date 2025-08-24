@@ -46,6 +46,10 @@ const Schema: z.ZodType<Prisma.ClientScalarWhereInput> = z
       .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
       .optional()
       .nullable(),
+    salesMethodology: z
+      .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
+      .optional()
+      .nullable(),
     notes: z
       .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
       .optional()

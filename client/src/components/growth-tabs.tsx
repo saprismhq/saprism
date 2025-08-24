@@ -16,6 +16,7 @@ import { GrowthMethod as GrowthMethodComponent } from "./growth-method";
 interface GrowthTabsProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   isLoading: boolean;
+  selectedClient?: any;
 }
 
 interface ChatMessage {
@@ -25,7 +26,7 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
+export function GrowthTabs({ meeting, isLoading, selectedClient }: GrowthTabsProps) {
   const [activeTab, setActiveTab] = useState("guide");
   const [chatContext, setChatContext] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
@@ -42,6 +43,20 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
     },
     enabled: !!meeting?.clientId,
   });
+
+  // Fetch client data from meeting's clientId
+  const { data: clientFromMeeting } = useQuery({
+    queryKey: ['/api/clients', meeting?.clientId],
+    queryFn: async () => {
+      if (!meeting?.clientId) return null;
+      const response = await apiRequest('GET', `/api/clients/${meeting.clientId}`);
+      return response.json();
+    },
+    enabled: !!meeting?.clientId,
+  });
+
+  // Use client from meeting or passed selectedClient
+  const actualSelectedClient = selectedClient || clientFromMeeting;
 
   // Handle tab routing from Growth Guide
   const handleChatRedirect = (context: string) => {
@@ -185,6 +200,7 @@ export function GrowthTabs({ meeting, isLoading }: GrowthTabsProps) {
           <TabsContent value="method" className="h-full m-0 data-[state=active]:flex data-[state=active]:flex-col">
             <GrowthMethodComponent 
               meeting={meeting}
+              selectedClient={actualSelectedClient}
             />
           </TabsContent>
         </div>
