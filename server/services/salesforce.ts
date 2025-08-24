@@ -167,7 +167,14 @@ export class SalesforceService {
     error?: string;
   }> {
     try {
-      await this.authenticate();
+      // Test authentication first without throwing
+      const authTest = await this.testConnection();
+      if (!authTest.connected) {
+        return { 
+          exists: false, 
+          error: `Salesforce not configured: ${authTest.error}` 
+        };
+      }
 
       // Search for existing Contact by email first (most reliable)
       let existingContact = null;
@@ -214,7 +221,7 @@ export class SalesforceService {
     } catch (error) {
       return { 
         exists: false, 
-        error: `Failed to search Salesforce: ${error.message}` 
+        error: `Salesforce search failed: ${error.message}` 
       };
     }
   }
@@ -233,7 +240,14 @@ export class SalesforceService {
     error?: string;
   }> {
     try {
-      await this.authenticate();
+      // Test authentication first without throwing
+      const authTest = await this.testConnection();
+      if (!authTest.connected) {
+        return { 
+          success: false, 
+          error: `Salesforce not configured: ${authTest.error}` 
+        };
+      }
 
       // Check if client already exists
       const existingClient = await this.findExistingClient(clientData);
