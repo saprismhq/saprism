@@ -142,6 +142,20 @@ export function GrowthMethodAI({ meeting, selectedClient }: GrowthMethodAIProps)
           </div>
         </div>
 
+        {isLoading && !insights && (
+          <div className="space-y-4">
+            <Card>
+              <CardContent className="p-6 text-center">
+                <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-primary" />
+                <h3 className="font-medium text-gray-900 mb-2">Generating AI Insights</h3>
+                <p className="text-sm text-gray-600">
+                  Analyzing your client context and meeting notes with {clientMethodology} methodology...
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {insights && (
           <div className="space-y-6">
             {/* Contextual Insights */}
