@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -31,6 +32,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
     email: '',
     phone: '',
     industry: '',
+    syncWithSalesforce: false,
   });
 
   // Reset form when dialog opens/closes
@@ -41,6 +43,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
       email: '',
       phone: '',
       industry: '',
+      syncWithSalesforce: false,
     });
   };
 
@@ -56,17 +59,31 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
       const response = await apiRequest('POST', '/api/clients', clientData);
       return response.json() as Promise<Client>;
     },
-    onSuccess: (newClient) => {
+    onSuccess: (newClient: any) => {
       // Invalidate clients query to refresh the dropdown
       queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
       
       // Notify parent component of new client
       onClientCreated(newClient);
       
-      // Show success message
+      // Show success message with Salesforce sync info
+      let description = `Client "${newClient.company || newClient.name}" has been created successfully.`;
+      
+      if (newClient.salesforceSync) {
+        if (newClient.salesforceSync.success) {
+          if (newClient.salesforceSync.action === 'updated_existing') {
+            description += ` Synced with existing Salesforce contact${newClient.salesforceSync.wasUpdated ? ' and updated missing fields' : ''}.`;
+          } else {
+            description += ' Created new contact in Salesforce.';
+          }
+        } else {
+          description += ' Note: Salesforce sync failed.';
+        }
+      }
+      
       toast({
         title: 'Success',
-        description: `Client "${newClient.company || newClient.name}" has been created successfully.`,
+        description,
       });
       
       // Close dialog and reset form
@@ -135,7 +152,7 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
   };
 
   // Handle input changes
-  const handleInputChange = (field: keyof InsertClient, value: string) => {
+  const handleInputChange = (field: keyof InsertClient, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -218,7 +235,28 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
             />
           </div>
 
-
+          {/* Salesforce Sync Checkbox */}
+          <div className="flex items-center space-x-2 pt-2">
+            <Checkbox
+              id="syncWithSalesforce"
+              checked={formData.syncWithSalesforce}
+              onCheckedChange={(checked) => 
+                handleInputChange('syncWithSalesforce', checked as boolean)
+              }
+              disabled={createClientMutation.isPending}
+            />
+            <Label 
+              htmlFor="syncWithSalesforce"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Sync with Salesforce
+            </Label>
+          </div>
+          {formData.syncWithSalesforce && (
+            <p className="text-xs text-gray-600 ml-6 -mt-1">
+              Checks for existing clients and prevents duplicates
+            </p>
+          )}
 
           {/* Form Actions */}
           <div className="flex justify-end space-x-3 pt-4">

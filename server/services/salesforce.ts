@@ -156,6 +156,180 @@ export class SalesforceService {
     return stageMap[stage.toLowerCase()] || "Prospecting";
   }
 
+  async findExistingClient(clientData: {
+    company: string;
+    name: string;
+    email?: string;
+  }): Promise<{ 
+    exists: boolean; 
+    contact?: any; 
+    account?: any; 
+    error?: string;
+  }> {
+    try {
+      await this.authenticate();
+
+      // Search for existing Contact by email first (most reliable)
+      let existingContact = null;
+      if (clientData.email) {
+        const contactsByEmail = await this.conn.sobject("Contact").find({
+          Email: clientData.email
+        });
+        if (contactsByEmail.length > 0) {
+          existingContact = contactsByEmail[0];
+        }
+      }
+
+      // If no contact found by email, search by name and company
+      if (!existingContact) {
+        const accountQuery = await this.conn.sobject("Account").find({
+          Name: clientData.company
+        });
+
+        if (accountQuery.length > 0) {
+          const accountId = accountQuery[0].Id;
+          const contactsByName = await this.conn.sobject("Contact").find({
+            AccountId: accountId,
+            Name: clientData.name
+          });
+
+          if (contactsByName.length > 0) {
+            existingContact = contactsByName[0];
+          }
+        }
+      }
+
+      if (existingContact) {
+        // Get the related account
+        const account = await this.conn.sobject("Account").retrieve(existingContact.AccountId);
+        
+        return {
+          exists: true,
+          contact: existingContact,
+          account: account
+        };
+      }
+
+      return { exists: false };
+    } catch (error) {
+      return { 
+        exists: false, 
+        error: `Failed to search Salesforce: ${error.message}` 
+      };
+    }
+  }
+
+  async createOrUpdateClient(clientData: {
+    company: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    industry?: string;
+  }): Promise<{ 
+    success: boolean; 
+    contactId?: string; 
+    accountId?: string;
+    wasUpdated?: boolean;
+    error?: string;
+  }> {
+    try {
+      await this.authenticate();
+
+      // Check if client already exists
+      const existingClient = await this.findExistingClient(clientData);
+      
+      if (existingClient.error) {
+        return { success: false, error: existingClient.error };
+      }
+
+      if (existingClient.exists && existingClient.contact && existingClient.account) {
+        // Update only missing fields
+        const contact = existingClient.contact;
+        const account = existingClient.account;
+        
+        const contactUpdates: any = {};
+        const accountUpdates: any = {};
+
+        // Update contact fields if missing
+        if (!contact.Email && clientData.email) {
+          contactUpdates.Email = clientData.email;
+        }
+        if (!contact.Phone && clientData.phone) {
+          contactUpdates.Phone = clientData.phone;
+        }
+
+        // Update account fields if missing
+        if (!account.Industry && clientData.industry) {
+          accountUpdates.Industry = clientData.industry;
+        }
+
+        // Update contact if needed
+        if (Object.keys(contactUpdates).length > 0) {
+          await this.conn.sobject("Contact").update({
+            Id: contact.Id,
+            ...contactUpdates
+          });
+        }
+
+        // Update account if needed
+        if (Object.keys(accountUpdates).length > 0) {
+          await this.conn.sobject("Account").update({
+            Id: account.Id,
+            ...accountUpdates
+          });
+        }
+
+        return {
+          success: true,
+          contactId: contact.Id,
+          accountId: account.Id,
+          wasUpdated: Object.keys(contactUpdates).length > 0 || Object.keys(accountUpdates).length > 0
+        };
+      }
+
+      // Create new Account and Contact
+      const accountResult = await this.conn.sobject("Account").create({
+        Name: clientData.company,
+        Industry: clientData.industry || null
+      });
+
+      if (!accountResult.success) {
+        return { success: false, error: "Failed to create Account in Salesforce" };
+      }
+
+      const contactResult = await this.conn.sobject("Contact").create({
+        FirstName: this.extractFirstName(clientData.name),
+        LastName: this.extractLastName(clientData.name),
+        Email: clientData.email || null,
+        Phone: clientData.phone || null,
+        AccountId: accountResult.id
+      });
+
+      if (!contactResult.success) {
+        return { success: false, error: "Failed to create Contact in Salesforce" };
+      }
+
+      return {
+        success: true,
+        contactId: contactResult.id,
+        accountId: accountResult.id,
+        wasUpdated: false
+      };
+    } catch (error) {
+      return { success: false, error: `Failed to create/update client in Salesforce: ${error.message}` };
+    }
+  }
+
+  private extractFirstName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts[0] || fullName;
+  }
+
+  private extractLastName(fullName: string): string {
+    const parts = fullName.trim().split(' ');
+    return parts.length > 1 ? parts.slice(1).join(' ') : 'Unknown';
+  }
+
   async testConnection(): Promise<{ connected: boolean; error?: string }> {
     try {
       await this.authenticate();

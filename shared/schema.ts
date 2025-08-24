@@ -71,6 +71,7 @@ export const InsertClientSchema = z.object({
   phone: z.string().optional(),
   industry: z.string().optional(),
   notes: z.string().optional(),
+  syncWithSalesforce: z.boolean().optional().default(false),
 });
 
 export type InsertClient = z.infer<typeof InsertClientSchema>;
