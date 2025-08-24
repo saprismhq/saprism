@@ -9,7 +9,8 @@ export class AIController {
   constructor(
     private noteService: INoteService,
     private meetingService: IMeetingService,
-    private coachingService: ICoachingService
+    private coachingService: ICoachingService,
+    private clientService?: any // Add client service for methodology insights
   ) {}
 
   async analyzeNotes(req: any, res: Response): Promise<void> {
@@ -144,6 +145,52 @@ export class AIController {
     } catch (error) {
       console.error("Error generating coaching suggestions:", error);
       res.status(500).json({ message: "Failed to generate coaching suggestions" });
+    }
+  }
+
+  async generateMethodologyInsights(req: any, res: Response): Promise<void> {
+    try {
+      const { meetingId, methodology } = req.body;
+      
+      // Validate meeting ownership
+      const userId = req.user.claims.sub;
+      const hasAccess = await this.meetingService.validateMeetingOwnership(meetingId, userId);
+      if (!hasAccess) {
+        res.status(403).json({ message: "Access denied" });
+        return;
+      }
+
+      // Get meeting and client data
+      const meeting = await this.meetingService.getMeetingById(meetingId);
+      if (!meeting) {
+        res.status(404).json({ message: "Meeting not found" });
+        return;
+      }
+
+      // Get all notes for this meeting
+      const notes = await this.noteService.getNotesByMeetingId(meetingId);
+      const allNotesContent = notes.map(note => note.content).join('\n\n');
+
+      // Get client information (we'll need to add client service later)
+      const clientInfo = {
+        name: meeting.clientName,
+        company: meeting.clientCompany,
+        dealType: meeting.dealType,
+        // TODO: Add client-specific data like industry, sales methodology, etc.
+      };
+
+      // Generate methodology-specific insights
+      const insights = await openaiService.generateMethodologyInsights(
+        methodology,
+        clientInfo,
+        allNotesContent,
+        meeting
+      );
+      
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating methodology insights:", error);
+      res.status(500).json({ message: "Failed to generate methodology insights" });
     }
   }
 

@@ -197,6 +197,67 @@ export class OpenAIService {
     }
   }
 
+  async generateMethodologyInsights(methodology: string, clientInfo: any, notesContent: string, meeting: any): Promise<any> {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert sales coach specializing in ${methodology} methodology. Generate innovative, contextual insights and recommendations specifically for this client and meeting context.
+
+            DO NOT provide generic battle cards or checklists. Instead, create personalized, AI-driven insights that combine:
+            - The ${methodology} framework principles
+            - This specific client's business context
+            - Meeting notes and conversation insights
+            - Strategic recommendations tailored to their situation
+
+            Respond with JSON in this format:
+            {
+              "methodology": "${methodology}",
+              "contextualInsights": [
+                {
+                  "insight": "Brief insight title",
+                  "description": "Detailed contextual analysis",
+                  "clientSpecific": "How this applies specifically to this client",
+                  "actionableSteps": ["specific actions to take"],
+                  "priority": "high|medium|low"
+                }
+              ],
+              "strategicRecommendations": {
+                "immediate": ["actions to take right away"],
+                "nearTerm": ["actions for next 1-2 weeks"], 
+                "longTerm": ["strategic positioning moves"]
+              },
+              "riskFactors": ["potential challenges or risks"],
+              "successIndicators": ["what to watch for to measure progress"]
+            }`
+          },
+          {
+            role: "user",
+            content: `CLIENT CONTEXT:
+            Name: ${clientInfo.name}
+            Company: ${clientInfo.company}
+            Deal Type: ${clientInfo.dealType || 'Not specified'}
+            
+            MEETING NOTES:
+            ${notesContent || 'No notes available yet'}
+            
+            Generate ${methodology}-specific insights and recommendations for this client.`
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.4,
+        max_tokens: 1500,
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || "{}");
+      return result;
+    } catch (error) {
+      throw new Error("Failed to generate methodology insights: " + (error as Error).message);
+    }
+  }
+
   async generateFollowUpQuestions(notesContent: string, painPoints: string[]): Promise<string[]> {
     try {
       const response = await openai.chat.completions.create({
