@@ -1,8 +1,5 @@
 # Saprism System Architecture
 
-## Overview
-Saprism is a modern full-stack AI-powered sales coaching platform built with a hybrid development architecture, following SOLID principles and modern design patterns.
-
 ## High-Level Architecture Diagram
 
 ```mermaid
