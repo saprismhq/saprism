@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoImage from "@assets/saprism_logo_withouttext Background Removed_1756061206616.png";
+import logoImage from "@assets/saprism_logo_withouttext Background Removed_1756062206616.png";
 
 interface SaprismLogoProps {
   className?: string;
