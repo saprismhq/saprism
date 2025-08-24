@@ -167,31 +167,6 @@ graph TB
     class REPLIT,NEON,WS infrastructure
 ```
 
-## Architecture Patterns
-
-### 1. Hybrid Development Architecture
-- **Single Server**: Express.js serves both API routes and frontend assets
-- **Development Mode**: Vite middleware provides hot module replacement through Express
-- **Production Mode**: Vite builds frontend to static files served by Express
-- **Port Strategy**: Both frontend and backend served on single port (5000)
-
-### 2. SOLID Principles Implementation
-- **Single Responsibility**: Each service handles one specific domain
-- **Open/Closed**: Services are open for extension, closed for modification
-- **Liskov Substitution**: Interfaces allow for service substitution
-- **Interface Segregation**: Dedicated interfaces for each service type
-- **Dependency Inversion**: High-level modules depend on abstractions
-
-### 3. Repository Pattern
-- **Data Access Layer**: Separate repositories for each entity
-- **Interface-Based**: All repositories implement common interfaces
-- **Type Safety**: Full TypeScript integration with Prisma
-
-### 4. Service Layer Architecture
-- **Business Logic**: Separated from controllers and data access
-- **Dependency Injection**: Container-based service management
-- **Cross-Cutting Concerns**: Authentication, logging, validation
-
 ## Data Flow
 
 ### 1. User Authentication Flow
@@ -279,27 +254,6 @@ sequenceDiagram
     Frontend-->>User: Confirmation
 ```
 
-## Technology Stack Details
-
-### Frontend Technologies
-- **React 18**: Latest React with concurrent features
-- **TypeScript**: Full type safety across the application
-- **Vite**: Modern build tool with HMR and optimized builds
-- **Tailwind CSS**: Utility-first CSS framework
-- **shadcn/ui**: High-quality component library
-- **TanStack Query**: Server state management with caching
-- **TipTap**: Rich text editor with extensible architecture
-- **Wouter**: Lightweight client-side routing
-
-### Backend Technologies
-- **Express.js**: Web application framework
-- **TypeScript**: Type-safe backend development
-- **Prisma**: Next-generation ORM with type safety
-- **OpenAI API**: GPT-4o for AI analysis and coaching
-- **jsforce**: Salesforce integration library
-- **Express Sessions**: Session management with PostgreSQL store
-- **WebSocket**: Real-time communication for transcription
-
 ### Infrastructure
 - **PostgreSQL**: Primary database with ACID compliance
 - **Neon**: Serverless PostgreSQL for cloud deployment
@@ -347,5 +301,3 @@ sequenceDiagram
 - **Static Asset Serving**: Optimized file serving
 - **Health Checks**: System status monitoring
 - **Graceful Shutdown**: Proper connection cleanup
-
-This architecture provides a robust, scalable, and maintainable foundation for the Saprism platform while following modern software engineering best practices.
