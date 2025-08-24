@@ -8,6 +8,7 @@ import { Plus, Activity, User } from "lucide-react";
 import { SalespringLogo } from "@/components/salespring-logo";
 import { ClientDropdown } from "@/components/client-dropdown";
 import { NewClientDialog } from "@/components/new-client-dialog";
+import { EditClientDialog } from "@/components/edit-client-dialog";
 import { RecentMeetingsList } from "@/components/recent-meetings-list";
 import { useSystemStatus, getOverallStatusColor } from "@/lib/api/status";
 import { useQuery } from "@tanstack/react-query";
@@ -38,6 +39,8 @@ export function Sidebar({
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showNewClientDialog, setShowNewClientDialog] = useState(false);
+  const [showEditClientDialog, setShowEditClientDialog] = useState(false);
+  const [clientToEdit, setClientToEdit] = useState<Client | null>(null);
   const [selectedDealType, setSelectedDealType] = useState<DealType>("Connect");
   const [selectedContactFilter, setSelectedContactFilter] = useState<string | null>(null);
   const [contactName, setContactName] = useState("");
@@ -76,6 +79,21 @@ export function Sidebar({
   // Handle new client dialog open
   const handleNewClientClick = () => {
     setShowNewClientDialog(true);
+  };
+
+  // Handle edit client dialog open
+  const handleEditClientClick = (client: Client) => {
+    setClientToEdit(client);
+    setShowEditClientDialog(true);
+  };
+
+  // Handle client updated
+  const handleClientUpdated = (updatedClient: Client) => {
+    if (selectedClient?.id === updatedClient.id) {
+      setSelectedClient(updatedClient);
+    }
+    setShowEditClientDialog(false);
+    setClientToEdit(null);
   };
 
   // Handle meeting creation
@@ -119,6 +137,7 @@ export function Sidebar({
           selectedClient={selectedClient}
           onClientSelect={handleClientSelect}
           onNewClientClick={handleNewClientClick}
+          onEditClientClick={handleEditClientClick}
         />
       </div>
 
@@ -330,6 +349,14 @@ export function Sidebar({
         isOpen={showNewClientDialog}
         onClose={() => setShowNewClientDialog(false)}
         onClientCreated={handleNewClientCreated}
+      />
+
+      {/* Edit Client Dialog */}
+      <EditClientDialog
+        client={clientToEdit}
+        open={showEditClientDialog}
+        onOpenChange={setShowEditClientDialog}
+        onClientUpdated={handleClientUpdated}
       />
     </aside>
   );

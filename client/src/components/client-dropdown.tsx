@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, ChevronsUpDown, UserPlus } from 'lucide-react';
+import { Check, ChevronsUpDown, UserPlus, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -12,6 +12,7 @@ interface ClientDropdownProps {
   selectedClient: Client | null;
   onClientSelect: (client: Client | null) => void;
   onNewClientClick: () => void;
+  onEditClientClick?: (client: Client) => void;
   className?: string;
 }
 
@@ -23,6 +24,7 @@ export function ClientDropdown({
   selectedClient, 
   onClientSelect, 
   onNewClientClick,
+  onEditClientClick,
   className 
 }: ClientDropdownProps) {
   const [open, setOpen] = useState(false);
@@ -138,6 +140,7 @@ export function ClientDropdown({
                     key={client.id}
                     value={`${client.name}-${client.company || ''}`}
                     onSelect={() => handleClientSelect(client)}
+                    className="group"
                   >
                     <Check
                       className={cn(
@@ -150,6 +153,19 @@ export function ClientDropdown({
                         {client.company || 'No Company'}
                       </span>
                     </div>
+                    {onEditClientClick && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpen(false);
+                          onEditClientClick(client);
+                        }}
+                        className="ml-2 p-1 rounded-md opacity-0 group-hover:opacity-100 hover:bg-gray-100 transition-all duration-150"
+                        title="Edit client"
+                      >
+                        <Settings className="h-3 w-3 text-gray-500 hover:text-gray-700" />
+                      </button>
+                    )}
                   </CommandItem>
                 ))}
               </CommandGroup>
