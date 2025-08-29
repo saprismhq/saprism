@@ -341,7 +341,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                     <span className="font-medium">Cost Impact:</span> 
                                     {mapping.businessImpact.cost.startsWith('Ask:') ? (
                                       <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                        🤔 {mapping.businessImpact.cost.replace('Ask:', '').trim()}
+                                        {mapping.businessImpact.cost.replace('Ask:', '').trim()}
                                       </div>
                                     ) : (
                                       <span> {mapping.businessImpact.cost}</span>
@@ -353,7 +353,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                     <span className="font-medium">Productivity:</span> 
                                     {mapping.businessImpact.productivity.startsWith('Ask:') ? (
                                       <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                        🤔 {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
+                                        {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
                                       </div>
                                     ) : (
                                       <span> {mapping.businessImpact.productivity}</span>
@@ -365,7 +365,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                     <span className="font-medium">Risk:</span> 
                                     {mapping.businessImpact.risk.startsWith('Ask:') ? (
                                       <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                        🤔 {mapping.businessImpact.risk.replace('Ask:', '').trim()}
+                                        {mapping.businessImpact.risk.replace('Ask:', '').trim()}
                                       </div>
                                     ) : (
                                       <span> {mapping.businessImpact.risk}</span>
@@ -379,7 +379,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                 <span className="font-medium">Solution:</span> 
                                 {mapping.technicalSolution.startsWith('Ask:') ? (
                                   <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                    🤔 {mapping.technicalSolution.replace('Ask:', '').trim()}
+                                    {mapping.technicalSolution.replace('Ask:', '').trim()}
                                   </div>
                                 ) : (
                                   <span> {mapping.technicalSolution}</span>
@@ -399,7 +399,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium text-green-700">Quick Win:</span> 
                                   {mapping.businessValue.immediate.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic text-xs">
-                                      🤔 {mapping.businessValue.immediate.replace('Ask:', '').trim()}
+                                      {mapping.businessValue.immediate.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span className="text-xs text-green-700"> {mapping.businessValue.immediate}</span>
@@ -411,7 +411,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium text-green-700">Medium-term:</span> 
                                   {mapping.businessValue.mediumTerm.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic text-xs">
-                                      🤔 {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
+                                      {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span className="text-xs text-green-700"> {mapping.businessValue.mediumTerm}</span>
@@ -423,7 +423,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium text-green-700">Long-term:</span> 
                                   {mapping.businessValue.longTerm.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic text-xs">
-                                      🤔 {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
+                                      {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span className="text-xs text-green-700"> {mapping.businessValue.longTerm}</span>
@@ -435,7 +435,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium text-green-700">Target:</span> 
                                   {mapping.metrics.target.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic text-xs">
-                                      🤔 {mapping.metrics.target.replace('Ask:', '').trim()}
+                                      {mapping.metrics.target.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span className="text-xs text-green-700"> {mapping.metrics.target}</span>
@@ -447,7 +447,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium text-green-700">Baseline:</span> 
                                   {mapping.metrics.baseline.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic text-xs">
-                                      🤔 {mapping.metrics.baseline.replace('Ask:', '').trim()}
+                                      {mapping.metrics.baseline.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span className="text-xs text-green-700"> {mapping.metrics.baseline}</span>
@@ -468,7 +468,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium">Executives:</span> 
                                   {mapping.stakeholderBenefit.executives.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 {mapping.stakeholderBenefit.executives.replace('Ask:', '').trim()}
+                                      {mapping.stakeholderBenefit.executives.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span> {mapping.stakeholderBenefit.executives}</span>
@@ -480,7 +480,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium">Managers:</span> 
                                   {mapping.stakeholderBenefit.managers.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 {mapping.stakeholderBenefit.managers.replace('Ask:', '').trim()}
+                                      {mapping.stakeholderBenefit.managers.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span> {mapping.stakeholderBenefit.managers}</span>
@@ -492,7 +492,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium">End Users:</span> 
                                   {mapping.stakeholderBenefit.endUsers.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 {mapping.stakeholderBenefit.endUsers.replace('Ask:', '').trim()}
+                                      {mapping.stakeholderBenefit.endUsers.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span> {mapping.stakeholderBenefit.endUsers}</span>
@@ -504,7 +504,7 @@ export function CoachingPanel({ meeting, isLoading }: CoachingPanelProps) {
                                   <span className="font-medium">Advantage:</span> 
                                   {mapping.competitiveAdvantage.startsWith('Ask:') ? (
                                     <div className="mt-1 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 {mapping.competitiveAdvantage.replace('Ask:', '').trim()}
+                                      {mapping.competitiveAdvantage.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <span> {mapping.competitiveAdvantage}</span>

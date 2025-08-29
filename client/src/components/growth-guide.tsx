@@ -273,7 +273,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessImpact.cost.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>Cost Impact:</strong> {mapping.businessImpact.cost.replace('Ask:', '').trim()}
+                                      <strong>Cost Impact:</strong> {mapping.businessImpact.cost.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• Cost: {mapping.businessImpact.cost}</p>
@@ -284,7 +284,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessImpact.productivity.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>Productivity:</strong> {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
+                                      <strong>Productivity:</strong> {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• Productivity: {mapping.businessImpact.productivity}</p>
@@ -295,7 +295,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessImpact.risk.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>Risk:</strong> {mapping.businessImpact.risk.replace('Ask:', '').trim()}
+                                      <strong>Risk:</strong> {mapping.businessImpact.risk.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• Risk: {mapping.businessImpact.risk}</p>
@@ -311,7 +311,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                             <h4 className="text-xs font-medium text-blue-800 mb-1">Technical Solution</h4>
                             {mapping.technicalSolution.startsWith('Ask:') ? (
                               <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                🤔 {mapping.technicalSolution.replace('Ask:', '').trim()}
+                                {mapping.technicalSolution.replace('Ask:', '').trim()}
                               </div>
                             ) : (
                               <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
@@ -327,7 +327,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessValue.immediate.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>0-3 months:</strong> {mapping.businessValue.immediate.replace('Ask:', '').trim()}
+                                      <strong>0-3 months:</strong> {mapping.businessValue.immediate.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• 0-3 months: {mapping.businessValue.immediate}</p>
@@ -338,7 +338,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessValue.mediumTerm.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>3-12 months:</strong> {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
+                                      <strong>3-12 months:</strong> {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• 3-12 months: {mapping.businessValue.mediumTerm}</p>
@@ -349,7 +349,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                 <div>
                                   {mapping.businessValue.longTerm.startsWith('Ask:') ? (
                                     <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
-                                      🤔 <strong>12+ months:</strong> {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
+                                      <strong>12+ months:</strong> {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
                                     <p>• 12+ months: {mapping.businessValue.longTerm}</p>
