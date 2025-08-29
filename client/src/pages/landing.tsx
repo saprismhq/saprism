@@ -6,9 +6,9 @@ import logoImage from "../../../assets/saprism_logo_transparent.png";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-white">
       {/* Header */}
-      <header className="border-b border-blue-800/50 bg-slate-900/80 backdrop-blur-sm">
+      <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <SaprismLogo size="md" />
@@ -32,11 +32,11 @@ export default function Landing() {
               className="h-20 w-20 object-contain"
             />
           </div>
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Complex Sales Into
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent"> Brilliant Success</span>
+            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Brilliant Success</span>
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Like light through a prism, Saprism transforms complex sales processes into clear, 
             actionable insights. AI-powered coaching and seamless CRM integration illuminate your path to success.
           </p>
@@ -51,9 +51,9 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-gradient-to-br from-slate-800/50 to-blue-800/50">
+      <section className="py-20 bg-gradient-to-br from-blue-50/50 to-cyan-50/50">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center text-white mb-12">
+          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Everything You Need to Illuminate Success
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
