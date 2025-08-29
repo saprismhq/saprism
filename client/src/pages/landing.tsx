@@ -26,11 +26,13 @@ export default function Landing() {
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center mb-8">
-            <img
-              src={logoImage}
-              alt="Saprism Logo"
-              className="h-20 w-20 object-contain"
-            />
+            <div className="bg-gradient-to-br from-blue-50 via-cyan-50 to-white rounded-full p-4">
+              <img
+                src={logoImage}
+                alt="Saprism Logo"
+                className="h-20 w-20 object-contain"
+              />
+            </div>
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Complex Sales Into
