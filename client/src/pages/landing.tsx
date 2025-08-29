@@ -11,7 +11,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <img src={saprismLogo} alt="Saprism" className="w-8 h-8" />
+              <img src={saprismLogo} alt="Saprism" className="w-10 h-10" />
               <span className="text-xl font-bold text-gray-900">Saprism</span>
             </div>
             <Button 
@@ -35,7 +35,7 @@ export default function Landing() {
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Complex Sales Into
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Brilliant Success</span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent"> Brilliant Success</span>
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Like light through a prism, Saprism transforms complex sales processes into clear, 
