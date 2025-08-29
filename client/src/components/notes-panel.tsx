@@ -506,7 +506,7 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
             <CardHeader className="pb-3">
               <CardTitle className="text-blue-900 flex items-center text-base">
                 <Brain className="w-4 h-4 mr-2" />
-                AI Analysis Summary
+                Analysis Summary
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -542,7 +542,7 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
         {analyzeNotesMutation.isPending && (
           <div className="flex items-center justify-center p-3 bg-blue-50 rounded-lg flex-shrink-0">
             <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mr-2"></div>
-            <span className="text-sm text-blue-600">AI analyzing your notes...</span>
+            <span className="text-sm text-blue-600">Analyzing your notes...</span>
           </div>
         )}
       </div>
