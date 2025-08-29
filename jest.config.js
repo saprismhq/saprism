@@ -1,6 +1,6 @@
 export default {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   transform: {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
