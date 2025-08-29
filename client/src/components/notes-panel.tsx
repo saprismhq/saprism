@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Save, FolderSync, Tag, Brain, Calendar } from "lucide-react";
 import { RichTextEditor } from "./rich-text-editor";
+import { UserDropdown } from "./user-dropdown";
 import type { MeetingWithNotes, AIAnalysisResult } from "@shared/schema";
 
 interface NotesPanelProps {
@@ -468,6 +469,7 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
               <FolderSync className="w-4 h-4 mr-2" />
               {syncToCrmMutation.isPending ? "Syncing..." : "Sync to CRM"}
             </Button>
+            <UserDropdown />
           </div>
       </header>
 

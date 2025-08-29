@@ -6,7 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, User } from "lucide-react";
 import { SaprismLogo } from "@/components/saprism-logo";
-import { UserDropdown } from "@/components/user-dropdown";
 import { ClientDropdown } from "@/components/client-dropdown";
 import { NewClientDialog } from "@/components/new-client-dialog";
 import { EditClientDialog } from "@/components/edit-client-dialog";
@@ -121,12 +120,11 @@ export function Sidebar({
   return (
     <aside className="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col h-full">
       {/* Logo & Brand */}
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center">
         <div>
           <SaprismLogo size="md" />
           <p className="text-sm text-transparent truncate invisible">Hidden spacer text</p>
         </div>
-        <UserDropdown />
       </div>
 
       {/* Client Selection */}
