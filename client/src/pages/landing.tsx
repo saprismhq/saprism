@@ -26,11 +26,11 @@ export default function Landing() {
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center mb-8">
-            <div className="bg-gradient-to-br from-blue-50 via-cyan-50 to-white rounded-full p-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
               <img
                 src={logoImage}
                 alt="Saprism Logo"
-                className="h-20 w-20 object-contain"
+                className="h-16 w-16 object-contain"
               />
             </div>
           </div>
