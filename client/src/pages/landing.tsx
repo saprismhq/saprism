@@ -11,8 +11,8 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <img src={saprismLogo} alt="Saprism" className="w-10 h-10" />
-              <span className="text-xl font-bold text-gray-900">Saprism</span>
+              <Diamond className="w-8 h-8 text-blue-600" />
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Saprism</span>
             </div>
             <Button 
               onClick={() => window.location.href = '/api/login'}
@@ -159,8 +159,8 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center space-x-3 mb-8">
-            <Diamond className="w-6 h-6 text-white" />
-            <span className="text-lg font-bold text-white">Saprism</span>
+            <Diamond className="w-6 h-6 text-blue-400" />
+            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">Saprism</span>
           </div>
           <div className="text-center text-gray-400">
             <p>&copy; 2024 Saprism. All rights reserved.</p>
