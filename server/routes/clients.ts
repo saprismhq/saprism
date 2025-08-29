@@ -330,12 +330,12 @@ router.put('/:id', isAuthenticated, async (req: any, res) => {
       where: { id: clientId },
       data: {
         ...validatedData,
-        // Convert empty strings to null for optional fields
-        email: validatedData.email || null,
-        company: validatedData.company || null,
-        phone: validatedData.phone || null,
-        industry: validatedData.industry || null,
-        notes: validatedData.notes || null,
+        // Convert empty strings to undefined for optional fields
+        email: validatedData.email || undefined,
+        company: validatedData.company || undefined,
+        phone: validatedData.phone || undefined,
+        industry: validatedData.industry || undefined,
+        notes: validatedData.notes || undefined,
       },
       include: {
         _count: {

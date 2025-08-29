@@ -204,6 +204,7 @@ export const insertCoachingSuggestionSchema = CoachingSuggestionSchema.omit({
   createdAt: true,
 }).partial({
   isUsed: true,
+  content: true,
 });
 
 export const insertCrmSyncLogSchema = CrmSyncLogSchema.omit({

@@ -78,6 +78,9 @@ export interface INotesService {
   
   // AI integration
   analyzeNotes(content: string, context: SessionContext): Promise<any>;
+  
+  // Cleanup
+  cleanup?(): void;
 }
 
 export interface ISessionService {

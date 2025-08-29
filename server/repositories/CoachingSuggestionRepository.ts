@@ -13,7 +13,10 @@ export interface ICoachingSuggestionRepository {
 export class CoachingSuggestionRepository implements ICoachingSuggestionRepository {
   async create(suggestion: InsertCoachingSuggestion): Promise<CoachingSuggestion> {
     const newSuggestion = await db.coachingSuggestion.create({
-      data: suggestion,
+      data: {
+        ...suggestion,
+        content: suggestion.content || {},
+      },
     });
     return newSuggestion;
   }
