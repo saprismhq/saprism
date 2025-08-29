@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Activity, User } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { SaprismLogo } from "@/components/saprism-logo";
+import { UserDropdown } from "@/components/user-dropdown";
 import { ClientDropdown } from "@/components/client-dropdown";
 import { NewClientDialog } from "@/components/new-client-dialog";
 import { EditClientDialog } from "@/components/edit-client-dialog";
 import { RecentMeetingsList } from "@/components/recent-meetings-list";
-import { useSystemStatus, getOverallStatusColor } from "@/lib/api/status";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Meeting, Client } from "@shared/schema";
@@ -44,9 +44,6 @@ export function Sidebar({
   const [selectedDealType, setSelectedDealType] = useState<DealType>("Connect");
   const [selectedContactFilter, setSelectedContactFilter] = useState<string | null>(null);
   const [contactName, setContactName] = useState("");
-
-  // Query system status
-  const { data: systemStatus, isLoading: statusLoading } = useSystemStatus();
 
   // Fetch existing contacts for the selected client
   const { data: clientMeetings = [] } = useQuery({
@@ -124,11 +121,12 @@ export function Sidebar({
   return (
     <aside className="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col h-full">
       {/* Logo & Brand */}
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center">
+      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div>
           <SaprismLogo size="md" />
           <p className="text-sm text-transparent truncate invisible">Hidden spacer text</p>
         </div>
+        <UserDropdown />
       </div>
 
       {/* Client Selection */}
@@ -284,65 +282,6 @@ export function Sidebar({
         />
       </nav>
 
-      {/* System Status */}
-      <div className="p-4 border-t border-gray-100">
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2 mb-2">
-            <Activity className="w-4 h-4 text-gray-600" />
-            <h4 className="text-sm font-medium text-gray-700">Status</h4>
-            {systemStatus && (
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                getOverallStatusColor(systemStatus)
-              }`}>
-                {systemStatus.overallHealth === 'healthy' ? '●' : 
-                 systemStatus.overallHealth === 'degraded' ? '◐' : '○'}
-              </div>
-            )}
-          </div>
-          
-          {statusLoading ? (
-            <div className="text-xs text-gray-500">Checking services...</div>
-          ) : systemStatus ? (
-            <div className="space-y-2">
-              {/* Salesforce Status */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    systemStatus.services.salesforce.connected ? "bg-green-500" : "bg-red-500"
-                  }`}></div>
-                  <span className="text-xs text-gray-700">
-                    Salesforce
-                  </span>
-                </div>
-                <div className={`text-xs ${
-                  systemStatus.services.salesforce.connected ? "text-green-600" : "text-red-600"
-                }`}>
-                  {systemStatus.services.salesforce.connected ? "Connected" : "Offline"}
-                </div>
-              </div>
-              
-              {/* OpenAI Status */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${
-                    systemStatus.services.openai.connected ? "bg-green-500" : "bg-red-500"
-                  }`}></div>
-                  <span className="text-xs text-gray-700">
-                    OpenAI
-                  </span>
-                </div>
-                <div className={`text-xs ${
-                  systemStatus.services.openai.connected ? "text-green-600" : "text-red-600"
-                }`}>
-                  {systemStatus.services.openai.connected ? "Connected" : "Offline"}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-xs text-red-600">Unable to check status</div>
-          )}
-        </div>
-      </div>
 
       {/* New Client Dialog */}
       <NewClientDialog
