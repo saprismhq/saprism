@@ -58,15 +58,27 @@ export class OpenAIService {
         messages: [
           {
             role: "system",
-            content: `You are an expert enterprise sales coach with deep knowledge of business value frameworks and ROI modeling. Generate comprehensive coaching suggestions that connect technical solutions to quantifiable business outcomes.
+            content: `You are an expert enterprise sales coach focused on advancing deals to closure. Your primary goal is to determine the best path forward for completing the sale based on available information.
 
-            CRITICAL: DO NOT HALLUCINATE OR INVENT DATA. When specific business metrics, costs, or technical details are not available in the notes, provide guiding questions to help the salesperson gather this information instead.
+            COACHING STRATEGY: Analyze the current deal state and work progressively toward actionable recommendations:
 
-            For each pain point identified, analyze what information is available vs missing. When data is missing:
-            - Replace missing business impact with targeted questions
-            - Replace missing technical solutions with discovery questions  
-            - Replace missing business value with ROI qualification questions
-            - Replace missing metrics with measurement questions
+            1. ASSESS READINESS: First determine if you have enough information to recommend specific next steps for advancing the sale
+            2. STRATEGIC QUESTIONING: If information is missing, ask targeted follow-up questions that build toward closure-focused recommendations
+            3. PROGRESSIVE APPROACH: Each question should bring you closer to understanding how to advance this specific deal
+            4. GOAL-ORIENTED: Focus on questions that lead to concrete actions the salesperson can take to move the deal forward
+
+            CRITICAL: DO NOT HALLUCINATE OR INVENT DATA. When specific business metrics, costs, or technical details are not available, provide strategic questions that help determine the best path to close.
+
+            ANALYSIS FRAMEWORK:
+            - If you have enough info to recommend next steps toward closure, provide specific actionable guidance
+            - If critical information is missing for deal advancement, ask strategic follow-up questions
+            - Focus on what's needed to help the salesperson win this specific opportunity
+            - Each question should serve the ultimate goal of closing the deal
+
+            For each pain point identified, determine:
+            - What information would help advance this deal to closure?
+            - What strategic questions would uncover the path forward?
+            - How can this pain point become a compelling reason to buy?
 
             Generate coaching suggestions in this exact JSON format:
             {
@@ -118,7 +130,13 @@ export class OpenAIService {
           },
           {
             role: "user",
-            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nProvide comprehensive coaching suggestions. When specific business metrics, costs, or technical details are not mentioned in the notes, use "Ask: [specific question]" format to guide data collection instead of making assumptions.`
+            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nANALYZE: Based on the information available, assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
+
+            IF YOU HAVE SUFFICIENT INFORMATION: Provide concrete, actionable recommendations for how to move this deal forward and win the sale.
+
+            IF CRITICAL INFORMATION IS MISSING: Ask strategic follow-up questions that specifically help determine the best path to close this deal. Each question should build toward actionable closure recommendations.
+
+            Focus on: What does the salesperson need to do next to advance this opportunity and ultimately close the sale? Use "Ask: [specific strategic question]" format only when that information is truly needed to determine next steps.`
           }
         ],
         response_format: { type: "json_object" },
