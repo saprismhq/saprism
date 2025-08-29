@@ -27,6 +27,8 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
   const [previousMeetingId, setPreviousMeetingId] = useState<number | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [currentMeetingId, setCurrentMeetingId] = useState<number | null>(null);
+  const [isActivelyTyping, setIsActivelyTyping] = useState<boolean>(false);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Auto-save when content changes
   useEffect(() => {
@@ -118,6 +120,15 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
     }
   }, [meeting, currentMeetingId]);
 
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
+  }, []);
+
   // Keep the coaching mutation for manual triggers (if needed)
   const generateCoachingMutation = useMutation({
     mutationFn: async ({ content, dealStage, meetingId }: { content: string; dealStage: string; meetingId: number }) => {
@@ -126,9 +137,20 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
     },
     onSuccess: (suggestions: any) => {
       console.log("Coaching suggestions generated successfully:", suggestions);
-      // Invalidate meeting data to refresh coaching suggestions
-      queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
+      // Only invalidate queries if user is not actively typing
+      if (!isActivelyTyping) {
+        queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+        queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
+      } else {
+        console.log("Skipping coaching query invalidation - user is actively typing");
+        // Schedule invalidation for when user stops typing
+        setTimeout(() => {
+          if (!isActivelyTyping) {
+            queryClient.invalidateQueries({ queryKey: ["/api/meetings", meeting?.id] });
+            queryClient.invalidateQueries({ queryKey: ["/api/meetings"] });
+          }
+        }, 3000);
+      }
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -189,21 +211,33 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
         }
       }
       
-      // Invalidate meeting data to refresh both AI analysis and coaching suggestions
-      console.log("Invalidating queries for meeting:", meeting?.id);
-      
-      try {
-        // Use safer invalidation approach without removing queries immediately
-        queryClient.invalidateQueries({ queryKey: ["meetings", "detail", meeting?.id] });
-        queryClient.invalidateQueries({ queryKey: ["meetings", "list"] });
+      // Only invalidate queries if user is not actively typing to prevent text input interruption
+      if (!isActivelyTyping) {
+        console.log("Invalidating queries for meeting:", meeting?.id);
         
-        // Faster refetch for immediate UI updates
+        try {
+          // Use safer invalidation approach without removing queries immediately
+          queryClient.invalidateQueries({ queryKey: ["meetings", "detail", meeting?.id] });
+          queryClient.invalidateQueries({ queryKey: ["meetings", "list"] });
+          
+          // Faster refetch for immediate UI updates
+          setTimeout(() => {
+            console.log("Force refetching meeting data for:", meeting?.id);
+            queryClient.refetchQueries({ queryKey: ["meetings", "detail", meeting?.id] }).catch(console.error);
+          }, 300);
+        } catch (error) {
+          console.error("Error invalidating queries:", error);
+        }
+      } else {
+        console.log("Skipping query invalidation - user is actively typing");
+        // Schedule invalidation for when user stops typing
         setTimeout(() => {
-          console.log("Force refetching meeting data for:", meeting?.id);
-          queryClient.refetchQueries({ queryKey: ["meetings", "detail", meeting?.id] }).catch(console.error);
-        }, 300); // Reduced from 1000ms to 300ms
-      } catch (error) {
-        console.error("Error invalidating queries:", error);
+          if (!isActivelyTyping) {
+            console.log("Delayed invalidation after typing stopped");
+            queryClient.invalidateQueries({ queryKey: ["meetings", "detail", meeting?.id] });
+            queryClient.invalidateQueries({ queryKey: ["meetings", "list"] });
+          }
+        }, 3000); // Wait 3 seconds after typing stops
       }
     },
     onError: (error) => {
@@ -320,6 +354,20 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
   // Handle note content changes with debounced analysis
   const handleNoteChange = (value: string) => {
     setNoteContent(value);
+
+    // Track active typing state
+    setIsActivelyTyping(true);
+    
+    // Clear existing typing timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    
+    // Set typing state to false after user stops typing for 2 seconds
+    const newTypingTimeout = setTimeout(() => {
+      setIsActivelyTyping(false);
+    }, 2000);
+    setTypingTimeout(newTypingTimeout);
 
     // Clear existing debounce
     if (analysisDebounce) {
