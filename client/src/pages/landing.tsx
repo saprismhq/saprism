@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Users, BarChart3, Zap, Sparkles } from "lucide-react";
-import { SaprismLogo } from "@/components/saprism-logo";
+import { Brain, Users, BarChart3, Zap, Diamond } from "lucide-react";
 
 export default function Landing() {
   return (
@@ -25,10 +24,7 @@ export default function Landing() {
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center mb-8">
-            <div className="relative">
-              <Sparkles className="w-16 h-16 text-cyan-400 opacity-30 absolute -top-4 -right-4 animate-pulse" />
-              <SaprismLogo size="lg" />
-            </div>
+            <Diamond className="w-20 h-20 text-blue-600" />
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Complex Sales Into
