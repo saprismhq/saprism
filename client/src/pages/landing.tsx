@@ -183,7 +183,7 @@ export default function Landing() {
             <SaprismLogo size="sm" className="text-white" />
           </div>
           <div className="text-center text-gray-400">
-            <p>&copy; 2024 Saprism. All rights reserved.</p>
+            <p>&copy; 2025 Saprism. All rights reserved.</p>
           </div>
         </div>
       </footer>
