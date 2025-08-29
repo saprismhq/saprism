@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Users, BarChart3, Zap } from "lucide-react";
 import { SaprismLogo } from "@/components/saprism-logo";
-import logoImage from "@assets/saprism_logo_transparent_1756064029669.png";
+import logoImage from "@assets/saprism_logo_withouttext_1756063429834.png";
 
 export default function Landing() {
   return (
