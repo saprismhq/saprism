@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Brain, Users, BarChart3, Zap } from "lucide-react";
 import { SaprismLogo } from "@/components/saprism-logo";
-import logoImage from "@assets/saprism_logo_withouttext_1756063429834.png";
+import logoImage from "@assets/saprism_logo_transparent_1756064029669.png";
 
 export default function Landing() {
   return (
@@ -26,11 +26,11 @@ export default function Landing() {
       <section className="py-20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex justify-center mb-8">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+            <div className="bg-gradient-to-r from-blue-100/50 via-cyan-100/50 to-green-100/50 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/30">
               <img
                 src={logoImage}
                 alt="Saprism Logo"
-                className="h-16 w-16 object-contain"
+                className="h-24 w-24 object-contain"
               />
             </div>
           </div>
