@@ -60,12 +60,13 @@ export class OpenAIService {
             role: "system",
             content: `You are an expert enterprise sales coach with deep knowledge of business value frameworks and ROI modeling. Generate comprehensive coaching suggestions that connect technical solutions to quantifiable business outcomes.
 
-            For each pain point identified, provide a structured business value analysis. Focus on:
-            - Quantifiable business impact (costs, time, risks)
-            - Multi-layered value proposition (immediate, medium-term, strategic)
-            - Stakeholder-specific benefits (executives, managers, end users)
-            - Measurable success metrics with baselines and targets
-            - Competitive differentiation and market positioning
+            CRITICAL: DO NOT HALLUCINATE OR INVENT DATA. When specific business metrics, costs, or technical details are not available in the notes, provide guiding questions to help the salesperson gather this information instead.
+
+            For each pain point identified, analyze what information is available vs missing. When data is missing:
+            - Replace missing business impact with targeted questions
+            - Replace missing technical solutions with discovery questions  
+            - Replace missing business value with ROI qualification questions
+            - Replace missing metrics with measurement questions
 
             Generate coaching suggestions in this exact JSON format:
             {
@@ -75,28 +76,28 @@ export class OpenAIService {
                 "category": "operational|financial|strategic|compliance|competitive",
                 "severity": 1-5,
                 "businessImpact": {
-                  "cost": "quantified cost impact (e.g., '$50K annually in lost productivity')",
-                  "productivity": "productivity impact description",
-                  "risk": "risk or opportunity cost description"
+                  "cost": "quantified cost OR 'Ask: [specific question to uncover cost impact]'",
+                  "productivity": "productivity impact OR 'Ask: [specific question about productivity impact]'",
+                  "risk": "risk description OR 'Ask: [specific question about business risks]'"
                 },
-                "technicalSolution": "specific technical capability that addresses this pain",
+                "technicalSolution": "specific solution OR 'Ask: [question to identify technical requirements]'",
                 "businessValue": {
-                  "immediate": "0-3 month benefits with metrics",
-                  "mediumTerm": "3-12 month benefits with metrics", 
-                  "longTerm": "12+ month strategic value with metrics"
+                  "immediate": "benefits with metrics OR 'Ask: [question about short-term value expectations]'",
+                  "mediumTerm": "benefits with metrics OR 'Ask: [question about medium-term ROI goals]'", 
+                  "longTerm": "strategic value OR 'Ask: [question about long-term strategic objectives]'"
                 },
                 "metrics": {
-                  "kpi": "key performance indicator affected",
-                  "baseline": "current state measurement",
-                  "target": "expected improvement percentage/amount",
-                  "timeframe": "timeline to achieve target"
+                  "kpi": "KPI affected OR 'Ask: [question about success measurement]'",
+                  "baseline": "current measurement OR 'Ask: [question about current performance baseline]'",
+                  "target": "improvement target OR 'Ask: [question about improvement goals]'",
+                  "timeframe": "timeline OR 'Ask: [question about timeline expectations]'"
                 },
                 "stakeholderBenefit": {
-                  "executives": "C-level impact and strategic value",
-                  "managers": "management efficiency and operational benefits",
-                  "endUsers": "day-to-day user experience improvements"
+                  "executives": "C-level impact OR 'Ask: [question about executive priorities]'",
+                  "managers": "management benefits OR 'Ask: [question about operational priorities]'",
+                  "endUsers": "user improvements OR 'Ask: [question about user experience goals]'"
                 },
-                "competitiveAdvantage": "how this creates market advantage"
+                "competitiveAdvantage": "market advantage OR 'Ask: [question about competitive landscape]'"
               }],
               "framing": {
                 "context": "business situation analysis",
@@ -111,11 +112,13 @@ export class OpenAIService {
                 "businessJustification": "why this step drives business value",
                 "expectedOutcome": "measurable expected result"
               }]
-            }`
+            }
+
+            Use "Ask: [question]" format when specific data is not available in the notes. This helps salespeople gather the missing information instead of presenting potentially inaccurate assumptions.`
           },
           {
             role: "user",
-            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nProvide comprehensive coaching suggestions with detailed business value analysis for advancing this deal.`
+            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nProvide comprehensive coaching suggestions. When specific business metrics, costs, or technical details are not mentioned in the notes, use "Ask: [specific question]" format to guide data collection instead of making assumptions.`
           }
         ],
         response_format: { type: "json_object" },

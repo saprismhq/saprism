@@ -269,9 +269,39 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                           <div className="bg-red-50 p-3 rounded">
                             <h4 className="text-xs font-medium text-red-800 mb-2">Business Impact</h4>
                             <div className="space-y-1 text-xs text-red-700">
-                              {mapping.businessImpact.cost && <p>• Cost: {mapping.businessImpact.cost}</p>}
-                              {mapping.businessImpact.productivity && <p>• Productivity: {mapping.businessImpact.productivity}</p>}
-                              {mapping.businessImpact.risk && <p>• Risk: {mapping.businessImpact.risk}</p>}
+                              {mapping.businessImpact.cost && (
+                                <div>
+                                  {mapping.businessImpact.cost.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>Cost Impact:</strong> {mapping.businessImpact.cost.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• Cost: {mapping.businessImpact.cost}</p>
+                                  )}
+                                </div>
+                              )}
+                              {mapping.businessImpact.productivity && (
+                                <div>
+                                  {mapping.businessImpact.productivity.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>Productivity:</strong> {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• Productivity: {mapping.businessImpact.productivity}</p>
+                                  )}
+                                </div>
+                              )}
+                              {mapping.businessImpact.risk && (
+                                <div>
+                                  {mapping.businessImpact.risk.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>Risk:</strong> {mapping.businessImpact.risk.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• Risk: {mapping.businessImpact.risk}</p>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
@@ -279,7 +309,13 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                         {mapping.technicalSolution && (
                           <div className="bg-blue-50 p-3 rounded">
                             <h4 className="text-xs font-medium text-blue-800 mb-1">Technical Solution</h4>
-                            <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
+                            {mapping.technicalSolution.startsWith('Ask:') ? (
+                              <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                🤔 {mapping.technicalSolution.replace('Ask:', '').trim()}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-blue-700">{mapping.technicalSolution}</p>
+                            )}
                           </div>
                         )}
 
@@ -287,9 +323,39 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                           <div className="bg-green-50 p-3 rounded">
                             <h4 className="text-xs font-medium text-green-800 mb-2">Business Value Timeline</h4>
                             <div className="space-y-1 text-xs text-green-700">
-                              {mapping.businessValue.immediate && <p>• 0-3 months: {mapping.businessValue.immediate}</p>}
-                              {mapping.businessValue.mediumTerm && <p>• 3-12 months: {mapping.businessValue.mediumTerm}</p>}
-                              {mapping.businessValue.longTerm && <p>• 12+ months: {mapping.businessValue.longTerm}</p>}
+                              {mapping.businessValue.immediate && (
+                                <div>
+                                  {mapping.businessValue.immediate.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>0-3 months:</strong> {mapping.businessValue.immediate.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• 0-3 months: {mapping.businessValue.immediate}</p>
+                                  )}
+                                </div>
+                              )}
+                              {mapping.businessValue.mediumTerm && (
+                                <div>
+                                  {mapping.businessValue.mediumTerm.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>3-12 months:</strong> {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• 3-12 months: {mapping.businessValue.mediumTerm}</p>
+                                  )}
+                                </div>
+                              )}
+                              {mapping.businessValue.longTerm && (
+                                <div>
+                                  {mapping.businessValue.longTerm.startsWith('Ask:') ? (
+                                    <div className="p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 italic">
+                                      🤔 <strong>12+ months:</strong> {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
+                                    </div>
+                                  ) : (
+                                    <p>• 12+ months: {mapping.businessValue.longTerm}</p>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
