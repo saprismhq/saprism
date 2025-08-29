@@ -1,13 +1,7 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Brain, Users, BarChart3, Zap, Diamond, Sparkles } from "lucide-react";
-import saprismLogo from "@/assets/saprism-logo.png";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Brain, Users, BarChart3, Zap, Sparkles, Diamond } from "lucide-react";
+import { SaprismLogo } from "@/components/saprism-logo";
 
 export default function Landing() {
   return (
@@ -16,12 +10,9 @@ export default function Landing() {
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Diamond className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">Saprism</span>
-            </div>
-            <Button
-              onClick={() => (window.location.href = "/api/login")}
+            <SaprismLogo size="md" />
+            <Button 
+              onClick={() => window.location.href = '/api/login'}
               className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
             >
               Get Started
@@ -189,10 +180,7 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center space-x-3 mb-8">
-            <Diamond className="w-6 h-6 text-blue-400" />
-            <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">
-              Saprism
-            </span>
+            <SaprismLogo size="sm" className="text-white" />
           </div>
           <div className="text-center text-gray-400">
             <p>&copy; 2024 Saprism. All rights reserved.</p>
