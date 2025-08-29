@@ -447,13 +447,14 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
         </div>
         <div className="flex items-center space-x-3">
             <Button
-              variant="outline"
+              variant="ghost"
+              size="sm"
               onClick={handleSave}
               disabled={saveNoteMutation.isPending || !noteContent.trim()}
-              className="h-9"
+              className="h-9 w-9 p-0 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+              title={saveNoteMutation.isPending ? "Saving..." : "Save"}
             >
-              <Save className="w-4 h-4 mr-2" />
-              {saveNoteMutation.isPending ? "Saving..." : "Save"}
+              <Save className="w-4 h-4" />
             </Button>
             {isAutoSaving && (
               <div className="flex items-center text-sm text-gray-500">
@@ -462,12 +463,14 @@ export function NotesPanel({ meeting, isLoading, transcriptionText }: NotesPanel
               </div>
             )}
             <Button
+              variant="ghost"
+              size="sm"
               onClick={handleCrmSync}
               disabled={syncToCrmMutation.isPending || !noteContent.trim()}
-              className="bg-primary hover:bg-primary/90 h-9"
+              className="h-9 w-9 p-0 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg"
+              title={syncToCrmMutation.isPending ? "Syncing..." : "Sync to CRM"}
             >
-              <FolderSync className="w-4 h-4 mr-2" />
-              {syncToCrmMutation.isPending ? "Syncing..." : "Sync to CRM"}
+              <FolderSync className="w-4 h-4" />
             </Button>
             <UserDropdown />
           </div>
