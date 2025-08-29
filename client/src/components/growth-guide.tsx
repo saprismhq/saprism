@@ -276,7 +276,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>Cost Impact:</strong> {mapping.businessImpact.cost.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• <span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>
+                                    <p>• <span className="font-medium">Cost Impact:</span> {mapping.businessImpact.cost}</p>
                                   )}
                                 </div>
                               )}
@@ -330,7 +330,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>0-3 months:</strong> {mapping.businessValue.immediate.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• 0-3 months: {mapping.businessValue.immediate}</p>
+                                    <p>• <span className="font-medium">0-3 months:</span> {mapping.businessValue.immediate}</p>
                                   )}
                                 </div>
                               )}
@@ -341,7 +341,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>3-12 months:</strong> {mapping.businessValue.mediumTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• 3-12 months: {mapping.businessValue.mediumTerm}</p>
+                                    <p>• <span className="font-medium">3-12 months:</span> {mapping.businessValue.mediumTerm}</p>
                                   )}
                                 </div>
                               )}
@@ -352,7 +352,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>12+ months:</strong> {mapping.businessValue.longTerm.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• 12+ months: {mapping.businessValue.longTerm}</p>
+                                    <p>• <span className="font-medium">12+ months:</span> {mapping.businessValue.longTerm}</p>
                                   )}
                                 </div>
                               )}
