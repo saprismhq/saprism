@@ -130,7 +130,17 @@ export class OpenAIService {
           },
           {
             role: "user",
-            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nANALYZE: Based on the information available, assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
+            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nIMPORTANT: FIRST scan the notes for answered questions. Look for patterns like:
+            - "What [question]? Answer: [response]"
+            - "What [question]? [Response without Answer:]" 
+            - Questions followed by client responses or answers
+            
+            EXTRACT AND USE these answered questions in your analysis. For example:
+            - If you see "What immediate benefits...? Answer: clearer pain points and insight" → Use "clearer pain points and insight" as the immediate business value
+            - If you see "What long-term goals...? Answer: afford our own private jet" → Use this as long-term value
+            - If you see strategic priorities mentioned → Use these in your analysis
+
+            THEN ANALYZE: Based on all available information (including extracted answers), assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
 
             IF YOU HAVE SUFFICIENT INFORMATION: Provide concrete, actionable recommendations for how to move this deal forward and win the sale.
 
