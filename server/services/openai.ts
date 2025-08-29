@@ -132,6 +132,17 @@ export class OpenAIService {
             role: "user",
             content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nIMPORTANT: Carefully read and understand ALL content in the notes, regardless of how it's formatted. People take notes differently - some use formal Q&A, others write conversationally, some use bullets or shorthand. Be flexible and intelligent in extracting information.
 
+            EXTRACT ANSWERED QUESTIONS: Before generating new questions, scan the notes for already answered business value questions. Examples:
+            
+            If notes contain: "What immediate improvements do you expect from better sales metrics tracking? Answer: A clearer idea of our pain points, and deep insight"
+            → USE: "A clearer idea of our pain points, and deep insight" as the immediate business value (do NOT ask this question again)
+            
+            If notes contain: "What long-term financial goals do you have post-recovery? Answer: we would love to be able to afford our own private jet"  
+            → USE: "we would love to be able to afford our own private jet" as the long-term business value
+            
+            If notes contain client responses about costs, timelines, or business impact:
+            → EXTRACT and USE those responses instead of asking "Ask:" questions
+
             CONTEXT-AWARE ANALYSIS: Look for any mentions of:
             - Business benefits, improvements, or value (immediate, medium-term, or long-term)
             - Client goals, objectives, or aspirations  
@@ -140,7 +151,7 @@ export class OpenAIService {
             - Stakeholder priorities or competitive concerns
             - Technical requirements or solution preferences
 
-            USE ANY RELEVANT INFORMATION found in the notes, regardless of format. Don't wait for perfect structured answers - extract value from natural conversation, bullet points, informal notes, or any other note-taking style.
+            PRIORITIZE ANSWERED CONTENT: If you find answered questions in the notes, use those answers directly in your analysis. Only generate "Ask:" questions for information that is genuinely missing.
 
             THEN ANALYZE: Based on all available information in the notes, assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
 
