@@ -276,7 +276,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>Cost Impact:</strong> {mapping.businessImpact.cost.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• Cost: {mapping.businessImpact.cost}</p>
+                                    <p>• <span className="font-medium">Cost:</span> {mapping.businessImpact.cost}</p>
                                   )}
                                 </div>
                               )}
@@ -287,7 +287,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>Productivity:</strong> {mapping.businessImpact.productivity.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• Productivity: {mapping.businessImpact.productivity}</p>
+                                    <p>• <span className="font-medium">Productivity:</span> {mapping.businessImpact.productivity}</p>
                                   )}
                                 </div>
                               )}
@@ -298,7 +298,7 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
                                       <strong>Risk:</strong> {mapping.businessImpact.risk.replace('Ask:', '').trim()}
                                     </div>
                                   ) : (
-                                    <p>• Risk: {mapping.businessImpact.risk}</p>
+                                    <p>• <span className="font-medium">Risk:</span> {mapping.businessImpact.risk}</p>
                                   )}
                                 </div>
                               )}
