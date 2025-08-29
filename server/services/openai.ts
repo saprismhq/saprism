@@ -130,17 +130,19 @@ export class OpenAIService {
           },
           {
             role: "user",
-            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nIMPORTANT: FIRST scan the notes for answered questions. Look for patterns like:
-            - "What [question]? Answer: [response]"
-            - "What [question]? [Response without Answer:]" 
-            - Questions followed by client responses or answers
-            
-            EXTRACT AND USE these answered questions in your analysis. For example:
-            - If you see "What immediate benefits...? Answer: clearer pain points and insight" → Use "clearer pain points and insight" as the immediate business value
-            - If you see "What long-term goals...? Answer: afford our own private jet" → Use this as long-term value
-            - If you see strategic priorities mentioned → Use these in your analysis
+            content: `Deal Stage: ${dealStage}\n\nMeeting Notes:\n${notesContent}\n\nIMPORTANT: Carefully read and understand ALL content in the notes, regardless of how it's formatted. People take notes differently - some use formal Q&A, others write conversationally, some use bullets or shorthand. Be flexible and intelligent in extracting information.
 
-            THEN ANALYZE: Based on all available information (including extracted answers), assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
+            CONTEXT-AWARE ANALYSIS: Look for any mentions of:
+            - Business benefits, improvements, or value (immediate, medium-term, or long-term)
+            - Client goals, objectives, or aspirations  
+            - Cost impacts, productivity effects, or business risks
+            - Timeline expectations, decision criteria, or success metrics
+            - Stakeholder priorities or competitive concerns
+            - Technical requirements or solution preferences
+
+            USE ANY RELEVANT INFORMATION found in the notes, regardless of format. Don't wait for perfect structured answers - extract value from natural conversation, bullet points, informal notes, or any other note-taking style.
+
+            THEN ANALYZE: Based on all available information in the notes, assess whether you have enough details to recommend specific next steps for advancing this deal to closure.
 
             IF YOU HAVE SUFFICIENT INFORMATION: Provide concrete, actionable recommendations for how to move this deal forward and win the sale.
 
