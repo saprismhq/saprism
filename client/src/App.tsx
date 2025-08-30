@@ -7,9 +7,18 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
+import ComingSoon from "@/pages/coming-soon";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  
+  // Check if platform is enabled via environment variable
+  const isPlatformEnabled = import.meta.env.VITE_IS_PLATFORM_ENABLED !== 'false';
+
+  // If platform is disabled, show coming soon page for all routes
+  if (!isPlatformEnabled) {
+    return <ComingSoon />;
+  }
 
   if (isLoading) {
     return (
