@@ -9,7 +9,7 @@ import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
 import ComingSoon from "@/pages/coming-soon";
 
-function Router() {
+function AppContent() {
   const { isAuthenticated, isLoading } = useAuth();
   
   // Check if platform is enabled via environment variable
@@ -53,8 +53,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <AppContent />
         <Toaster />
-        <Router />
       </TooltipProvider>
     </QueryClientProvider>
   );
