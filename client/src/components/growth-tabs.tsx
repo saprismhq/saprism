@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { MeetingWithNotes, MeetingWithSessions, CoachingSuggestionContent } from "@shared/schema";
 import { GrowthGuide as GrowthGuideComponent } from "./growth-guide";
 import { GrowthChat as GrowthChatComponent } from "./growth-chat";
-import { GrowthMethodAI as GrowthMethodComponent } from "./growth-method-ai";
+import { GrowthMethod as GrowthMethodComponent } from "./growth-method";
 
 interface GrowthTabsProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
