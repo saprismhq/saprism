@@ -282,11 +282,11 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
       
       const response = await apiRequest("PUT", `/api/clients/${selectedClient.id}`, {
         name: selectedClient.name,
-        company: selectedClient.company,
-        email: selectedClient.email,
-        phone: selectedClient.phone,
-        industry: selectedClient.industry,
-        notes: selectedClient.notes,
+        company: selectedClient.company || "",
+        email: selectedClient.email || "",
+        phone: selectedClient.phone || "",
+        industry: selectedClient.industry || "",
+        notes: selectedClient.notes || "",
         salesMethodology: methodologyName,
       });
       return response.json();
@@ -322,6 +322,36 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
     },
   });
 
+  // Generate AI insights mutation
+  const generateInsightsMutation = useMutation({
+    mutationFn: async (methodologyName: string) => {
+      if (!meeting?.id) throw new Error("No meeting selected");
+      
+      const response = await apiRequest('POST', '/api/ai/methodology', {
+        meetingId: meeting.id,
+        methodology: methodologyName
+      });
+      return response.json();
+    },
+    onSuccess: (insights) => {
+      toast({
+        title: "AI Insights Generated",
+        description: `Generated ${insights.contextualInsights?.length || 0} insights for ${insights.methodology}`,
+      });
+      
+      // Refresh any methodology-related queries
+      queryClient.invalidateQueries({ queryKey: ['/api/ai/methodology'] });
+    },
+    onError: (error) => {
+      console.error('Error generating insights:', error);
+      toast({
+        title: "Insights Generation Failed",
+        description: "Could not generate AI insights. This might be due to API quota limits.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Handle methodology selection change
   const handleMethodologyChange = (methodologyId: string) => {
     setSelectedMethodology(methodologyId);
@@ -329,7 +359,15 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
     // Find the methodology name for saving to client
     const selectedMethodologyData = METHODOLOGIES.find(m => m.id === methodologyId);
     if (selectedMethodologyData && selectedClient?.id) {
-      updateClientMethodologyMutation.mutate(selectedMethodologyData.name);
+      // Update client methodology first
+      updateClientMethodologyMutation.mutate(selectedMethodologyData.name, {
+        onSuccess: () => {
+          // Then generate AI insights like the original flow
+          if (meeting?.id) {
+            generateInsightsMutation.mutate(selectedMethodologyData.name);
+          }
+        }
+      });
     }
   };
 
@@ -437,7 +475,7 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
             <Select 
               value={selectedMethodology} 
               onValueChange={handleMethodologyChange}
-              disabled={updateClientMethodologyMutation.isPending || !selectedClient?.id}
+              disabled={updateClientMethodologyMutation.isPending || generateInsightsMutation.isPending || !selectedClient?.id}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a methodology" />
@@ -458,6 +496,10 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
               <p className="text-xs text-gray-500 mt-2">Updating methodology...</p>
             )}
             
+            {generateInsightsMutation.isPending && (
+              <p className="text-xs text-gray-500 mt-2">Generating AI insights...</p>
+            )}
+            
             {!selectedClient?.id && (
               <p className="text-xs text-gray-500 mt-2">Select a client to choose methodology</p>
             )}
@@ -471,6 +513,37 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
                       {industry}
                     </Badge>
                   ))}
+                </div>
+                
+                {/* AI Insights Generation Button */}
+                <div className="mt-4 pt-3 border-t border-gray-100">
+                  <Button
+                    onClick={() => {
+                      const selectedMethodologyData = METHODOLOGIES.find(m => m.id === selectedMethodology);
+                      if (selectedMethodologyData?.name && meeting?.id) {
+                        generateInsightsMutation.mutate(selectedMethodologyData.name);
+                      }
+                    }}
+                    disabled={generateInsightsMutation.isPending || !meeting?.id}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    {generateInsightsMutation.isPending ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+                        Generating AI Insights...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2" />
+                        Generate AI Insights
+                      </>
+                    )}
+                  </Button>
+                  {!meeting?.id && (
+                    <p className="text-xs text-gray-400 mt-2">Select a meeting to generate insights</p>
+                  )}
                 </div>
               </div>
             )}
