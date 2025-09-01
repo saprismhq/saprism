@@ -1,14 +1,13 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
-  "exclude": ["node_modules", "build", "dist", "shared/zod/**/*.ts", "**/*.test.ts", "**/*.test.tsx"],
+  "include": ["shared/**/*"],
+  "exclude": ["node_modules", "build", "dist", "**/*.test.ts", "**/*.test.tsx"],
   "compilerOptions": {
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
     "noEmit": true,
     "module": "ESNext",
     "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "jsx": "preserve",
+    "lib": ["esnext"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
