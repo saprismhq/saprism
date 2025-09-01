@@ -2,14 +2,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Client, SALES_METHODOLOGIES } from "@shared/schema";
+import { Client } from "@shared/schema";
 
 interface EditClientDialogProps {
   client: Client | null;
@@ -30,7 +29,6 @@ export function EditClientDialog({
     email: "",
     phone: "",
     industry: "",
-    salesMethodology: "",
     notes: "",
     syncWithSalesforce: false,
   });
@@ -47,7 +45,6 @@ export function EditClientDialog({
         email: client.email || "",
         phone: client.phone || "",
         industry: client.industry || "",
-        salesMethodology: client.salesMethodology || "",
         notes: client.notes || "",
         syncWithSalesforce: false,
       });
@@ -71,7 +68,6 @@ export function EditClientDialog({
         email: "",
         phone: "",
         industry: "",
-        salesMethodology: "",
         notes: "",
         syncWithSalesforce: false,
       });
@@ -199,26 +195,6 @@ export function EditClientDialog({
             />
           </div>
 
-          {/* Sales Methodology Field */}
-          <div className="space-y-2">
-            <Label htmlFor="salesMethodology">Sales Methodology</Label>
-            <Select
-              value={formData.salesMethodology || ''}
-              onValueChange={(value) => handleInputChange('salesMethodology', value)}
-              disabled={updateClientMutation.isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a methodology" />
-              </SelectTrigger>
-              <SelectContent>
-                {SALES_METHODOLOGIES.map((methodology) => (
-                  <SelectItem key={methodology} value={methodology}>
-                    {methodology}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Notes Field */}
           <div className="space-y-2">

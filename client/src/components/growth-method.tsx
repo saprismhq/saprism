@@ -5,6 +5,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, CheckCircle, Circle, Target, Users, DollarSign, Calendar, Zap } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { isUnauthorizedError } from "@/lib/authUtils";
 import type { MeetingWithNotes, MeetingWithSessions } from "@shared/schema";
 
 interface MethodologyStep {
@@ -268,6 +272,66 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
   const [selectedMethodology, setSelectedMethodology] = useState<string>("");
   const [methodology, setMethodology] = useState<SalesMethodology | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Create client methodology update mutation
+  const updateClientMethodologyMutation = useMutation({
+    mutationFn: async (methodologyName: string) => {
+      if (!selectedClient?.id) throw new Error("No client selected");
+      
+      const response = await apiRequest("PUT", `/api/clients/${selectedClient.id}`, {
+        name: selectedClient.name,
+        company: selectedClient.company,
+        email: selectedClient.email,
+        phone: selectedClient.phone,
+        industry: selectedClient.industry,
+        notes: selectedClient.notes,
+        salesMethodology: methodologyName,
+      });
+      return response.json();
+    },
+    onSuccess: (updatedClient) => {
+      toast({
+        title: "Methodology Updated",
+        description: `Sales methodology set to ${updatedClient.salesMethodology}`,
+      });
+      
+      // Invalidate and refetch clients to update the UI
+      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      
+      console.error('Error updating client methodology:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update sales methodology. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle methodology selection change
+  const handleMethodologyChange = (methodologyId: string) => {
+    setSelectedMethodology(methodologyId);
+    
+    // Find the methodology name for saving to client
+    const selectedMethodologyData = METHODOLOGIES.find(m => m.id === methodologyId);
+    if (selectedMethodologyData && selectedClient?.id) {
+      updateClientMethodologyMutation.mutate(selectedMethodologyData.name);
+    }
+  };
 
   // Auto-select methodology based on client's selected methodology
   useEffect(() => {
@@ -275,6 +339,7 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
       // Map client's sales methodology to our component methodology ids
       const methodologyMap: { [key: string]: string } = {
         'MEDDIC': 'meddpicc',
+        'MEDDPICC': 'meddpicc',
         'Challenger Sale': 'challenger', 
         'SPIN Selling': 'spin',
         'Value Selling': 'meddpicc', // Use MEDDPICC as fallback
@@ -369,7 +434,11 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <Select value={selectedMethodology} onValueChange={setSelectedMethodology}>
+            <Select 
+              value={selectedMethodology} 
+              onValueChange={handleMethodologyChange}
+              disabled={updateClientMethodologyMutation.isPending || !selectedClient?.id}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select a methodology" />
               </SelectTrigger>
@@ -384,6 +453,14 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
                 ))}
               </SelectContent>
             </Select>
+            
+            {updateClientMethodologyMutation.isPending && (
+              <p className="text-xs text-gray-500 mt-2">Updating methodology...</p>
+            )}
+            
+            {!selectedClient?.id && (
+              <p className="text-xs text-gray-500 mt-2">Select a client to choose methodology</p>
+            )}
             
             {methodology && (
               <div className="mt-3">

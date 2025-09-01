@@ -6,10 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { InsertClient, Client, SALES_METHODOLOGIES, SalesMethodology } from '@shared/schema';
+import { InsertClient, Client } from '@shared/schema';
 import { isUnauthorizedError } from '@/lib/authUtils';
 
 interface NewClientDialogProps {
@@ -33,7 +32,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
     email: '',
     phone: '',
     industry: '',
-    salesMethodology: '',
     syncWithSalesforce: false,
   });
 
@@ -45,7 +43,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
       email: '',
       phone: '',
       industry: '',
-      salesMethodology: '',
       syncWithSalesforce: false,
     });
   };
@@ -238,26 +235,6 @@ export function NewClientDialog({ isOpen, onClose, onClientCreated }: NewClientD
             />
           </div>
 
-          {/* Sales Methodology */}
-          <div>
-            <Label htmlFor="salesMethodology">Sales Methodology</Label>
-            <Select
-              value={formData.salesMethodology || ''}
-              onValueChange={(value) => handleInputChange('salesMethodology', value)}
-              disabled={createClientMutation.isPending}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a methodology" />
-              </SelectTrigger>
-              <SelectContent>
-                {SALES_METHODOLOGIES.map((methodology) => (
-                  <SelectItem key={methodology} value={methodology}>
-                    {methodology}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Salesforce Sync Checkbox */}
           <div className="flex items-center space-x-2 pt-2">
