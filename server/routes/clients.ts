@@ -329,13 +329,14 @@ router.put('/:id', isAuthenticated, async (req: any, res) => {
     const client = await prisma.client.update({
       where: { id: clientId },
       data: {
-        ...validatedData,
-        // Convert empty strings to undefined for optional fields
-        email: validatedData.email || undefined,
+        name: validatedData.name,
         company: validatedData.company || undefined,
+        email: validatedData.email || undefined,
         phone: validatedData.phone || undefined,
         industry: validatedData.industry || undefined,
+        salesMethodology: validatedData.salesMethodology || undefined,
         notes: validatedData.notes || undefined,
+        // Do not spread validatedData directly to avoid unknown fields
       },
       include: {
         _count: {
