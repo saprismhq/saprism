@@ -96,7 +96,7 @@ export class AuthenticationService implements IAuthenticationService {
     for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
       const strategy = new Strategy(
         {
-          name: `oidc:${domain}`,
+          name: `replitauth:${domain}`,
           config,
           scope: "openid email profile offline_access",
           callbackURL: `https://${domain}/api/callback`,
@@ -114,14 +114,22 @@ export class AuthenticationService implements IAuthenticationService {
 
   private setupAuthRoutes(app: Express, config: any): void {
     app.get("/api/login", (req, res, next) => {
-      passport.authenticate(`oidc:${req.hostname}`, {
+      // For local development, use the first registered domain
+      const domain = req.hostname === 'localhost' 
+        ? process.env.REPLIT_DOMAINS!.split(',')[0] 
+        : req.hostname;
+      passport.authenticate(`replitauth:${domain}`, {
         prompt: "login consent",
         scope: ["openid", "email", "profile", "offline_access"],
       })(req, res, next);
     });
 
     app.get("/api/callback", (req, res, next) => {
-      passport.authenticate(`oidc:${req.hostname}`, {
+      // For local development, use the first registered domain
+      const domain = req.hostname === 'localhost' 
+        ? process.env.REPLIT_DOMAINS!.split(',')[0] 
+        : req.hostname;
+      passport.authenticate(`replitauth:${domain}`, {
         successReturnToOrRedirect: "/",
         failureRedirect: "/api/login",
       })(req, res, next);
