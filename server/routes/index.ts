@@ -41,6 +41,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const crmController = new CrmController(meetingService, noteService, crmSyncService);
   const statusController = new StatusController();
 
+  // Health check endpoint for load balancer
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK' });
+  });
+
   // User routes
   app.get('/api/auth/user', isAuthenticated, (req, res) => userController.getCurrentUser(req, res));
 
