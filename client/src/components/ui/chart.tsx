@@ -101,15 +101,6 @@ ${colorConfig
 }
 
 const ChartTooltip = RechartsPrimitive.Tooltip
-
-/**
- * NOTE: To avoid the Recharts/React prop-type intersection issues and the
- * TS2344 errors you were seeing, we intentionally type the forwardRef props
- * as `any` here and then normalize payload to `any[]` before using it.
- *
- * This is a small and safe place to relax types because tooltip `payload` is
- * runtime data from the chart library and we then treat it in a defensive way.
- */
 const ChartTooltipContent = React.forwardRef<HTMLDivElement, any>(
   (
     {
@@ -262,10 +253,6 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, any>(
 ChartTooltipContent.displayName = "ChartTooltip"
 
 const ChartLegend = RechartsPrimitive.Legend
-
-/**
- * Similar approach for Legend: accept `any` for forwardRef props, normalize payload to any[].
- */
 const ChartLegendContent = React.forwardRef<HTMLDivElement, any>(
   (
     { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey, ...rest },
