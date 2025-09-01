@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Users, BarChart3, Zap, Diamond, Sparkles } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Brain, Users, BarChart3, Zap, Sparkles, Diamond } from "lucide-react";
+import { SaprismLogo } from "@/components/saprism-logo";
 
 export default function Landing() {
   return (
@@ -9,12 +16,9 @@ export default function Landing() {
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Diamond className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">Saprism</span>
-            </div>
-            <Button 
-              onClick={() => window.location.href = '/api/login'}
+            <SaprismLogo size="md" />
+            <Button
+              onClick={() => (window.location.href = "/api/login")}
               className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
             >
               Get Started
@@ -34,16 +38,20 @@ export default function Landing() {
           </div>
           <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Transform Complex Sales Into
-            <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent"> Brilliant Success</span>
+            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+              {" "}
+              Brilliant Success
+            </span>
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Like light through a prism, Saprism transforms complex sales processes into clear, 
-            actionable insights. AI-powered coaching and seamless CRM integration illuminate your path to success.
+            Like light through a prism, Saprism transforms complex sales
+            processes into clear, actionable insights. AI-powered coaching and
+            seamless CRM integration illuminate your path to success.
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-lg px-8 py-3"
-            onClick={() => window.location.href = '/api/login'}
+            onClick={() => (window.location.href = "/api/login")}
           >
             Illuminate Your Sales Process
           </Button>
@@ -62,21 +70,23 @@ export default function Landing() {
                 <Brain className="w-8 h-8 text-blue-600 mb-2" />
                 <CardTitle>Smart Insights</CardTitle>
                 <CardDescription>
-                  Illuminate hidden opportunities with AI-powered note analysis that reveals clear insights
+                  Illuminate hidden opportunities with AI-powered note analysis
+                  that reveals clear insights
                 </CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <Zap className="w-8 h-8 text-cyan-500 mb-2" />
                 <CardTitle>Real-Time Coaching</CardTitle>
                 <CardDescription>
-                  Enhance every conversation with intelligent prompts that guide deals to completion
+                  Enhance every conversation with intelligent prompts that guide
+                  deals to completion
                 </CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <Users className="w-8 h-8 text-blue-500 mb-2" />
@@ -86,7 +96,7 @@ export default function Landing() {
                 </CardDescription>
               </CardHeader>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <BarChart3 className="w-8 h-8 text-cyan-600 mb-2" />
@@ -112,22 +122,37 @@ export default function Landing() {
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="font-semibold text-gray-900">Never Miss a Pain Point</p>
-                    <p className="text-gray-600">AI identifies and maps customer pain points to your value propositions</p>
+                    <p className="font-semibold text-gray-900">
+                      Never Miss a Pain Point
+                    </p>
+                    <p className="text-gray-600">
+                      AI identifies and maps customer pain points to your value
+                      propositions
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="font-semibold text-gray-900">Perfect Follow-Up Every Time</p>
-                    <p className="text-gray-600">Get intelligent next-step recommendations based on meeting context</p>
+                    <p className="font-semibold text-gray-900">
+                      Perfect Follow-Up Every Time
+                    </p>
+                    <p className="text-gray-600">
+                      Get intelligent next-step recommendations based on meeting
+                      context
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2"></div>
                   <div>
-                    <p className="font-semibold text-gray-900">Seamless CRM Updates</p>
-                    <p className="text-gray-600">Automatically sync structured data to your CRM without manual entry</p>
+                    <p className="font-semibold text-gray-900">
+                      Seamless CRM Updates
+                    </p>
+                    <p className="text-gray-600">
+                      Automatically sync structured data to your CRM without
+                      manual entry
+                    </p>
                   </div>
                 </div>
               </div>
@@ -135,15 +160,18 @@ export default function Landing() {
             <div className="bg-gradient-to-br from-blue-100/50 to-cyan-100/50 rounded-lg p-8 border border-blue-200/20">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-center">Ready to Transform Your Sales Process?</CardTitle>
+                  <CardTitle className="text-center">
+                    Ready to Transform Your Sales Process?
+                  </CardTitle>
                   <CardDescription className="text-center">
-                    Join thousands of sales professionals who are already using Saprism
+                    Join thousands of sales professionals who are already using
+                    Saprism
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button 
+                  <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => (window.location.href = "/api/login")}
                   >
                     Get Started Now
                   </Button>
@@ -158,11 +186,10 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center space-x-3 mb-8">
-            <Diamond className="w-6 h-6 text-white" />
-            <span className="text-lg font-bold text-white">Saprism</span>
+            <SaprismLogo size="sm" className="text-white" />
           </div>
           <div className="text-center text-gray-400">
-            <p>&copy; 2024 Saprism. All rights reserved.</p>
+            <p>&copy; 2025 Saprism. All rights reserved.</p>
           </div>
         </div>
       </footer>
