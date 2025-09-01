@@ -861,7 +861,7 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
               <SelectTrigger>
                 <SelectValue placeholder="Select a methodology" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[240px] overflow-y-auto">
                 {METHODOLOGIES.map((method) => (
                   <SelectItem key={method.id} value={method.id}>
                     <div className="flex flex-col">
