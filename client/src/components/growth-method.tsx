@@ -35,8 +35,8 @@ interface GrowthMethodProps {
 
 const METHODOLOGIES: SalesMethodology[] = [
   {
-    id: "meddpicc",
-    name: "MEDDPICC",
+    id: "meddic",
+    name: "MEDDIC",
     description: "Comprehensive B2B sales methodology for complex enterprise deals",
     industries: ["Technology", "SaaS", "Enterprise Software", "Manufacturing"],
     steps: [
@@ -265,6 +265,387 @@ const METHODOLOGIES: SalesMethodology[] = [
         progress: 0
       }
     ]
+  },
+  {
+    id: "value_selling",
+    name: "Value Selling",
+    description: "Focus on the value proposition and ROI for the customer",
+    industries: ["Professional Services", "Consulting", "Financial Services", "Healthcare"],
+    steps: [
+      {
+        id: "value_discovery",
+        name: "Value Discovery",
+        description: "Identify areas where you can create value",
+        questions: [
+          "What are your biggest business challenges?",
+          "Where do you see opportunities for improvement?",
+          "What would success look like for your organization?",
+          "How do you currently measure performance in this area?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "value_creation",
+        name: "Value Creation",
+        description: "Develop solutions that create measurable value",
+        questions: [
+          "How can our solution address your challenges?",
+          "What specific benefits would you expect to see?",
+          "How would you measure the success of this solution?",
+          "What would the impact be on your organization?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "value_proof",
+        name: "Value Proof",
+        description: "Demonstrate and quantify the value proposition",
+        questions: [
+          "Can we run a pilot or proof of concept?",
+          "What metrics would you use to evaluate success?",
+          "How can we demonstrate ROI?",
+          "What evidence would convince your stakeholders?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "solution_selling",
+    name: "Solution Selling",
+    description: "Understand customer needs and position comprehensive solutions",
+    industries: ["Technology", "Software", "Professional Services", "Manufacturing"],
+    steps: [
+      {
+        id: "needs_analysis",
+        name: "Needs Analysis",
+        description: "Deeply understand customer requirements",
+        questions: [
+          "What specific problems are you trying to solve?",
+          "How are you handling this currently?",
+          "What are the limitations of your current approach?",
+          "What would an ideal solution look like?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "solution_design",
+        name: "Solution Design",
+        description: "Create tailored solutions for customer needs",
+        questions: [
+          "How would our solution address your specific needs?",
+          "What components would be most valuable to you?",
+          "How would this integrate with your existing systems?",
+          "What customizations might be required?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "solution_presentation",
+        name: "Solution Presentation",
+        description: "Present the solution compellingly",
+        questions: [
+          "How does this solution solve your key problems?",
+          "What are the expected outcomes and benefits?",
+          "What is the implementation timeline?",
+          "How do we compare to other options you're considering?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "consultative_selling",
+    name: "Consultative Selling",
+    description: "Act as a trusted advisor to understand and solve customer challenges",
+    industries: ["Professional Services", "Consulting", "Financial Services", "Real Estate"],
+    steps: [
+      {
+        id: "relationship_building",
+        name: "Relationship Building",
+        description: "Establish trust and credibility",
+        questions: [
+          "What are your key business objectives?",
+          "What challenges are you facing in achieving them?",
+          "Who else is involved in addressing these challenges?",
+          "What has worked well for you in the past?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "diagnostic_questioning",
+        name: "Diagnostic Questioning",
+        description: "Uncover underlying issues and opportunities",
+        questions: [
+          "What's causing this challenge?",
+          "How is this affecting your business?",
+          "What have you tried so far?",
+          "What would happen if this isn't resolved?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "advisory_solution",
+        name: "Advisory Solution",
+        description: "Recommend solutions as a trusted advisor",
+        questions: [
+          "Based on what I've learned, here's what I recommend...",
+          "What are your thoughts on this approach?",
+          "How does this align with your priorities?",
+          "What concerns do you have about moving forward?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "neat_selling",
+    name: "NEAT Selling",
+    description: "Core Needs, Economic Impact, Access to Authority, Timeline",
+    industries: ["B2B Services", "Technology", "Consulting", "Manufacturing"],
+    steps: [
+      {
+        id: "core_needs",
+        name: "Core Needs",
+        description: "Identify the customer's core business needs",
+        questions: [
+          "What are your most pressing business needs?",
+          "What problems are you trying to solve?",
+          "What goals are you trying to achieve?",
+          "What would success look like?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "economic_impact",
+        name: "Economic Impact",
+        description: "Quantify the financial impact of the problem and solution",
+        questions: [
+          "What is this problem costing you?",
+          "What would be the financial benefit of solving this?",
+          "How do you calculate ROI for this type of investment?",
+          "What budget have you allocated for this?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "access_authority",
+        name: "Access to Authority",
+        description: "Ensure you can reach the decision makers",
+        questions: [
+          "Who else is involved in this decision?",
+          "Who has the final authority to approve this?",
+          "Can you introduce me to the decision makers?",
+          "What is the decision-making process?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "timeline",
+        name: "Timeline",
+        description: "Establish realistic timelines and urgency",
+        questions: [
+          "When do you need to have this solved?",
+          "What's driving this timeline?",
+          "What happens if this isn't resolved by then?",
+          "What are the key milestones in your process?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "sandler_selling",
+    name: "Sandler Selling",
+    description: "Pain-focused selling methodology with emphasis on qualifying prospects",
+    industries: ["Professional Services", "Financial Services", "Real Estate", "Insurance"],
+    steps: [
+      {
+        id: "bonding_rapport",
+        name: "Bonding & Rapport",
+        description: "Build trust and establish a relationship",
+        questions: [
+          "Tell me about your business background",
+          "What brought you to this company?",
+          "What do you enjoy most about your role?",
+          "What are your biggest challenges right now?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "pain_identification",
+        name: "Pain Identification",
+        description: "Uncover the prospect's pain points",
+        questions: [
+          "What problems are you experiencing?",
+          "How long has this been an issue?",
+          "What have you done to try to fix it?",
+          "What's it costing you to live with this problem?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "budget_discussion",
+        name: "Budget Discussion",
+        description: "Understand their investment capacity",
+        questions: [
+          "What budget have you set aside for solving this?",
+          "How do you typically make investment decisions?",
+          "What would you need to see to justify the investment?",
+          "Who else is involved in budget approval?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "decision_process",
+        name: "Decision Process",
+        description: "Understand how they make decisions",
+        questions: [
+          "How do you typically evaluate solutions?",
+          "Who else would be involved in this decision?",
+          "What's your timeline for making a decision?",
+          "What could prevent you from moving forward?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "miller_heiman",
+    name: "Miller Heiman",
+    description: "Strategic selling methodology focused on large, complex sales",
+    industries: ["Enterprise Technology", "Manufacturing", "Aerospace", "Government"],
+    steps: [
+      {
+        id: "situation_analysis",
+        name: "Situation Analysis",
+        description: "Analyze the selling situation",
+        questions: [
+          "What is the customer's current situation?",
+          "What changes are driving this opportunity?",
+          "Who are the key players involved?",
+          "What are the competitive dynamics?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "buying_influences",
+        name: "Buying Influences",
+        description: "Identify and understand all buying influences",
+        questions: [
+          "Who is the economic buyer?",
+          "Who are the technical buyers?",
+          "Who are the user buyers?",
+          "Who are the coaches and gatekeepers?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "win_results",
+        name: "Win-Results",
+        description: "Understand what winning means for each buying influence",
+        questions: [
+          "What does each buyer want to achieve?",
+          "How will they measure success?",
+          "What are their personal wins?",
+          "What are the organizational wins?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "sales_funnel",
+        name: "Sales Funnel",
+        description: "Manage the sales process systematically",
+        questions: [
+          "Where are we in the sales process?",
+          "What are the next steps?",
+          "What could derail this opportunity?",
+          "How do we advance to the next stage?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
+  },
+  {
+    id: "custom_methodology",
+    name: "Custom Methodology",
+    description: "Tailored approach based on your specific sales process and industry",
+    industries: ["All Industries", "Customizable", "Flexible", "Adaptable"],
+    steps: [
+      {
+        id: "discovery",
+        name: "Discovery",
+        description: "Understand the customer's situation",
+        questions: [
+          "What brings you to evaluate new solutions?",
+          "What challenges are you facing?",
+          "What are your key objectives?",
+          "What would success look like?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "qualification",
+        name: "Qualification",
+        description: "Qualify the opportunity",
+        questions: [
+          "What budget have you allocated?",
+          "What's your decision timeline?",
+          "Who else is involved in this decision?",
+          "How will you evaluate solutions?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "presentation",
+        name: "Presentation",
+        description: "Present your solution",
+        questions: [
+          "How does our solution address your needs?",
+          "What questions do you have?",
+          "How does this compare to other options?",
+          "What are your next steps?"
+        ],
+        completed: false,
+        progress: 0
+      },
+      {
+        id: "closing",
+        name: "Closing",
+        description: "Close the deal",
+        questions: [
+          "Are you ready to move forward?",
+          "What concerns do you still have?",
+          "When would you like to get started?",
+          "What do we need to do to finalize this?"
+        ],
+        completed: false,
+        progress: 0
+      }
+    ]
   }
 ];
 
@@ -376,31 +757,31 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
     if (selectedClient?.salesMethodology && !selectedMethodology) {
       // Map client's sales methodology to our component methodology ids
       const methodologyMap: { [key: string]: string } = {
-        'MEDDIC': 'meddpicc',
-        'MEDDPICC': 'meddpicc',
+        'MEDDIC': 'meddic',
+        'MEDDPICC': 'meddic',
         'Challenger Sale': 'challenger', 
         'SPIN Selling': 'spin',
-        'Value Selling': 'meddpicc', // Use MEDDPICC as fallback
-        'Solution Selling': 'meddpicc',
-        'Consultative Selling': 'challenger',
-        'NEAT Selling': 'spin',
-        'Sandler Selling': 'challenger', 
-        'Miller Heiman': 'meddpicc',
-        'Custom Methodology': 'meddpicc' // Default fallback
+        'Value Selling': 'value_selling',
+        'Solution Selling': 'solution_selling',
+        'Consultative Selling': 'consultative_selling',
+        'NEAT Selling': 'neat_selling',
+        'Sandler Selling': 'sandler_selling', 
+        'Miller Heiman': 'miller_heiman',
+        'Custom Methodology': 'custom_methodology'
       };
       
-      const methodologyId = methodologyMap[selectedClient.salesMethodology] || 'meddpicc';
+      const methodologyId = methodologyMap[selectedClient.salesMethodology] || 'meddic';
       setSelectedMethodology(methodologyId);
     } else if (meeting?.clientCompany && !selectedMethodology && !selectedClient?.salesMethodology) {
       // Fallback to old auto-detection if no client methodology is set
       const company = meeting.clientCompany.toLowerCase();
       
       if (company.includes('tech') || company.includes('software') || company.includes('saas')) {
-        setSelectedMethodology("meddpicc");
+        setSelectedMethodology("meddic");
       } else if (company.includes('consulting') || company.includes('services')) {
-        setSelectedMethodology("challenger");
+        setSelectedMethodology("consultative_selling");
       } else {
-        setSelectedMethodology("meddpicc"); // Default to MEDDPICC for B2B
+        setSelectedMethodology("meddic"); // Default to MEDDIC for B2B
       }
     }
   }, [meeting, selectedClient, selectedMethodology]);
