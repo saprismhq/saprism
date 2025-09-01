@@ -189,18 +189,26 @@ export class OpenAIService {
                                   message.includes("Next Steps") ||
                                   message.length > 200; // Assume longer initial messages are from sections
 
-      const conciseInstruction = isFromSectionButton 
-        ? "Provide comprehensive guidance for this specific section."
-        : "Keep responses concise - maximum 3 sentences unless critical information requires more. Focus on key insights without filler text.";
+      const structuredInstruction = `ALWAYS structure your response with these two sections:
+
+**Information to Gather**
+• [High-level bullet points of key info needed]
+• [Focus on strategic insights, not detailed explanations]
+
+**Example Questions**
+• [Concise, actionable questions]
+• [Maximum 4-5 questions total]
+
+Keep responses brief and focused. No lengthy explanations or filler text.`;
 
       const messages = [
         {
           role: "system",
           content: `You are an expert sales coach and Growth Guide assistant. You help sales professionals with sales strategies, deal analysis, objection handling, value proposition development, and relationship building.
           
-          ${conciseInstruction}
+          ${structuredInstruction}
           
-          Provide specific, actionable advice tied to the deal context when possible. Be conversational but professional.
+          Provide specific, actionable advice tied to the deal context when possible. Be professional and direct.
           
           Meeting Context: ${meetingContext}`
         }
@@ -226,7 +234,7 @@ export class OpenAIService {
         model: "gpt-4o",
         messages: messages as any,
         temperature: 0.7,
-        max_tokens: isFromSectionButton ? 800 : 300, // Shorter for general chat, longer for section responses
+        max_tokens: isFromSectionButton ? 400 : 150, // Reduced by ~50%: 800->400, 300->150
       });
 
       return response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
