@@ -192,14 +192,14 @@ export class OpenAIService {
       const structuredInstruction = `ALWAYS structure your response with these two sections:
 
 **Information to Gather**
-• [High-level bullet points of key info needed]
-• [Focus on strategic insights, not detailed explanations]
+• [2-3 bullet points maximum]
+• [Strategic insights only]
 
-**Example Questions**
-• [Concise, actionable questions]
-• [Maximum 4-5 questions total]
+**Example Questions**  
+• [3 questions maximum]
+• [Direct, actionable questions]
 
-Keep responses brief and focused. No lengthy explanations or filler text.`;
+CRITICAL: Keep response under 4 lines per section. No scrolling required.`;
 
       const messages = [
         {
@@ -234,7 +234,7 @@ Keep responses brief and focused. No lengthy explanations or filler text.`;
         model: "gpt-4o",
         messages: messages as any,
         temperature: 0.7,
-        max_tokens: isFromSectionButton ? 400 : 150, // Reduced by ~50%: 800->400, 300->150
+        max_tokens: isFromSectionButton ? 200 : 100, // Ultra-concise: no scrolling needed
       });
 
       return response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
