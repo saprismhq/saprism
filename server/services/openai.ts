@@ -189,17 +189,17 @@ export class OpenAIService {
                                   message.includes("Next Steps") ||
                                   message.length > 200; // Assume longer initial messages are from sections
 
-      const structuredInstruction = `ALWAYS structure your response with these two sections:
+      const structuredInstruction = `MANDATORY EXACT FORMAT - NO EXCEPTIONS:
 
 **Information to Gather**
-• [2 bullet points maximum]
-• [Strategic insights only]
+• First insight
+• Second insight
 
-**Example Questions**  
-• [2 questions maximum]
-• [Direct, actionable questions]
+**Example Questions**
+• First question
+• Second question
 
-CRITICAL: Keep response under 3 lines per section. No scrolling required.`;
+STOP. NEVER ADD MORE THAN 2 ITEMS PER SECTION.`;
 
       const messages = [
         {
@@ -234,12 +234,66 @@ CRITICAL: Keep response under 3 lines per section. No scrolling required.`;
         model: "gpt-4o",
         messages: messages as any,
         temperature: 0.7,
-        max_tokens: isFromSectionButton ? 200 : 100, // Ultra-concise: no scrolling needed
+        max_tokens: isFromSectionButton ? 120 : 60, // Force ultra-short responses
       });
 
-      return response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
+      let aiResponse = response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
+      
+      // Post-processing validation: Enforce exactly 2 items per section
+      aiResponse = this.enforceResponseFormat(aiResponse);
+      
+      return aiResponse;
     } catch (error) {
       throw new Error("Failed to generate chat response: " + (error as Error).message);
+    }
+  }
+
+  // Post-processing validation to enforce exactly 2 items per section
+  private enforceResponseFormat(response: string): string {
+    try {
+      // Split response into sections
+      const sections = response.split('**');
+      let formattedResponse = '';
+      
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        
+        if (section.includes('Information to Gather')) {
+          formattedResponse += '**Information to Gather**\n';
+          const bullets = this.extractAndLimitBullets(response, 'Information to Gather');
+          formattedResponse += bullets + '\n\n';
+        } else if (section.includes('Example Questions')) {
+          formattedResponse += '**Example Questions**\n';
+          const bullets = this.extractAndLimitBullets(response, 'Example Questions');
+          formattedResponse += bullets;
+        }
+      }
+      
+      return formattedResponse.trim() || response; // Fallback to original if parsing fails
+    } catch (error) {
+      return response; // Fallback to original response if validation fails
+    }
+  }
+
+  private extractAndLimitBullets(text: string, sectionName: string): string {
+    try {
+      // Find the section
+      const sectionStart = text.indexOf(`**${sectionName}**`);
+      if (sectionStart === -1) return '';
+      
+      // Find the next section or end of text
+      const afterSection = text.substring(sectionStart + sectionName.length + 4);
+      const nextSection = afterSection.indexOf('**');
+      const sectionText = nextSection === -1 ? afterSection : afterSection.substring(0, nextSection);
+      
+      // Extract bullets (lines starting with •)
+      const bullets = sectionText.split('\n')
+        .filter(line => line.trim().startsWith('•'))
+        .slice(0, 2); // Enforce exactly 2 items maximum
+      
+      return bullets.join('\n');
+    } catch (error) {
+      return '';
     }
   }
 
