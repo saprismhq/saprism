@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { MessageCircle, Send, Loader2, User, Bot } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MessageCircle, Send, Loader2, User, Bot, Database } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -16,13 +17,15 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+type MeetingContextMode = "off" | "current" | "all";
+
 interface GrowthChatProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   initialContext?: string;
   onContextUsed?: () => void;
   messages?: ChatMessage[];
   onMessagesChange?: (messages: ChatMessage[]) => void;
-  useAllMeetingsContext?: boolean;
+  useAllMeetingsContext?: boolean; // Keep for backward compatibility
   clientMeetings?: any[];
 }
 
@@ -32,10 +35,13 @@ export function GrowthChat({
   onContextUsed, 
   messages = [], 
   onMessagesChange,
-  useAllMeetingsContext = true,
+  useAllMeetingsContext = true, // Keep for backward compatibility
   clientMeetings = []
 }: GrowthChatProps) {
   const [inputValue, setInputValue] = useState("");
+  const [meetingContextMode, setMeetingContextMode] = useState<MeetingContextMode>(
+    useAllMeetingsContext ? "all" : "current"
+  );
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -95,15 +101,27 @@ export function GrowthChat({
 
     onMessagesChange?.([...messages, userMessage]);
     
-    // Prepare meeting context based on toggle setting
-    let meetingContext = `
-      Meeting with: ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}
-      Deal Type: ${meeting.dealType || 'Not specified'}
-    `;
+    // Prepare meeting context based on selected mode
+    let meetingContext = '';
 
-    if (useAllMeetingsContext && clientMeetings.length > 0) {
-      // Build context from all client meetings
-      meetingContext += `\n\nMeeting History (${clientMeetings.length} meetings):`;
+    if (meetingContextMode === "off") {
+      // No meeting context provided
+      meetingContext = "No specific meeting context provided.";
+    } else if (meetingContextMode === "current") {
+      // Only current meeting context
+      meetingContext = `
+        Meeting with: ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}
+        Deal Type: ${meeting.dealType || 'Not specified'}
+        Current Meeting Notes: ${meeting.notes?.[0]?.content || 'No notes yet'}
+        AI Analysis: ${meeting.notes?.[0]?.aiAnalysis ? JSON.stringify(meeting.notes[0].aiAnalysis) : 'No analysis yet'}
+      `;
+    } else if (meetingContextMode === "all" && clientMeetings.length > 0) {
+      // All opportunities context
+      meetingContext = `
+        Meeting with: ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}
+        Deal Type: ${meeting.dealType || 'Not specified'}
+        
+        Meeting History (${clientMeetings.length} meetings):`;
       
       clientMeetings
         .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
@@ -120,11 +138,14 @@ export function GrowthChat({
             });
           }
         });
-    } else {
-      // Only use current meeting context
-      meetingContext += `
+    } else if (meetingContextMode === "all" && clientMeetings.length === 0) {
+      // All opportunities selected but no other meetings available
+      meetingContext = `
+        Meeting with: ${meeting.clientName}${meeting.clientCompany ? ` from ${meeting.clientCompany}` : ''}
+        Deal Type: ${meeting.dealType || 'Not specified'}
         Current Meeting Notes: ${meeting.notes?.[0]?.content || 'No notes yet'}
         AI Analysis: ${meeting.notes?.[0]?.aiAnalysis ? JSON.stringify(meeting.notes[0].aiAnalysis) : 'No analysis yet'}
+        Note: No other meetings found for this client.
       `;
     }
 
@@ -171,11 +192,44 @@ export function GrowthChat({
     <div className="flex-1 flex flex-col h-full">
       {/* Chat Header */}
       <div className="p-4 border-b border-gray-200 bg-white">
-        <h3 className="font-medium text-gray-900">Growth Chat</h3>
-        <p className="text-sm text-gray-600">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-medium text-gray-900">Growth Chat</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-3">
           Discussing: {meeting.clientName}
           {meeting.clientCompany && ` (${meeting.clientCompany})`}
         </p>
+        
+        {/* Meeting Context Selector */}
+        <div className="flex items-center space-x-2">
+          <Database className="w-4 h-4 text-gray-500" />
+          <span className="text-sm font-medium text-gray-700">Context:</span>
+          <Select value={meetingContextMode} onValueChange={(value: MeetingContextMode) => setMeetingContextMode(value)}>
+            <SelectTrigger className="w-48 h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="off">
+                <div className="flex flex-col">
+                  <span className="font-medium">Off</span>
+                  <span className="text-xs text-gray-500">No meeting context</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="current">
+                <div className="flex flex-col">
+                  <span className="font-medium">Current Opportunity</span>
+                  <span className="text-xs text-gray-500">This meeting only</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="all">
+                <div className="flex flex-col">
+                  <span className="font-medium">All Opportunities</span>
+                  <span className="text-xs text-gray-500">All client meetings{clientMeetings.length > 0 ? ` (${clientMeetings.length})` : ''}</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Messages */}
