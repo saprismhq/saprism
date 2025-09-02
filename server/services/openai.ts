@@ -192,14 +192,14 @@ export class OpenAIService {
       const structuredInstruction = `ALWAYS structure your response with these two sections:
 
 **Information to Gather**
-• [2-3 bullet points maximum]
+• [2 bullet points maximum]
 • [Strategic insights only]
 
 **Example Questions**  
-• [3 questions maximum]
+• [2 questions maximum]
 • [Direct, actionable questions]
 
-CRITICAL: Keep response under 4 lines per section. No scrolling required.`;
+CRITICAL: Keep response under 3 lines per section. No scrolling required.`;
 
       const messages = [
         {
