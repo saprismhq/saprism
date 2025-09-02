@@ -1,21 +1,18 @@
 import { z } from 'zod';
-import { UserCreateNestedOneWithoutClientsInputObjectSchema } from './UserCreateNestedOneWithoutClientsInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { UserCreateNestedOneWithoutClientsInputObjectSchema } from './UserCreateNestedOneWithoutClientsInput.schema'
 
-const Schema: z.ZodType<Prisma.ClientCreateWithoutMeetingsInput> = z
-  .object({
-    name: z.string(),
-    company: z.string(),
-    email: z.string().optional().nullable(),
-    phone: z.string().optional().nullable(),
-    industry: z.string().optional().nullable(),
-    salesMethodology: z.string().optional().nullable(),
-    notes: z.string().optional().nullable(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-    user: z.lazy(() => UserCreateNestedOneWithoutClientsInputObjectSchema),
-  })
-  .strict();
-
-export const ClientCreateWithoutMeetingsInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  name: z.string().max(255),
+  company: z.string().max(255),
+  email: z.string().max(255).nullish(),
+  phone: z.string().max(255).nullish(),
+  industry: z.string().max(255).nullish(),
+  salesMethodology: z.string().max(255).nullish(),
+  notes: z.string().nullish(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  user: z.lazy(() => UserCreateNestedOneWithoutClientsInputObjectSchema)
+}).strict();
+export const ClientCreateWithoutMeetingsInputObjectSchema: z.ZodType<Prisma.ClientCreateWithoutMeetingsInput> = makeSchema() as unknown as z.ZodType<Prisma.ClientCreateWithoutMeetingsInput>;
+export const ClientCreateWithoutMeetingsInputObjectZodSchema = makeSchema();

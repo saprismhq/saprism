@@ -1,14 +1,11 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.SessionOrderByWithRelationInput> = z
-  .object({
-    sid: z.lazy(() => SortOrderSchema).optional(),
-    sess: z.lazy(() => SortOrderSchema).optional(),
-    expire: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const SessionOrderByWithRelationInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  sid: SortOrderSchema.optional(),
+  sess: SortOrderSchema.optional(),
+  expire: SortOrderSchema.optional()
+}).strict();
+export const SessionOrderByWithRelationInputObjectSchema: z.ZodType<Prisma.SessionOrderByWithRelationInput> = makeSchema() as unknown as z.ZodType<Prisma.SessionOrderByWithRelationInput>;
+export const SessionOrderByWithRelationInputObjectZodSchema = makeSchema();

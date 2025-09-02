@@ -1,17 +1,14 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.CrmSyncLogCountOrderByAggregateInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    meetingId: z.lazy(() => SortOrderSchema).optional(),
-    status: z.lazy(() => SortOrderSchema).optional(),
-    syncData: z.lazy(() => SortOrderSchema).optional(),
-    error: z.lazy(() => SortOrderSchema).optional(),
-    createdAt: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const CrmSyncLogCountOrderByAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  meetingId: SortOrderSchema.optional(),
+  status: SortOrderSchema.optional(),
+  syncData: SortOrderSchema.optional(),
+  error: SortOrderSchema.optional(),
+  createdAt: SortOrderSchema.optional()
+}).strict();
+export const CrmSyncLogCountOrderByAggregateInputObjectSchema: z.ZodType<Prisma.CrmSyncLogCountOrderByAggregateInput> = makeSchema() as unknown as z.ZodType<Prisma.CrmSyncLogCountOrderByAggregateInput>;
+export const CrmSyncLogCountOrderByAggregateInputObjectZodSchema = makeSchema();

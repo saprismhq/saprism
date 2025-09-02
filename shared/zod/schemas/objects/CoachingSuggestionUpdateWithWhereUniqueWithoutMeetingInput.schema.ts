@@ -1,23 +1,12 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { CoachingSuggestionWhereUniqueInputObjectSchema } from './CoachingSuggestionWhereUniqueInput.schema';
 import { CoachingSuggestionUpdateWithoutMeetingInputObjectSchema } from './CoachingSuggestionUpdateWithoutMeetingInput.schema';
-import { CoachingSuggestionUncheckedUpdateWithoutMeetingInputObjectSchema } from './CoachingSuggestionUncheckedUpdateWithoutMeetingInput.schema';
+import { CoachingSuggestionUncheckedUpdateWithoutMeetingInputObjectSchema } from './CoachingSuggestionUncheckedUpdateWithoutMeetingInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInput> =
-  z
-    .object({
-      where: z.lazy(() => CoachingSuggestionWhereUniqueInputObjectSchema),
-      data: z.union([
-        z.lazy(() => CoachingSuggestionUpdateWithoutMeetingInputObjectSchema),
-        z.lazy(
-          () =>
-            CoachingSuggestionUncheckedUpdateWithoutMeetingInputObjectSchema,
-        ),
-      ]),
-    })
-    .strict();
-
-export const CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInputObjectSchema =
-  Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  where: z.lazy(() => CoachingSuggestionWhereUniqueInputObjectSchema),
+  data: z.union([z.lazy(() => CoachingSuggestionUpdateWithoutMeetingInputObjectSchema), z.lazy(() => CoachingSuggestionUncheckedUpdateWithoutMeetingInputObjectSchema)])
+}).strict();
+export const CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInput>;
+export const CoachingSuggestionUpdateWithWhereUniqueWithoutMeetingInputObjectZodSchema = makeSchema();

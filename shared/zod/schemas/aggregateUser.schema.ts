@@ -6,20 +6,4 @@ import { UserCountAggregateInputObjectSchema } from './objects/UserCountAggregat
 import { UserMinAggregateInputObjectSchema } from './objects/UserMinAggregateInput.schema';
 import { UserMaxAggregateInputObjectSchema } from './objects/UserMaxAggregateInput.schema';
 
-export const UserAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      UserOrderByWithRelationInputObjectSchema,
-      UserOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: UserWhereInputObjectSchema.optional(),
-  cursor: UserWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), UserCountAggregateInputObjectSchema])
-    .optional(),
-  _min: UserMinAggregateInputObjectSchema.optional(),
-  _max: UserMaxAggregateInputObjectSchema.optional(),
-});
+export const UserAggregateSchema = z.object({ orderBy: z.union([UserOrderByWithRelationInputObjectSchema, UserOrderByWithRelationInputObjectSchema.array()]).optional(), where: UserWhereInputObjectSchema.optional(), cursor: UserWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), UserCountAggregateInputObjectSchema ]).optional(), _min: UserMinAggregateInputObjectSchema.optional(), _max: UserMaxAggregateInputObjectSchema.optional() })

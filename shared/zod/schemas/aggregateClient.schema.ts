@@ -8,22 +8,4 @@ import { ClientMaxAggregateInputObjectSchema } from './objects/ClientMaxAggregat
 import { ClientAvgAggregateInputObjectSchema } from './objects/ClientAvgAggregateInput.schema';
 import { ClientSumAggregateInputObjectSchema } from './objects/ClientSumAggregateInput.schema';
 
-export const ClientAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      ClientOrderByWithRelationInputObjectSchema,
-      ClientOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: ClientWhereInputObjectSchema.optional(),
-  cursor: ClientWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), ClientCountAggregateInputObjectSchema])
-    .optional(),
-  _min: ClientMinAggregateInputObjectSchema.optional(),
-  _max: ClientMaxAggregateInputObjectSchema.optional(),
-  _avg: ClientAvgAggregateInputObjectSchema.optional(),
-  _sum: ClientSumAggregateInputObjectSchema.optional(),
-});
+export const ClientAggregateSchema = z.object({ orderBy: z.union([ClientOrderByWithRelationInputObjectSchema, ClientOrderByWithRelationInputObjectSchema.array()]).optional(), where: ClientWhereInputObjectSchema.optional(), cursor: ClientWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), ClientCountAggregateInputObjectSchema ]).optional(), _min: ClientMinAggregateInputObjectSchema.optional(), _max: ClientMaxAggregateInputObjectSchema.optional(), _avg: ClientAvgAggregateInputObjectSchema.optional(), _sum: ClientSumAggregateInputObjectSchema.optional() })

@@ -1,19 +1,17 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.MeetingMaxAggregateInputType> = z
-  .object({
-    id: z.literal(true).optional(),
-    userId: z.literal(true).optional(),
-    clientId: z.literal(true).optional(),
-    clientName: z.literal(true).optional(),
-    clientCompany: z.literal(true).optional(),
-    dealType: z.literal(true).optional(),
-    status: z.literal(true).optional(),
-    createdAt: z.literal(true).optional(),
-    updatedAt: z.literal(true).optional(),
-  })
-  .strict();
 
-export const MeetingMaxAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.literal(true).optional(),
+  userId: z.literal(true).optional(),
+  clientId: z.literal(true).optional(),
+  clientName: z.literal(true).optional(),
+  clientCompany: z.literal(true).optional(),
+  dealType: z.literal(true).optional(),
+  status: z.literal(true).optional(),
+  createdAt: z.literal(true).optional(),
+  updatedAt: z.literal(true).optional()
+}).strict();
+export const MeetingMaxAggregateInputObjectSchema: z.ZodType<Prisma.MeetingMaxAggregateInputType> = makeSchema() as unknown as z.ZodType<Prisma.MeetingMaxAggregateInputType>;
+export const MeetingMaxAggregateInputObjectZodSchema = makeSchema();

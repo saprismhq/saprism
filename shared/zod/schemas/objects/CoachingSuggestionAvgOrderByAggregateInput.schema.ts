@@ -1,13 +1,10 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.CoachingSuggestionAvgOrderByAggregateInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    meetingId: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const CoachingSuggestionAvgOrderByAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  meetingId: SortOrderSchema.optional()
+}).strict();
+export const CoachingSuggestionAvgOrderByAggregateInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionAvgOrderByAggregateInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionAvgOrderByAggregateInput>;
+export const CoachingSuggestionAvgOrderByAggregateInputObjectZodSchema = makeSchema();

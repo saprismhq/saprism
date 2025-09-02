@@ -1,15 +1,10 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.NestedBoolNullableFilter> = z
-  .object({
-    equals: z.boolean().optional().nullable(),
-    not: z
-      .union([z.boolean(), z.lazy(() => NestedBoolNullableFilterObjectSchema)])
-      .optional()
-      .nullable(),
-  })
-  .strict();
 
-export const NestedBoolNullableFilterObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  equals: z.boolean().nullish(),
+  not: z.union([z.boolean(), z.lazy(makeSchema)]).nullish()
+}).strict();
+export const NestedBoolNullableFilterObjectSchema: z.ZodType<Prisma.NestedBoolNullableFilter> = makeSchema() as unknown as z.ZodType<Prisma.NestedBoolNullableFilter>;
+export const NestedBoolNullableFilterObjectZodSchema = makeSchema();

@@ -1,11 +1,9 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.NoteWhereUniqueInput> = z
-  .object({
-    id: z.number().optional(),
-  })
-  .strict();
 
-export const NoteWhereUniqueInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.number().int()
+}).strict();
+export const NoteWhereUniqueInputObjectSchema: z.ZodType<Prisma.NoteWhereUniqueInput> = makeSchema() as unknown as z.ZodType<Prisma.NoteWhereUniqueInput>;
+export const NoteWhereUniqueInputObjectZodSchema = makeSchema();

@@ -1,89 +1,25 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { IntWithAggregatesFilterObjectSchema } from './IntWithAggregatesFilter.schema';
 import { StringWithAggregatesFilterObjectSchema } from './StringWithAggregatesFilter.schema';
 import { StringNullableWithAggregatesFilterObjectSchema } from './StringNullableWithAggregatesFilter.schema';
-import { DateTimeWithAggregatesFilterObjectSchema } from './DateTimeWithAggregatesFilter.schema';
+import { DateTimeWithAggregatesFilterObjectSchema } from './DateTimeWithAggregatesFilter.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.ClientScalarWhereWithAggregatesInput> = z
-  .object({
-    AND: z
-      .union([
-        z.lazy(() => ClientScalarWhereWithAggregatesInputObjectSchema),
-        z.lazy(() => ClientScalarWhereWithAggregatesInputObjectSchema).array(),
-      ])
-      .optional(),
-    OR: z
-      .lazy(() => ClientScalarWhereWithAggregatesInputObjectSchema)
-      .array()
-      .optional(),
-    NOT: z
-      .union([
-        z.lazy(() => ClientScalarWhereWithAggregatesInputObjectSchema),
-        z.lazy(() => ClientScalarWhereWithAggregatesInputObjectSchema).array(),
-      ])
-      .optional(),
-    id: z
-      .union([z.lazy(() => IntWithAggregatesFilterObjectSchema), z.number()])
-      .optional(),
-    userId: z
-      .union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()])
-      .optional(),
-    name: z
-      .union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()])
-      .optional(),
-    company: z
-      .union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string()])
-      .optional(),
-    email: z
-      .union([
-        z.lazy(() => StringNullableWithAggregatesFilterObjectSchema),
-        z.string(),
-      ])
-      .optional()
-      .nullable(),
-    phone: z
-      .union([
-        z.lazy(() => StringNullableWithAggregatesFilterObjectSchema),
-        z.string(),
-      ])
-      .optional()
-      .nullable(),
-    industry: z
-      .union([
-        z.lazy(() => StringNullableWithAggregatesFilterObjectSchema),
-        z.string(),
-      ])
-      .optional()
-      .nullable(),
-    salesMethodology: z
-      .union([
-        z.lazy(() => StringNullableWithAggregatesFilterObjectSchema),
-        z.string(),
-      ])
-      .optional()
-      .nullable(),
-    notes: z
-      .union([
-        z.lazy(() => StringNullableWithAggregatesFilterObjectSchema),
-        z.string(),
-      ])
-      .optional()
-      .nullable(),
-    createdAt: z
-      .union([
-        z.lazy(() => DateTimeWithAggregatesFilterObjectSchema),
-        z.coerce.date(),
-      ])
-      .optional(),
-    updatedAt: z
-      .union([
-        z.lazy(() => DateTimeWithAggregatesFilterObjectSchema),
-        z.coerce.date(),
-      ])
-      .optional(),
-  })
-  .strict();
-
-export const ClientScalarWhereWithAggregatesInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  AND: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
+  OR: z.lazy(makeSchema).array().optional(),
+  NOT: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
+  id: z.union([z.lazy(() => IntWithAggregatesFilterObjectSchema), z.number().int()]).optional(),
+  userId: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string().max(255)]).optional(),
+  name: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string().max(255)]).optional(),
+  company: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string().max(255)]).optional(),
+  email: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string().max(255)]).nullish(),
+  phone: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string().max(255)]).nullish(),
+  industry: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string().max(255)]).nullish(),
+  salesMethodology: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string().max(255)]).nullish(),
+  notes: z.union([z.lazy(() => StringNullableWithAggregatesFilterObjectSchema), z.string()]).nullish(),
+  createdAt: z.union([z.lazy(() => DateTimeWithAggregatesFilterObjectSchema), z.date()]).optional(),
+  updatedAt: z.union([z.lazy(() => DateTimeWithAggregatesFilterObjectSchema), z.date()]).optional()
+}).strict();
+export const ClientScalarWhereWithAggregatesInputObjectSchema: z.ZodType<Prisma.ClientScalarWhereWithAggregatesInput> = makeSchema() as unknown as z.ZodType<Prisma.ClientScalarWhereWithAggregatesInput>;
+export const ClientScalarWhereWithAggregatesInputObjectZodSchema = makeSchema();

@@ -1,89 +1,38 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
 import { IntNullableFilterObjectSchema } from './IntNullableFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema';
-import { UserRelationFilterObjectSchema } from './UserRelationFilter.schema';
+import { UserScalarRelationFilterObjectSchema } from './UserScalarRelationFilter.schema';
 import { UserWhereInputObjectSchema } from './UserWhereInput.schema';
-import { ClientRelationFilterObjectSchema } from './ClientRelationFilter.schema';
+import { ClientNullableScalarRelationFilterObjectSchema } from './ClientNullableScalarRelationFilter.schema';
 import { ClientWhereInputObjectSchema } from './ClientWhereInput.schema';
 import { NoteListRelationFilterObjectSchema } from './NoteListRelationFilter.schema';
 import { CoachingSuggestionListRelationFilterObjectSchema } from './CoachingSuggestionListRelationFilter.schema';
 import { CrmSyncLogListRelationFilterObjectSchema } from './CrmSyncLogListRelationFilter.schema';
-import { CallSessionListRelationFilterObjectSchema } from './CallSessionListRelationFilter.schema';
+import { CallSessionListRelationFilterObjectSchema } from './CallSessionListRelationFilter.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.MeetingWhereInput> = z
-  .object({
-    AND: z
-      .union([
-        z.lazy(() => MeetingWhereInputObjectSchema),
-        z.lazy(() => MeetingWhereInputObjectSchema).array(),
-      ])
-      .optional(),
-    OR: z
-      .lazy(() => MeetingWhereInputObjectSchema)
-      .array()
-      .optional(),
-    NOT: z
-      .union([
-        z.lazy(() => MeetingWhereInputObjectSchema),
-        z.lazy(() => MeetingWhereInputObjectSchema).array(),
-      ])
-      .optional(),
-    id: z.union([z.lazy(() => IntFilterObjectSchema), z.number()]).optional(),
-    userId: z
-      .union([z.lazy(() => StringFilterObjectSchema), z.string()])
-      .optional(),
-    clientId: z
-      .union([z.lazy(() => IntNullableFilterObjectSchema), z.number()])
-      .optional()
-      .nullable(),
-    clientName: z
-      .union([z.lazy(() => StringFilterObjectSchema), z.string()])
-      .optional(),
-    clientCompany: z
-      .union([z.lazy(() => StringNullableFilterObjectSchema), z.string()])
-      .optional()
-      .nullable(),
-    dealType: z
-      .union([z.lazy(() => StringFilterObjectSchema), z.string()])
-      .optional(),
-    status: z
-      .union([z.lazy(() => StringFilterObjectSchema), z.string()])
-      .optional(),
-    createdAt: z
-      .union([z.lazy(() => DateTimeFilterObjectSchema), z.coerce.date()])
-      .optional(),
-    updatedAt: z
-      .union([z.lazy(() => DateTimeFilterObjectSchema), z.coerce.date()])
-      .optional(),
-    user: z
-      .union([
-        z.lazy(() => UserRelationFilterObjectSchema),
-        z.lazy(() => UserWhereInputObjectSchema),
-      ])
-      .optional(),
-    client: z
-      .union([
-        z.lazy(() => ClientRelationFilterObjectSchema),
-        z.lazy(() => ClientWhereInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    notes: z.lazy(() => NoteListRelationFilterObjectSchema).optional(),
-    coachingSuggestions: z
-      .lazy(() => CoachingSuggestionListRelationFilterObjectSchema)
-      .optional(),
-    crmSyncLogs: z
-      .lazy(() => CrmSyncLogListRelationFilterObjectSchema)
-      .optional(),
-    callSessions: z
-      .lazy(() => CallSessionListRelationFilterObjectSchema)
-      .optional(),
-  })
-  .strict();
-
-export const MeetingWhereInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  AND: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
+  OR: z.lazy(makeSchema).array().optional(),
+  NOT: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
+  id: z.union([z.lazy(() => IntFilterObjectSchema), z.number().int()]).optional(),
+  userId: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(255)]).optional(),
+  clientId: z.union([z.lazy(() => IntNullableFilterObjectSchema), z.number().int()]).nullish(),
+  clientName: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(255)]).optional(),
+  clientCompany: z.union([z.lazy(() => StringNullableFilterObjectSchema), z.string().max(255)]).nullish(),
+  dealType: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(100)]).optional(),
+  status: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(50)]).optional(),
+  createdAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional(),
+  updatedAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional(),
+  user: z.union([z.lazy(() => UserScalarRelationFilterObjectSchema), z.lazy(() => UserWhereInputObjectSchema)]).optional(),
+  client: z.union([z.lazy(() => ClientNullableScalarRelationFilterObjectSchema), z.lazy(() => ClientWhereInputObjectSchema)]).nullish(),
+  notes: z.lazy(() => NoteListRelationFilterObjectSchema).optional(),
+  coachingSuggestions: z.lazy(() => CoachingSuggestionListRelationFilterObjectSchema).optional(),
+  crmSyncLogs: z.lazy(() => CrmSyncLogListRelationFilterObjectSchema).optional(),
+  callSessions: z.lazy(() => CallSessionListRelationFilterObjectSchema).optional()
+}).strict();
+export const MeetingWhereInputObjectSchema: z.ZodType<Prisma.MeetingWhereInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingWhereInput>;
+export const MeetingWhereInputObjectZodSchema = makeSchema();

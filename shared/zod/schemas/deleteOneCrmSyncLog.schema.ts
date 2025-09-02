@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import { CrmSyncLogSelectObjectSchema } from './objects/CrmSyncLogSelect.schema';
+import { CrmSyncLogIncludeObjectSchema } from './objects/CrmSyncLogInclude.schema';
 import { CrmSyncLogWhereUniqueInputObjectSchema } from './objects/CrmSyncLogWhereUniqueInput.schema';
 
-export const CrmSyncLogDeleteOneSchema = z.object({
-  where: CrmSyncLogWhereUniqueInputObjectSchema,
-});
+export const CrmSyncLogDeleteOneSchema = z.object({ select: CrmSyncLogSelectObjectSchema.optional(), include: CrmSyncLogIncludeObjectSchema.optional(), where: CrmSyncLogWhereUniqueInputObjectSchema  })

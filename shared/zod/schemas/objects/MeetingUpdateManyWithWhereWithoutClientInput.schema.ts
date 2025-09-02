@@ -1,18 +1,12 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { MeetingScalarWhereInputObjectSchema } from './MeetingScalarWhereInput.schema';
 import { MeetingUpdateManyMutationInputObjectSchema } from './MeetingUpdateManyMutationInput.schema';
-import { MeetingUncheckedUpdateManyWithoutMeetingsInputObjectSchema } from './MeetingUncheckedUpdateManyWithoutMeetingsInput.schema';
+import { MeetingUncheckedUpdateManyWithoutClientInputObjectSchema } from './MeetingUncheckedUpdateManyWithoutClientInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.MeetingUpdateManyWithWhereWithoutClientInput> = z
-  .object({
-    where: z.lazy(() => MeetingScalarWhereInputObjectSchema),
-    data: z.union([
-      z.lazy(() => MeetingUpdateManyMutationInputObjectSchema),
-      z.lazy(() => MeetingUncheckedUpdateManyWithoutMeetingsInputObjectSchema),
-    ]),
-  })
-  .strict();
-
-export const MeetingUpdateManyWithWhereWithoutClientInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  where: z.lazy(() => MeetingScalarWhereInputObjectSchema),
+  data: z.union([z.lazy(() => MeetingUpdateManyMutationInputObjectSchema), z.lazy(() => MeetingUncheckedUpdateManyWithoutClientInputObjectSchema)])
+}).strict();
+export const MeetingUpdateManyWithWhereWithoutClientInputObjectSchema: z.ZodType<Prisma.MeetingUpdateManyWithWhereWithoutClientInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingUpdateManyWithWhereWithoutClientInput>;
+export const MeetingUpdateManyWithWhereWithoutClientInputObjectZodSchema = makeSchema();

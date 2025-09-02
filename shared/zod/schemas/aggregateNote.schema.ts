@@ -8,22 +8,4 @@ import { NoteMaxAggregateInputObjectSchema } from './objects/NoteMaxAggregateInp
 import { NoteAvgAggregateInputObjectSchema } from './objects/NoteAvgAggregateInput.schema';
 import { NoteSumAggregateInputObjectSchema } from './objects/NoteSumAggregateInput.schema';
 
-export const NoteAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      NoteOrderByWithRelationInputObjectSchema,
-      NoteOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: NoteWhereInputObjectSchema.optional(),
-  cursor: NoteWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), NoteCountAggregateInputObjectSchema])
-    .optional(),
-  _min: NoteMinAggregateInputObjectSchema.optional(),
-  _max: NoteMaxAggregateInputObjectSchema.optional(),
-  _avg: NoteAvgAggregateInputObjectSchema.optional(),
-  _sum: NoteSumAggregateInputObjectSchema.optional(),
-});
+export const NoteAggregateSchema = z.object({ orderBy: z.union([NoteOrderByWithRelationInputObjectSchema, NoteOrderByWithRelationInputObjectSchema.array()]).optional(), where: NoteWhereInputObjectSchema.optional(), cursor: NoteWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), NoteCountAggregateInputObjectSchema ]).optional(), _min: NoteMinAggregateInputObjectSchema.optional(), _max: NoteMaxAggregateInputObjectSchema.optional(), _avg: NoteAvgAggregateInputObjectSchema.optional(), _sum: NoteSumAggregateInputObjectSchema.optional() })

@@ -1,11 +1,9 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z
-  .object({
-    set: z.string().optional().nullable(),
-  })
-  .strict();
 
-export const NullableStringFieldUpdateOperationsInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  set: z.string().nullish()
+}).strict();
+export const NullableStringFieldUpdateOperationsInputObjectSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = makeSchema() as unknown as z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput>;
+export const NullableStringFieldUpdateOperationsInputObjectZodSchema = makeSchema();

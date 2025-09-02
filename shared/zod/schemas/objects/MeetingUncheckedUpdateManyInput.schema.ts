@@ -1,71 +1,21 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { IntFieldUpdateOperationsInputObjectSchema } from './IntFieldUpdateOperationsInput.schema';
 import { StringFieldUpdateOperationsInputObjectSchema } from './StringFieldUpdateOperationsInput.schema';
 import { NullableIntFieldUpdateOperationsInputObjectSchema } from './NullableIntFieldUpdateOperationsInput.schema';
 import { NullableStringFieldUpdateOperationsInputObjectSchema } from './NullableStringFieldUpdateOperationsInput.schema';
-import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema';
+import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.MeetingUncheckedUpdateManyInput> = z
-  .object({
-    id: z
-      .union([
-        z.number(),
-        z.lazy(() => IntFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    userId: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    clientId: z
-      .union([
-        z.number(),
-        z.lazy(() => NullableIntFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    clientName: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    clientCompany: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    dealType: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    status: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    createdAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    updatedAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-  })
-  .strict();
-
-export const MeetingUncheckedUpdateManyInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputObjectSchema)]).optional(),
+  userId: z.union([z.string().max(255), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  clientId: z.union([z.number().int(), z.lazy(() => NullableIntFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  clientName: z.union([z.string().max(255), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  clientCompany: z.union([z.string().max(255), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  dealType: z.union([z.string().max(100), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  status: z.union([z.string().max(50), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  createdAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional(),
+  updatedAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional()
+}).strict();
+export const MeetingUncheckedUpdateManyInputObjectSchema: z.ZodType<Prisma.MeetingUncheckedUpdateManyInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingUncheckedUpdateManyInput>;
+export const MeetingUncheckedUpdateManyInputObjectZodSchema = makeSchema();

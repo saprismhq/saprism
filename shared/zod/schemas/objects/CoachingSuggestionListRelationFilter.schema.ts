@@ -1,14 +1,11 @@
 import { z } from 'zod';
-import { CoachingSuggestionWhereInputObjectSchema } from './CoachingSuggestionWhereInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { CoachingSuggestionWhereInputObjectSchema } from './CoachingSuggestionWhereInput.schema'
 
-const Schema: z.ZodType<Prisma.CoachingSuggestionListRelationFilter> = z
-  .object({
-    every: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional(),
-    some: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional(),
-    none: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional(),
-  })
-  .strict();
-
-export const CoachingSuggestionListRelationFilterObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  every: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional(),
+  some: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional(),
+  none: z.lazy(() => CoachingSuggestionWhereInputObjectSchema).optional()
+}).strict();
+export const CoachingSuggestionListRelationFilterObjectSchema: z.ZodType<Prisma.CoachingSuggestionListRelationFilter> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionListRelationFilter>;
+export const CoachingSuggestionListRelationFilterObjectZodSchema = makeSchema();

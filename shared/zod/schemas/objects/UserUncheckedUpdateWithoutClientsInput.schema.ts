@@ -1,63 +1,19 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { StringFieldUpdateOperationsInputObjectSchema } from './StringFieldUpdateOperationsInput.schema';
 import { NullableStringFieldUpdateOperationsInputObjectSchema } from './NullableStringFieldUpdateOperationsInput.schema';
 import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldUpdateOperationsInput.schema';
-import { MeetingUncheckedUpdateManyWithoutUserNestedInputObjectSchema } from './MeetingUncheckedUpdateManyWithoutUserNestedInput.schema';
+import { MeetingUncheckedUpdateManyWithoutUserNestedInputObjectSchema } from './MeetingUncheckedUpdateManyWithoutUserNestedInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.UserUncheckedUpdateWithoutClientsInput> = z
-  .object({
-    id: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    email: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    firstName: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    lastName: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    profileImageUrl: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    createdAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    updatedAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    meetings: z
-      .lazy(() => MeetingUncheckedUpdateManyWithoutUserNestedInputObjectSchema)
-      .optional(),
-  })
-  .strict();
-
-export const UserUncheckedUpdateWithoutClientsInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  email: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  firstName: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  lastName: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  profileImageUrl: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  createdAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional(),
+  updatedAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional(),
+  meetings: z.lazy(() => MeetingUncheckedUpdateManyWithoutUserNestedInputObjectSchema).optional()
+}).strict();
+export const UserUncheckedUpdateWithoutClientsInputObjectSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutClientsInput> = makeSchema() as unknown as z.ZodType<Prisma.UserUncheckedUpdateWithoutClientsInput>;
+export const UserUncheckedUpdateWithoutClientsInputObjectZodSchema = makeSchema();

@@ -1,19 +1,17 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.MeetingCreateManyInput> = z
-  .object({
-    id: z.number().optional(),
-    userId: z.string(),
-    clientId: z.number().optional().nullable(),
-    clientName: z.string(),
-    clientCompany: z.string().optional().nullable(),
-    dealType: z.string().optional(),
-    status: z.string().optional(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-  })
-  .strict();
 
-export const MeetingCreateManyInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.number().int().optional(),
+  userId: z.string().max(255),
+  clientId: z.number().int().nullish(),
+  clientName: z.string().max(255),
+  clientCompany: z.string().max(255).nullish(),
+  dealType: z.string().max(100).optional(),
+  status: z.string().max(50).optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional()
+}).strict();
+export const MeetingCreateManyInputObjectSchema: z.ZodType<Prisma.MeetingCreateManyInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingCreateManyInput>;
+export const MeetingCreateManyInputObjectZodSchema = makeSchema();

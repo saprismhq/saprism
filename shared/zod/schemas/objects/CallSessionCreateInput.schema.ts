@@ -1,42 +1,24 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { JsonNullValueInputSchema } from '../enums/JsonNullValueInput.schema';
 import { NullableJsonNullValueInputSchema } from '../enums/NullableJsonNullValueInput.schema';
-import { MeetingCreateNestedOneWithoutCallSessionsInputObjectSchema } from './MeetingCreateNestedOneWithoutCallSessionsInput.schema';
+import { MeetingCreateNestedOneWithoutCallSessionsInputObjectSchema } from './MeetingCreateNestedOneWithoutCallSessionsInput.schema'
 
-import type { Prisma } from '@prisma/client';
+import { JsonValueSchema as jsonSchema } from '../../helpers/json-helpers';
 
-const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
-const jsonSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
-  z.union([
-    literalSchema,
-    z.array(jsonSchema.nullable()),
-    z.record(jsonSchema.nullable()),
-  ]),
-);
-
-const Schema: z.ZodType<Prisma.CallSessionCreateInput> = z
-  .object({
-    id: z.string().optional(),
-    liveKitRoomName: z.string(),
-    liveKitToken: z.string().optional().nullable(),
-    participants: z
-      .union([z.lazy(() => JsonNullValueInputSchema), jsonSchema])
-      .optional(),
-    status: z.string().optional(),
-    startedAt: z.coerce.date().optional().nullable(),
-    endedAt: z.coerce.date().optional().nullable(),
-    transcription: z
-      .union([z.lazy(() => NullableJsonNullValueInputSchema), jsonSchema])
-      .optional(),
-    sessionMetadata: z
-      .union([z.lazy(() => NullableJsonNullValueInputSchema), jsonSchema])
-      .optional(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-    meeting: z.lazy(
-      () => MeetingCreateNestedOneWithoutCallSessionsInputObjectSchema,
-    ),
-  })
-  .strict();
-
-export const CallSessionCreateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.string().optional(),
+  liveKitRoomName: z.string().max(255),
+  liveKitToken: z.string().nullish(),
+  participants: z.union([JsonNullValueInputSchema, jsonSchema]).optional(),
+  status: z.string().max(50).optional(),
+  startedAt: z.date().nullish(),
+  endedAt: z.date().nullish(),
+  transcription: z.union([NullableJsonNullValueInputSchema, jsonSchema]).optional(),
+  sessionMetadata: z.union([NullableJsonNullValueInputSchema, jsonSchema]).optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  meeting: z.lazy(() => MeetingCreateNestedOneWithoutCallSessionsInputObjectSchema)
+}).strict();
+export const CallSessionCreateInputObjectSchema: z.ZodType<Prisma.CallSessionCreateInput> = makeSchema() as unknown as z.ZodType<Prisma.CallSessionCreateInput>;
+export const CallSessionCreateInputObjectZodSchema = makeSchema();

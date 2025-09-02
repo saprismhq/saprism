@@ -8,22 +8,4 @@ import { CoachingSuggestionMaxAggregateInputObjectSchema } from './objects/Coach
 import { CoachingSuggestionAvgAggregateInputObjectSchema } from './objects/CoachingSuggestionAvgAggregateInput.schema';
 import { CoachingSuggestionSumAggregateInputObjectSchema } from './objects/CoachingSuggestionSumAggregateInput.schema';
 
-export const CoachingSuggestionAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      CoachingSuggestionOrderByWithRelationInputObjectSchema,
-      CoachingSuggestionOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: CoachingSuggestionWhereInputObjectSchema.optional(),
-  cursor: CoachingSuggestionWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), CoachingSuggestionCountAggregateInputObjectSchema])
-    .optional(),
-  _min: CoachingSuggestionMinAggregateInputObjectSchema.optional(),
-  _max: CoachingSuggestionMaxAggregateInputObjectSchema.optional(),
-  _avg: CoachingSuggestionAvgAggregateInputObjectSchema.optional(),
-  _sum: CoachingSuggestionSumAggregateInputObjectSchema.optional(),
-});
+export const CoachingSuggestionAggregateSchema = z.object({ orderBy: z.union([CoachingSuggestionOrderByWithRelationInputObjectSchema, CoachingSuggestionOrderByWithRelationInputObjectSchema.array()]).optional(), where: CoachingSuggestionWhereInputObjectSchema.optional(), cursor: CoachingSuggestionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), CoachingSuggestionCountAggregateInputObjectSchema ]).optional(), _min: CoachingSuggestionMinAggregateInputObjectSchema.optional(), _max: CoachingSuggestionMaxAggregateInputObjectSchema.optional(), _avg: CoachingSuggestionAvgAggregateInputObjectSchema.optional(), _sum: CoachingSuggestionSumAggregateInputObjectSchema.optional() })

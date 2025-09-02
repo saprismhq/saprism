@@ -1,21 +1,16 @@
 import { z } from 'zod';
-import { MeetingCreateNestedManyWithoutUserInputObjectSchema } from './MeetingCreateNestedManyWithoutUserInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { MeetingCreateNestedManyWithoutUserInputObjectSchema } from './MeetingCreateNestedManyWithoutUserInput.schema'
 
-const Schema: z.ZodType<Prisma.UserCreateWithoutClientsInput> = z
-  .object({
-    id: z.string(),
-    email: z.string().optional().nullable(),
-    firstName: z.string().optional().nullable(),
-    lastName: z.string().optional().nullable(),
-    profileImageUrl: z.string().optional().nullable(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-    meetings: z
-      .lazy(() => MeetingCreateNestedManyWithoutUserInputObjectSchema)
-      .optional(),
-  })
-  .strict();
-
-export const UserCreateWithoutClientsInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.string().max(255),
+  email: z.string().max(255).nullish(),
+  firstName: z.string().max(255).nullish(),
+  lastName: z.string().max(255).nullish(),
+  profileImageUrl: z.string().max(255).nullish(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  meetings: z.lazy(() => MeetingCreateNestedManyWithoutUserInputObjectSchema).optional()
+}).strict();
+export const UserCreateWithoutClientsInputObjectSchema: z.ZodType<Prisma.UserCreateWithoutClientsInput> = makeSchema() as unknown as z.ZodType<Prisma.UserCreateWithoutClientsInput>;
+export const UserCreateWithoutClientsInputObjectZodSchema = makeSchema();

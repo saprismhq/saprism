@@ -1,20 +1,17 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.CallSessionMinOrderByAggregateInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    meetingId: z.lazy(() => SortOrderSchema).optional(),
-    liveKitRoomName: z.lazy(() => SortOrderSchema).optional(),
-    liveKitToken: z.lazy(() => SortOrderSchema).optional(),
-    status: z.lazy(() => SortOrderSchema).optional(),
-    startedAt: z.lazy(() => SortOrderSchema).optional(),
-    endedAt: z.lazy(() => SortOrderSchema).optional(),
-    createdAt: z.lazy(() => SortOrderSchema).optional(),
-    updatedAt: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const CallSessionMinOrderByAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  meetingId: SortOrderSchema.optional(),
+  liveKitRoomName: SortOrderSchema.optional(),
+  liveKitToken: SortOrderSchema.optional(),
+  status: SortOrderSchema.optional(),
+  startedAt: SortOrderSchema.optional(),
+  endedAt: SortOrderSchema.optional(),
+  createdAt: SortOrderSchema.optional(),
+  updatedAt: SortOrderSchema.optional()
+}).strict();
+export const CallSessionMinOrderByAggregateInputObjectSchema: z.ZodType<Prisma.CallSessionMinOrderByAggregateInput> = makeSchema() as unknown as z.ZodType<Prisma.CallSessionMinOrderByAggregateInput>;
+export const CallSessionMinOrderByAggregateInputObjectZodSchema = makeSchema();

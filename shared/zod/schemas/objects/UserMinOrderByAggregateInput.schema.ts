@@ -1,18 +1,15 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.UserMinOrderByAggregateInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    email: z.lazy(() => SortOrderSchema).optional(),
-    firstName: z.lazy(() => SortOrderSchema).optional(),
-    lastName: z.lazy(() => SortOrderSchema).optional(),
-    profileImageUrl: z.lazy(() => SortOrderSchema).optional(),
-    createdAt: z.lazy(() => SortOrderSchema).optional(),
-    updatedAt: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const UserMinOrderByAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  email: SortOrderSchema.optional(),
+  firstName: SortOrderSchema.optional(),
+  lastName: SortOrderSchema.optional(),
+  profileImageUrl: SortOrderSchema.optional(),
+  createdAt: SortOrderSchema.optional(),
+  updatedAt: SortOrderSchema.optional()
+}).strict();
+export const UserMinOrderByAggregateInputObjectSchema: z.ZodType<Prisma.UserMinOrderByAggregateInput> = makeSchema() as unknown as z.ZodType<Prisma.UserMinOrderByAggregateInput>;
+export const UserMinOrderByAggregateInputObjectZodSchema = makeSchema();

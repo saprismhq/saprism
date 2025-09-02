@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { IntFieldUpdateOperationsInputObjectSchema } from './IntFieldUpdateOperationsInput.schema';
 import { StringFieldUpdateOperationsInputObjectSchema } from './StringFieldUpdateOperationsInput.schema';
 import { NullableStringFieldUpdateOperationsInputObjectSchema } from './NullableStringFieldUpdateOperationsInput.schema';
@@ -6,83 +7,21 @@ import { DateTimeFieldUpdateOperationsInputObjectSchema } from './DateTimeFieldU
 import { NoteUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './NoteUncheckedUpdateManyWithoutMeetingNestedInput.schema';
 import { CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInput.schema';
 import { CrmSyncLogUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CrmSyncLogUncheckedUpdateManyWithoutMeetingNestedInput.schema';
-import { CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CallSessionUncheckedUpdateManyWithoutMeetingNestedInput.schema';
+import { CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema } from './CallSessionUncheckedUpdateManyWithoutMeetingNestedInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.MeetingUncheckedUpdateWithoutClientInput> = z
-  .object({
-    id: z
-      .union([
-        z.number(),
-        z.lazy(() => IntFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    userId: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    clientName: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    clientCompany: z
-      .union([
-        z.string(),
-        z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    dealType: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    status: z
-      .union([
-        z.string(),
-        z.lazy(() => StringFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    createdAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    updatedAt: z
-      .union([
-        z.coerce.date(),
-        z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema),
-      ])
-      .optional(),
-    notes: z
-      .lazy(() => NoteUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema)
-      .optional(),
-    coachingSuggestions: z
-      .lazy(
-        () =>
-          CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema,
-      )
-      .optional(),
-    crmSyncLogs: z
-      .lazy(
-        () =>
-          CrmSyncLogUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema,
-      )
-      .optional(),
-    callSessions: z
-      .lazy(
-        () =>
-          CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema,
-      )
-      .optional(),
-  })
-  .strict();
-
-export const MeetingUncheckedUpdateWithoutClientInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.union([z.number().int(), z.lazy(() => IntFieldUpdateOperationsInputObjectSchema)]).optional(),
+  userId: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  clientName: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  clientCompany: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputObjectSchema)]).nullish(),
+  dealType: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  status: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputObjectSchema)]).optional(),
+  createdAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional(),
+  updatedAt: z.union([z.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputObjectSchema)]).optional(),
+  notes: z.lazy(() => NoteUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema).optional(),
+  coachingSuggestions: z.lazy(() => CoachingSuggestionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema).optional(),
+  crmSyncLogs: z.lazy(() => CrmSyncLogUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema).optional(),
+  callSessions: z.lazy(() => CallSessionUncheckedUpdateManyWithoutMeetingNestedInputObjectSchema).optional()
+}).strict();
+export const MeetingUncheckedUpdateWithoutClientInputObjectSchema: z.ZodType<Prisma.MeetingUncheckedUpdateWithoutClientInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingUncheckedUpdateWithoutClientInput>;
+export const MeetingUncheckedUpdateWithoutClientInputObjectZodSchema = makeSchema();

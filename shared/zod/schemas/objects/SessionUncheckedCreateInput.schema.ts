@@ -1,23 +1,13 @@
 import { z } from 'zod';
-import { JsonNullValueInputSchema } from '../enums/JsonNullValueInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { JsonNullValueInputSchema } from '../enums/JsonNullValueInput.schema'
 
-const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
-const jsonSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
-  z.union([
-    literalSchema,
-    z.array(jsonSchema.nullable()),
-    z.record(jsonSchema.nullable()),
-  ]),
-);
+import { JsonValueSchema as jsonSchema } from '../../helpers/json-helpers';
 
-const Schema: z.ZodType<Prisma.SessionUncheckedCreateInput> = z
-  .object({
-    sid: z.string(),
-    sess: z.union([z.lazy(() => JsonNullValueInputSchema), jsonSchema]),
-    expire: z.coerce.date(),
-  })
-  .strict();
-
-export const SessionUncheckedCreateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  sid: z.string().max(255),
+  sess: z.union([JsonNullValueInputSchema, jsonSchema]),
+  expire: z.date()
+}).strict();
+export const SessionUncheckedCreateInputObjectSchema: z.ZodType<Prisma.SessionUncheckedCreateInput> = makeSchema() as unknown as z.ZodType<Prisma.SessionUncheckedCreateInput>;
+export const SessionUncheckedCreateInputObjectZodSchema = makeSchema();

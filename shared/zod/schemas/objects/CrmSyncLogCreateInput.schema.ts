@@ -1,30 +1,16 @@
 import { z } from 'zod';
-import { NullableJsonNullValueInputSchema } from '../enums/NullableJsonNullValueInput.schema';
-import { MeetingCreateNestedOneWithoutCrmSyncLogsInputObjectSchema } from './MeetingCreateNestedOneWithoutCrmSyncLogsInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { NullableJsonNullValueInputSchema } from '../enums/NullableJsonNullValueInput.schema';
+import { MeetingCreateNestedOneWithoutCrmSyncLogsInputObjectSchema } from './MeetingCreateNestedOneWithoutCrmSyncLogsInput.schema'
 
-const literalSchema = z.union([z.string(), z.number(), z.boolean()]);
-const jsonSchema: z.ZodType<Prisma.InputJsonValue> = z.lazy(() =>
-  z.union([
-    literalSchema,
-    z.array(jsonSchema.nullable()),
-    z.record(jsonSchema.nullable()),
-  ]),
-);
+import { JsonValueSchema as jsonSchema } from '../../helpers/json-helpers';
 
-const Schema: z.ZodType<Prisma.CrmSyncLogCreateInput> = z
-  .object({
-    status: z.string(),
-    syncData: z
-      .union([z.lazy(() => NullableJsonNullValueInputSchema), jsonSchema])
-      .optional(),
-    error: z.string().optional().nullable(),
-    createdAt: z.coerce.date().optional(),
-    meeting: z.lazy(
-      () => MeetingCreateNestedOneWithoutCrmSyncLogsInputObjectSchema,
-    ),
-  })
-  .strict();
-
-export const CrmSyncLogCreateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  status: z.string().max(50),
+  syncData: z.union([NullableJsonNullValueInputSchema, jsonSchema]).optional(),
+  error: z.string().nullish(),
+  createdAt: z.date().optional(),
+  meeting: z.lazy(() => MeetingCreateNestedOneWithoutCrmSyncLogsInputObjectSchema)
+}).strict();
+export const CrmSyncLogCreateInputObjectSchema: z.ZodType<Prisma.CrmSyncLogCreateInput> = makeSchema() as unknown as z.ZodType<Prisma.CrmSyncLogCreateInput>;
+export const CrmSyncLogCreateInputObjectZodSchema = makeSchema();

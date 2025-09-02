@@ -1,26 +1,19 @@
 import { z } from 'zod';
-import { MeetingUncheckedCreateNestedManyWithoutClientInputObjectSchema } from './MeetingUncheckedCreateNestedManyWithoutClientInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { MeetingUncheckedCreateNestedManyWithoutClientInputObjectSchema } from './MeetingUncheckedCreateNestedManyWithoutClientInput.schema'
 
-const Schema: z.ZodType<Prisma.ClientUncheckedCreateWithoutUserInput> = z
-  .object({
-    id: z.number().optional(),
-    name: z.string(),
-    company: z.string(),
-    email: z.string().optional().nullable(),
-    phone: z.string().optional().nullable(),
-    industry: z.string().optional().nullable(),
-    salesMethodology: z.string().optional().nullable(),
-    notes: z.string().optional().nullable(),
-    createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional(),
-    meetings: z
-      .lazy(
-        () => MeetingUncheckedCreateNestedManyWithoutClientInputObjectSchema,
-      )
-      .optional(),
-  })
-  .strict();
-
-export const ClientUncheckedCreateWithoutUserInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  company: z.string(),
+  email: z.string().nullish(),
+  phone: z.string().nullish(),
+  industry: z.string().nullish(),
+  salesMethodology: z.string().nullish(),
+  notes: z.string().nullish(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  meetings: z.lazy(() => MeetingUncheckedCreateNestedManyWithoutClientInputObjectSchema).optional()
+}).strict();
+export const ClientUncheckedCreateWithoutUserInputObjectSchema: z.ZodType<Prisma.ClientUncheckedCreateWithoutUserInput> = makeSchema() as unknown as z.ZodType<Prisma.ClientUncheckedCreateWithoutUserInput>;
+export const ClientUncheckedCreateWithoutUserInputObjectZodSchema = makeSchema();

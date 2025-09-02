@@ -1,15 +1,13 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = z
-  .object({
-    set: z.number().optional(),
-    increment: z.number().optional(),
-    decrement: z.number().optional(),
-    multiply: z.number().optional(),
-    divide: z.number().optional(),
-  })
-  .strict();
 
-export const IntFieldUpdateOperationsInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  set: z.number().int().optional(),
+  increment: z.number().int().optional(),
+  decrement: z.number().int().optional(),
+  multiply: z.number().int().optional(),
+  divide: z.number().int().optional()
+}).strict();
+export const IntFieldUpdateOperationsInputObjectSchema: z.ZodType<Prisma.IntFieldUpdateOperationsInput> = makeSchema() as unknown as z.ZodType<Prisma.IntFieldUpdateOperationsInput>;
+export const IntFieldUpdateOperationsInputObjectZodSchema = makeSchema();

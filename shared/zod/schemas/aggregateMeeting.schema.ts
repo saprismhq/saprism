@@ -8,22 +8,4 @@ import { MeetingMaxAggregateInputObjectSchema } from './objects/MeetingMaxAggreg
 import { MeetingAvgAggregateInputObjectSchema } from './objects/MeetingAvgAggregateInput.schema';
 import { MeetingSumAggregateInputObjectSchema } from './objects/MeetingSumAggregateInput.schema';
 
-export const MeetingAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      MeetingOrderByWithRelationInputObjectSchema,
-      MeetingOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: MeetingWhereInputObjectSchema.optional(),
-  cursor: MeetingWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), MeetingCountAggregateInputObjectSchema])
-    .optional(),
-  _min: MeetingMinAggregateInputObjectSchema.optional(),
-  _max: MeetingMaxAggregateInputObjectSchema.optional(),
-  _avg: MeetingAvgAggregateInputObjectSchema.optional(),
-  _sum: MeetingSumAggregateInputObjectSchema.optional(),
-});
+export const MeetingAggregateSchema = z.object({ orderBy: z.union([MeetingOrderByWithRelationInputObjectSchema, MeetingOrderByWithRelationInputObjectSchema.array()]).optional(), where: MeetingWhereInputObjectSchema.optional(), cursor: MeetingWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), MeetingCountAggregateInputObjectSchema ]).optional(), _min: MeetingMinAggregateInputObjectSchema.optional(), _max: MeetingMaxAggregateInputObjectSchema.optional(), _avg: MeetingAvgAggregateInputObjectSchema.optional(), _sum: MeetingSumAggregateInputObjectSchema.optional() })

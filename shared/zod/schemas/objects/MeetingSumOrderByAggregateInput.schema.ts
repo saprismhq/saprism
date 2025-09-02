@@ -1,13 +1,10 @@
 import { z } from 'zod';
-import { SortOrderSchema } from '../enums/SortOrder.schema';
-
 import type { Prisma } from '@prisma/client';
+import { SortOrderSchema } from '../enums/SortOrder.schema'
 
-const Schema: z.ZodType<Prisma.MeetingSumOrderByAggregateInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    clientId: z.lazy(() => SortOrderSchema).optional(),
-  })
-  .strict();
-
-export const MeetingSumOrderByAggregateInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  clientId: SortOrderSchema.optional()
+}).strict();
+export const MeetingSumOrderByAggregateInputObjectSchema: z.ZodType<Prisma.MeetingSumOrderByAggregateInput> = makeSchema() as unknown as z.ZodType<Prisma.MeetingSumOrderByAggregateInput>;
+export const MeetingSumOrderByAggregateInputObjectZodSchema = makeSchema();

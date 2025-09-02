@@ -1,11 +1,9 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.SessionWhereUniqueInput> = z
-  .object({
-    sid: z.string().optional(),
-  })
-  .strict();
 
-export const SessionWhereUniqueInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  sid: z.string().max(255)
+}).strict();
+export const SessionWhereUniqueInputObjectSchema: z.ZodType<Prisma.SessionWhereUniqueInput> = makeSchema() as unknown as z.ZodType<Prisma.SessionWhereUniqueInput>;
+export const SessionWhereUniqueInputObjectZodSchema = makeSchema();

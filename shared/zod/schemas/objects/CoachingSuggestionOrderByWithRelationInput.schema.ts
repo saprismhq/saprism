@@ -1,32 +1,17 @@
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { SortOrderSchema } from '../enums/SortOrder.schema';
 import { SortOrderInputObjectSchema } from './SortOrderInput.schema';
-import { MeetingOrderByWithRelationInputObjectSchema } from './MeetingOrderByWithRelationInput.schema';
+import { MeetingOrderByWithRelationInputObjectSchema } from './MeetingOrderByWithRelationInput.schema'
 
-import type { Prisma } from '@prisma/client';
-
-const Schema: z.ZodType<Prisma.CoachingSuggestionOrderByWithRelationInput> = z
-  .object({
-    id: z.lazy(() => SortOrderSchema).optional(),
-    meetingId: z.lazy(() => SortOrderSchema).optional(),
-    type: z.lazy(() => SortOrderSchema).optional(),
-    content: z.lazy(() => SortOrderSchema).optional(),
-    isUsed: z
-      .union([
-        z.lazy(() => SortOrderSchema),
-        z.lazy(() => SortOrderInputObjectSchema),
-      ])
-      .optional(),
-    createdAt: z
-      .union([
-        z.lazy(() => SortOrderSchema),
-        z.lazy(() => SortOrderInputObjectSchema),
-      ])
-      .optional(),
-    meeting: z
-      .lazy(() => MeetingOrderByWithRelationInputObjectSchema)
-      .optional(),
-  })
-  .strict();
-
-export const CoachingSuggestionOrderByWithRelationInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: SortOrderSchema.optional(),
+  meetingId: SortOrderSchema.optional(),
+  type: SortOrderSchema.optional(),
+  content: SortOrderSchema.optional(),
+  isUsed: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
+  createdAt: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
+  meeting: z.lazy(() => MeetingOrderByWithRelationInputObjectSchema).optional()
+}).strict();
+export const CoachingSuggestionOrderByWithRelationInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionOrderByWithRelationInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionOrderByWithRelationInput>;
+export const CoachingSuggestionOrderByWithRelationInputObjectZodSchema = makeSchema();

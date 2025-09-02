@@ -1,16 +1,10 @@
 import { z } from 'zod';
-import { CrmSyncLogCreateManyMeetingInputObjectSchema } from './CrmSyncLogCreateManyMeetingInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { CrmSyncLogCreateManyMeetingInputObjectSchema } from './CrmSyncLogCreateManyMeetingInput.schema'
 
-const Schema: z.ZodType<Prisma.CrmSyncLogCreateManyMeetingInputEnvelope> = z
-  .object({
-    data: z.union([
-      z.lazy(() => CrmSyncLogCreateManyMeetingInputObjectSchema),
-      z.lazy(() => CrmSyncLogCreateManyMeetingInputObjectSchema).array(),
-    ]),
-    skipDuplicates: z.boolean().optional(),
-  })
-  .strict();
-
-export const CrmSyncLogCreateManyMeetingInputEnvelopeObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  data: z.union([z.lazy(() => CrmSyncLogCreateManyMeetingInputObjectSchema), z.lazy(() => CrmSyncLogCreateManyMeetingInputObjectSchema).array()]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+export const CrmSyncLogCreateManyMeetingInputEnvelopeObjectSchema: z.ZodType<Prisma.CrmSyncLogCreateManyMeetingInputEnvelope> = makeSchema() as unknown as z.ZodType<Prisma.CrmSyncLogCreateManyMeetingInputEnvelope>;
+export const CrmSyncLogCreateManyMeetingInputEnvelopeObjectZodSchema = makeSchema();

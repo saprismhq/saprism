@@ -6,20 +6,4 @@ import { SessionCountAggregateInputObjectSchema } from './objects/SessionCountAg
 import { SessionMinAggregateInputObjectSchema } from './objects/SessionMinAggregateInput.schema';
 import { SessionMaxAggregateInputObjectSchema } from './objects/SessionMaxAggregateInput.schema';
 
-export const SessionAggregateSchema = z.object({
-  orderBy: z
-    .union([
-      SessionOrderByWithRelationInputObjectSchema,
-      SessionOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: SessionWhereInputObjectSchema.optional(),
-  cursor: SessionWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  _count: z
-    .union([z.literal(true), SessionCountAggregateInputObjectSchema])
-    .optional(),
-  _min: SessionMinAggregateInputObjectSchema.optional(),
-  _max: SessionMaxAggregateInputObjectSchema.optional(),
-});
+export const SessionAggregateSchema = z.object({ orderBy: z.union([SessionOrderByWithRelationInputObjectSchema, SessionOrderByWithRelationInputObjectSchema.array()]).optional(), where: SessionWhereInputObjectSchema.optional(), cursor: SessionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), SessionCountAggregateInputObjectSchema ]).optional(), _min: SessionMinAggregateInputObjectSchema.optional(), _max: SessionMaxAggregateInputObjectSchema.optional() })

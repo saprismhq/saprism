@@ -1,23 +1,14 @@
 import { z } from 'zod';
-import { NestedIntNullableFilterObjectSchema } from './NestedIntNullableFilter.schema';
-import { NestedBoolNullableFilterObjectSchema } from './NestedBoolNullableFilter.schema';
-
 import type { Prisma } from '@prisma/client';
+import { NestedIntNullableFilterObjectSchema } from './NestedIntNullableFilter.schema';
+import { NestedBoolNullableFilterObjectSchema } from './NestedBoolNullableFilter.schema'
 
-const Schema: z.ZodType<Prisma.NestedBoolNullableWithAggregatesFilter> = z
-  .object({
-    equals: z.boolean().optional().nullable(),
-    not: z
-      .union([
-        z.boolean(),
-        z.lazy(() => NestedBoolNullableWithAggregatesFilterObjectSchema),
-      ])
-      .optional()
-      .nullable(),
-    _count: z.lazy(() => NestedIntNullableFilterObjectSchema).optional(),
-    _min: z.lazy(() => NestedBoolNullableFilterObjectSchema).optional(),
-    _max: z.lazy(() => NestedBoolNullableFilterObjectSchema).optional(),
-  })
-  .strict();
-
-export const NestedBoolNullableWithAggregatesFilterObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  equals: z.boolean().nullish(),
+  not: z.union([z.boolean(), z.lazy(makeSchema)]).nullish(),
+  _count: z.lazy(() => NestedIntNullableFilterObjectSchema).optional(),
+  _min: z.lazy(() => NestedBoolNullableFilterObjectSchema).optional(),
+  _max: z.lazy(() => NestedBoolNullableFilterObjectSchema).optional()
+}).strict();
+export const NestedBoolNullableWithAggregatesFilterObjectSchema: z.ZodType<Prisma.NestedBoolNullableWithAggregatesFilter> = makeSchema() as unknown as z.ZodType<Prisma.NestedBoolNullableWithAggregatesFilter>;
+export const NestedBoolNullableWithAggregatesFilterObjectZodSchema = makeSchema();

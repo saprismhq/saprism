@@ -1,14 +1,11 @@
 import { z } from 'zod';
-import { ClientWhereInputObjectSchema } from './ClientWhereInput.schema';
-
 import type { Prisma } from '@prisma/client';
+import { ClientWhereInputObjectSchema } from './ClientWhereInput.schema'
 
-const Schema: z.ZodType<Prisma.ClientListRelationFilter> = z
-  .object({
-    every: z.lazy(() => ClientWhereInputObjectSchema).optional(),
-    some: z.lazy(() => ClientWhereInputObjectSchema).optional(),
-    none: z.lazy(() => ClientWhereInputObjectSchema).optional(),
-  })
-  .strict();
-
-export const ClientListRelationFilterObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  every: z.lazy(() => ClientWhereInputObjectSchema).optional(),
+  some: z.lazy(() => ClientWhereInputObjectSchema).optional(),
+  none: z.lazy(() => ClientWhereInputObjectSchema).optional()
+}).strict();
+export const ClientListRelationFilterObjectSchema: z.ZodType<Prisma.ClientListRelationFilter> = makeSchema() as unknown as z.ZodType<Prisma.ClientListRelationFilter>;
+export const ClientListRelationFilterObjectZodSchema = makeSchema();

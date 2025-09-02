@@ -1,19 +1,25 @@
+import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 import { SessionOrderByWithRelationInputObjectSchema } from './objects/SessionOrderByWithRelationInput.schema';
 import { SessionWhereInputObjectSchema } from './objects/SessionWhereInput.schema';
 import { SessionWhereUniqueInputObjectSchema } from './objects/SessionWhereUniqueInput.schema';
 import { SessionScalarFieldEnumSchema } from './enums/SessionScalarFieldEnum.schema';
 
-export const SessionFindManySchema = z.object({
-  orderBy: z
-    .union([
-      SessionOrderByWithRelationInputObjectSchema,
-      SessionOrderByWithRelationInputObjectSchema.array(),
-    ])
-    .optional(),
-  where: SessionWhereInputObjectSchema.optional(),
-  cursor: SessionWhereUniqueInputObjectSchema.optional(),
-  take: z.number().optional(),
-  skip: z.number().optional(),
-  distinct: z.array(SessionScalarFieldEnumSchema).optional(),
-});
+// Select schema needs to be in file to prevent circular imports
+//------------------------------------------------------
+
+export const SessionFindManySelectSchema: z.ZodType<Prisma.SessionSelect> = z.object({
+    sid: z.boolean().optional(),
+    sess: z.boolean().optional(),
+    expire: z.boolean().optional()
+  }).strict() as unknown as z.ZodType<Prisma.SessionSelect>;
+
+export const SessionFindManySelectZodSchema = z.object({
+    sid: z.boolean().optional(),
+    sess: z.boolean().optional(),
+    expire: z.boolean().optional()
+  }).strict();
+
+export const SessionFindManySchema: z.ZodType<Prisma.SessionFindManyArgs> = z.object({ select: SessionFindManySelectSchema.optional(),  orderBy: z.union([SessionOrderByWithRelationInputObjectSchema, SessionOrderByWithRelationInputObjectSchema.array()]).optional(), where: SessionWhereInputObjectSchema.optional(), cursor: SessionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), distinct: z.union([SessionScalarFieldEnumSchema, SessionScalarFieldEnumSchema.array()]).optional() }).strict() as unknown as z.ZodType<Prisma.SessionFindManyArgs>;
+
+export const SessionFindManyZodSchema = z.object({ select: SessionFindManySelectSchema.optional(),  orderBy: z.union([SessionOrderByWithRelationInputObjectSchema, SessionOrderByWithRelationInputObjectSchema.array()]).optional(), where: SessionWhereInputObjectSchema.optional(), cursor: SessionWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), distinct: z.union([SessionScalarFieldEnumSchema, SessionScalarFieldEnumSchema.array()]).optional() }).strict();

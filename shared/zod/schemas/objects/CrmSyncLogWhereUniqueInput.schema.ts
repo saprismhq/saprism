@@ -1,11 +1,9 @@
 import { z } from 'zod';
-
 import type { Prisma } from '@prisma/client';
 
-const Schema: z.ZodType<Prisma.CrmSyncLogWhereUniqueInput> = z
-  .object({
-    id: z.number().optional(),
-  })
-  .strict();
 
-export const CrmSyncLogWhereUniqueInputObjectSchema = Schema;
+const makeSchema = (): z.ZodObject<any> => z.object({
+  id: z.number().int()
+}).strict();
+export const CrmSyncLogWhereUniqueInputObjectSchema: z.ZodType<Prisma.CrmSyncLogWhereUniqueInput> = makeSchema() as unknown as z.ZodType<Prisma.CrmSyncLogWhereUniqueInput>;
+export const CrmSyncLogWhereUniqueInputObjectZodSchema = makeSchema();
