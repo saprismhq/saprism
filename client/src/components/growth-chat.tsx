@@ -26,6 +26,7 @@ interface GrowthChatProps {
   messages?: ChatMessage[];
   onMessagesChange?: (messages: ChatMessage[]) => void;
   useAllMeetingsContext?: boolean; // Keep for backward compatibility
+  meetingContextMode?: MeetingContextMode;
   clientMeetings?: any[];
 }
 
@@ -36,12 +37,12 @@ export function GrowthChat({
   messages = [], 
   onMessagesChange,
   useAllMeetingsContext = true, // Keep for backward compatibility
+  meetingContextMode: propMeetingContextMode,
   clientMeetings = []
 }: GrowthChatProps) {
   const [inputValue, setInputValue] = useState("");
-  const [meetingContextMode, setMeetingContextMode] = useState<MeetingContextMode>(
-    useAllMeetingsContext ? "all" : "current"
-  );
+  // Use prop mode if provided, otherwise map boolean for compatibility
+  const meetingContextMode: MeetingContextMode = propMeetingContextMode || (useAllMeetingsContext ? "all" : "current");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
@@ -192,44 +193,11 @@ export function GrowthChat({
     <div className="flex-1 flex flex-col h-full">
       {/* Chat Header */}
       <div className="p-4 border-b border-gray-200 bg-white">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-medium text-gray-900">Growth Chat</h3>
-        </div>
-        <p className="text-sm text-gray-600 mb-3">
+        <h3 className="font-medium text-gray-900">Growth Chat</h3>
+        <p className="text-sm text-gray-600">
           Discussing: {meeting.clientName}
           {meeting.clientCompany && ` (${meeting.clientCompany})`}
         </p>
-        
-        {/* Meeting Context Selector */}
-        <div className="flex items-center space-x-2">
-          <Database className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Context:</span>
-          <Select value={meetingContextMode} onValueChange={(value: MeetingContextMode) => setMeetingContextMode(value)}>
-            <SelectTrigger className="w-48 h-8 text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="off">
-                <div className="flex flex-col">
-                  <span className="font-medium">Off</span>
-                  <span className="text-xs text-gray-500">No meeting context</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="current">
-                <div className="flex flex-col">
-                  <span className="font-medium">Current Opportunity</span>
-                  <span className="text-xs text-gray-500">This meeting only</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="all">
-                <div className="flex flex-col">
-                  <span className="font-medium">All Opportunities</span>
-                  <span className="text-xs text-gray-500">All client meetings{clientMeetings.length > 0 ? ` (${clientMeetings.length})` : ''}</span>
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       {/* Messages */}

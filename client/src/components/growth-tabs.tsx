@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageCircle, Copy, Check, ArrowLeftRight, Target, CheckSquare, Lightbulb, BookOpen, History } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export function GrowthTabs({ meeting, isLoading, selectedClient }: GrowthTabsPro
   const [chatContext, setChatContext] = useState<string>("");
   const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
   const [chatWelcomeShown, setChatWelcomeShown] = useState<Record<number, boolean>>({});
-  const [useAllMeetingsContext, setUseAllMeetingsContext] = useState(true);
+  const [meetingContextMode, setMeetingContextMode] = useState<"off" | "current" | "all">("all");
 
   // Fetch all meetings for context toggle description
   const { data: clientMeetings = [] } = useQuery({
@@ -124,21 +124,37 @@ export function GrowthTabs({ meeting, isLoading, selectedClient }: GrowthTabsPro
           <p className="text-sm text-gray-600">AI-powered sales insights and methodology</p>
         </div>
         
-        {/* Global Context Toggle */}
+        {/* Meeting Context Selector */}
         <div className="flex items-center justify-between py-2">
           <div className="flex items-center space-x-2">
             <History className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-700">Meeting Context</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-gray-500">
-              {useAllMeetingsContext ? 'All' : 'Current'}
-            </span>
-            <Switch
-              checked={useAllMeetingsContext}
-              onCheckedChange={setUseAllMeetingsContext}
-            />
-          </div>
+          <Select value={meetingContextMode} onValueChange={(value: "off" | "current" | "all") => setMeetingContextMode(value)}>
+            <SelectTrigger className="w-48 h-8 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="off">
+                <div className="flex flex-col">
+                  <span className="font-medium">Off</span>
+                  <span className="text-xs text-gray-500">No meeting context</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="current">
+                <div className="flex flex-col">
+                  <span className="font-medium">Current Opportunity</span>
+                  <span className="text-xs text-gray-500">This meeting only</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="all">
+                <div className="flex flex-col">
+                  <span className="font-medium">All Opportunities</span>
+                  <span className="text-xs text-gray-500">All client meetings{clientMeetings.length > 0 ? ` (${clientMeetings.length})` : ''}</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -174,7 +190,7 @@ export function GrowthTabs({ meeting, isLoading, selectedClient }: GrowthTabsPro
             <GrowthGuideComponent 
               meeting={meeting} 
               onChatRedirect={handleChatRedirect}
-              useAllMeetingsContext={useAllMeetingsContext}
+              useAllMeetingsContext={meetingContextMode === "all"}
             />
           </TabsContent>
 
@@ -192,7 +208,7 @@ export function GrowthTabs({ meeting, isLoading, selectedClient }: GrowthTabsPro
                   }));
                 }
               }}
-              useAllMeetingsContext={useAllMeetingsContext}
+              meetingContextMode={meetingContextMode}
               clientMeetings={clientMeetings}
             />
           </TabsContent>
