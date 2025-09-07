@@ -1,7 +1,3 @@
-# Saprism AWS Infrastructure
-
-This directory contains Terraform configuration files for deploying Saprism, an AI-powered sales coaching platform, on AWS using modern cloud-native architecture.
-
 ## 🏗️ Architecture Overview
 
 The infrastructure deploys a complete production-ready environment with:
