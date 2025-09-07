@@ -185,3 +185,68 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# Security and Monitoring Variables
+
+variable "waf_rate_limit" {
+  description = "Rate limit for WAF (requests per 5 minutes)"
+  type        = number
+  default     = 2000
+}
+
+variable "enable_vpc_endpoints" {
+  description = "Enable VPC endpoints for AWS services"
+  type        = bool
+  default     = false
+}
+
+variable "enable_cloudfront" {
+  description = "Enable CloudFront CDN for S3 storage"
+  type        = bool
+  default     = false
+}
+
+variable "enable_xray" {
+  description = "Enable X-Ray tracing"
+  type        = bool
+  default     = false
+}
+
+variable "alert_email" {
+  description = "Email address for CloudWatch alerts"
+  type        = string
+  default     = ""
+}
+
+# CI/CD Variables
+
+variable "enable_cicd" {
+  description = "Enable CI/CD pipeline with CodePipeline and CodeBuild"
+  type        = bool
+  default     = false
+}
+
+variable "github_owner" {
+  description = "GitHub repository owner/organization"
+  type        = string
+  default     = ""
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = ""
+}
+
+variable "github_branch" {
+  description = "GitHub branch to track"
+  type        = string
+  default     = "main"
+}
+
+variable "github_token" {
+  description = "GitHub personal access token for CodePipeline"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

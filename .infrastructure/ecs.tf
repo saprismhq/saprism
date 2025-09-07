@@ -43,6 +43,58 @@ resource "aws_ecs_task_definition" "app" {
         {
           name      = "OPENAI_API_KEY"
           valueFrom = aws_ssm_parameter.openai_api_key.arn
+        },
+        {
+          name      = "COGNITO_USER_POOL_ID"
+          valueFrom = aws_ssm_parameter.cognito_user_pool_id.arn
+        },
+        {
+          name      = "COGNITO_CLIENT_ID"
+          valueFrom = aws_ssm_parameter.cognito_client_id.arn
+        },
+        {
+          name      = "COGNITO_CLIENT_SECRET"
+          valueFrom = aws_ssm_parameter.cognito_client_secret.arn
+        },
+        {
+          name      = "COGNITO_DOMAIN"
+          valueFrom = aws_ssm_parameter.cognito_domain.arn
+        },
+        {
+          name      = "SALESFORCE_CLIENT_ID"
+          valueFrom = aws_ssm_parameter.salesforce_client_id.arn
+        },
+        {
+          name      = "SALESFORCE_CLIENT_SECRET"
+          valueFrom = aws_ssm_parameter.salesforce_client_secret.arn
+        },
+        {
+          name      = "SALESFORCE_INSTANCE_URL"
+          valueFrom = aws_ssm_parameter.salesforce_instance_url.arn
+        },
+        {
+          name      = "LIVEKIT_API_KEY"
+          valueFrom = aws_ssm_parameter.livekit_api_key.arn
+        },
+        {
+          name      = "LIVEKIT_SECRET_KEY"
+          valueFrom = aws_ssm_parameter.livekit_secret_key.arn
+        },
+        {
+          name      = "LIVEKIT_WS_URL"
+          valueFrom = aws_ssm_parameter.livekit_ws_url.arn
+        },
+        {
+          name      = "SESSION_SECRET"
+          valueFrom = aws_ssm_parameter.session_secret.arn
+        },
+        {
+          name      = "JWT_SECRET"
+          valueFrom = aws_ssm_parameter.jwt_secret.arn
+        },
+        {
+          name      = "APP_URL"
+          valueFrom = aws_ssm_parameter.app_url.arn
         }
       ]
       
