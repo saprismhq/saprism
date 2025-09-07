@@ -250,3 +250,93 @@ variable "github_token" {
   default     = ""
   sensitive   = true
 }
+
+# Social Login Variables
+
+variable "enable_google_login" {
+  description = "Enable Google OAuth login"
+  type        = bool
+  default     = false
+}
+
+variable "google_client_id" {
+  description = "Google OAuth client ID"
+  type        = string
+  default     = ""
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth client secret"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_facebook_login" {
+  description = "Enable Facebook login"
+  type        = bool
+  default     = false
+}
+
+variable "facebook_app_id" {
+  description = "Facebook App ID"
+  type        = string
+  default     = ""
+}
+
+variable "facebook_app_secret" {
+  description = "Facebook App Secret"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_apple_login" {
+  description = "Enable Apple Sign In"
+  type        = bool
+  default     = false
+}
+
+variable "apple_client_id" {
+  description = "Apple Sign In client ID (Service ID)"
+  type        = string
+  default     = ""
+}
+
+variable "apple_team_id" {
+  description = "Apple Developer Team ID"
+  type        = string
+  default     = ""
+}
+
+variable "apple_key_id" {
+  description = "Apple Sign In Key ID"
+  type        = string
+  default     = ""
+}
+
+variable "apple_private_key" {
+  description = "Apple Sign In private key content"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "enable_amazon_login" {
+  description = "Enable Amazon Login"
+  type        = bool
+  default     = false
+}
+
+variable "amazon_client_id" {
+  description = "Amazon Login client ID"
+  type        = string
+  default     = ""
+}
+
+variable "amazon_client_secret" {
+  description = "Amazon Login client secret"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

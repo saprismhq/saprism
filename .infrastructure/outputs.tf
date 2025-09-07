@@ -256,24 +256,44 @@ output "pipeline_artifacts_bucket" {
 
 output "all_ssm_parameters" {
   description = "List of all SSM parameter names for the application"
-  value = {
-    database_url          = aws_ssm_parameter.database_url.name
-    database_password     = aws_ssm_parameter.db_password.name
-    openai_api_key       = aws_ssm_parameter.openai_api_key.name
-    cognito_user_pool_id = aws_ssm_parameter.cognito_user_pool_id.name
-    cognito_client_id    = aws_ssm_parameter.cognito_client_id.name
-    cognito_client_secret = aws_ssm_parameter.cognito_client_secret.name
-    cognito_domain       = aws_ssm_parameter.cognito_domain.name
-    salesforce_client_id = aws_ssm_parameter.salesforce_client_id.name
-    salesforce_client_secret = aws_ssm_parameter.salesforce_client_secret.name
-    salesforce_instance_url = aws_ssm_parameter.salesforce_instance_url.name
-    livekit_api_key      = aws_ssm_parameter.livekit_api_key.name
-    livekit_secret_key   = aws_ssm_parameter.livekit_secret_key.name
-    livekit_ws_url       = aws_ssm_parameter.livekit_ws_url.name
-    session_secret       = aws_ssm_parameter.session_secret.name
-    jwt_secret          = aws_ssm_parameter.jwt_secret.name
-    app_url             = aws_ssm_parameter.app_url.name
-  }
+  value = merge(
+    {
+      database_url          = aws_ssm_parameter.database_url.name
+      database_password     = aws_ssm_parameter.db_password.name
+      openai_api_key       = aws_ssm_parameter.openai_api_key.name
+      cognito_user_pool_id = aws_ssm_parameter.cognito_user_pool_id.name
+      cognito_client_id    = aws_ssm_parameter.cognito_client_id.name
+      cognito_client_secret = aws_ssm_parameter.cognito_client_secret.name
+      cognito_domain       = aws_ssm_parameter.cognito_domain.name
+      salesforce_client_id = aws_ssm_parameter.salesforce_client_id.name
+      salesforce_client_secret = aws_ssm_parameter.salesforce_client_secret.name
+      salesforce_instance_url = aws_ssm_parameter.salesforce_instance_url.name
+      livekit_api_key      = aws_ssm_parameter.livekit_api_key.name
+      livekit_secret_key   = aws_ssm_parameter.livekit_secret_key.name
+      livekit_ws_url       = aws_ssm_parameter.livekit_ws_url.name
+      session_secret       = aws_ssm_parameter.session_secret.name
+      jwt_secret          = aws_ssm_parameter.jwt_secret.name
+      app_url             = aws_ssm_parameter.app_url.name
+    },
+    var.enable_google_login ? {
+      google_client_id     = aws_ssm_parameter.google_client_id[0].name
+      google_client_secret = aws_ssm_parameter.google_client_secret[0].name
+    } : {},
+    var.enable_facebook_login ? {
+      facebook_app_id      = aws_ssm_parameter.facebook_app_id[0].name
+      facebook_app_secret  = aws_ssm_parameter.facebook_app_secret[0].name
+    } : {},
+    var.enable_apple_login ? {
+      apple_client_id      = aws_ssm_parameter.apple_client_id[0].name
+      apple_team_id        = aws_ssm_parameter.apple_team_id[0].name
+      apple_key_id         = aws_ssm_parameter.apple_key_id[0].name
+      apple_private_key    = aws_ssm_parameter.apple_private_key[0].name
+    } : {},
+    var.enable_amazon_login ? {
+      amazon_client_id     = aws_ssm_parameter.amazon_client_id[0].name
+      amazon_client_secret = aws_ssm_parameter.amazon_client_secret[0].name
+    } : {}
+  )
 }
 
 # Quick Setup Information

@@ -196,3 +196,189 @@ resource "aws_ssm_parameter" "app_url" {
     Project     = var.project_name
   }
 }
+
+# Social Login Configuration Parameters
+
+# Google OAuth Parameters
+resource "aws_ssm_parameter" "google_client_id" {
+  count = var.enable_google_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/google_client_id"
+  type  = "String"
+  value = var.google_client_id != "" ? var.google_client_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-google-client-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "google_client_secret" {
+  count = var.enable_google_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/google_client_secret"
+  type  = "SecureString"
+  value = var.google_client_secret != "" ? var.google_client_secret : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-google-client-secret-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+# Facebook OAuth Parameters
+resource "aws_ssm_parameter" "facebook_app_id" {
+  count = var.enable_facebook_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/facebook_app_id"
+  type  = "String"
+  value = var.facebook_app_id != "" ? var.facebook_app_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-facebook-app-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "facebook_app_secret" {
+  count = var.enable_facebook_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/facebook_app_secret"
+  type  = "SecureString"
+  value = var.facebook_app_secret != "" ? var.facebook_app_secret : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-facebook-app-secret-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+# Apple Sign In Parameters
+resource "aws_ssm_parameter" "apple_client_id" {
+  count = var.enable_apple_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/apple_client_id"
+  type  = "String"
+  value = var.apple_client_id != "" ? var.apple_client_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-apple-client-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "apple_team_id" {
+  count = var.enable_apple_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/apple_team_id"
+  type  = "String"
+  value = var.apple_team_id != "" ? var.apple_team_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-apple-team-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "apple_key_id" {
+  count = var.enable_apple_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/apple_key_id"
+  type  = "String"
+  value = var.apple_key_id != "" ? var.apple_key_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-apple-key-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "apple_private_key" {
+  count = var.enable_apple_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/apple_private_key"
+  type  = "SecureString"
+  value = var.apple_private_key != "" ? var.apple_private_key : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-apple-private-key-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+# Amazon Login Parameters
+resource "aws_ssm_parameter" "amazon_client_id" {
+  count = var.enable_amazon_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/amazon_client_id"
+  type  = "String"
+  value = var.amazon_client_id != "" ? var.amazon_client_id : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-amazon-client-id-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "amazon_client_secret" {
+  count = var.enable_amazon_login ? 1 : 0
+  
+  name  = "/${var.project_name}/${var.environment}/amazon_client_secret"
+  type  = "SecureString"
+  value = var.amazon_client_secret != "" ? var.amazon_client_secret : "PLACEHOLDER_SET_ACTUAL_VALUE"
+
+  tags = {
+    Name        = "${var.project_name}-amazon-client-secret-${random_string.resource_suffix.result}"
+    Environment = var.environment
+    Project     = var.project_name
+  }
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}

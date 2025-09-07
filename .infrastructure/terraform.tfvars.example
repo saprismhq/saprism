@@ -46,6 +46,25 @@ github_token  = "your-github-personal-access-token"  # Keep this secret!
 # backup_retention_period = 30
 # performance_insights_enabled = true
 
+# Social Login Configuration (optional)
+enable_google_login   = false  # Set to true to enable Google OAuth
+google_client_id      = ""     # Google OAuth client ID
+google_client_secret  = ""     # Google OAuth client secret
+
+enable_facebook_login = false  # Set to true to enable Facebook login
+facebook_app_id       = ""     # Facebook App ID
+facebook_app_secret   = ""     # Facebook App Secret
+
+enable_apple_login    = false  # Set to true to enable Apple Sign In
+apple_client_id       = ""     # Apple Service ID (client ID)
+apple_team_id         = ""     # Apple Developer Team ID
+apple_key_id          = ""     # Apple Sign In Key ID
+apple_private_key     = ""     # Apple private key content (base64 or raw)
+
+enable_amazon_login   = false  # Set to true to enable Amazon Login
+amazon_client_id      = ""     # Amazon Login client ID
+amazon_client_secret  = ""     # Amazon Login client secret
+
 # Additional Tags (optional)
 tags = {
   Owner       = "DevOps Team"
