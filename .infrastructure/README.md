@@ -1,195 +1,329 @@
-# Salespring Infrastructure
+# Saprism AWS Infrastructure
 
-This directory contains Terraform configuration files for deploying Salespring infrastructure on AWS.
+This directory contains Terraform configuration files for deploying Saprism, an AI-powered sales coaching platform, on AWS using modern cloud-native architecture.
 
-## Architecture
+## 🏗️ Architecture Overview
 
-The infrastructure includes:
+The infrastructure deploys a complete production-ready environment with:
 
-- **VPC**: Custom VPC with public and private subnets across 2 availability zones
-- **ECS Fargate**: Container orchestration for running the application
-- **Application Load Balancer**: Load balancing and SSL termination
-- **RDS PostgreSQL**: Managed database service
-- **ECR**: Container registry for Docker images
-- **CloudWatch**: Logging and monitoring
-- **Auto Scaling**: Automatic scaling based on CPU/Memory usage
-- **Security Groups**: Network security rules
-- **IAM Roles**: Permissions for ECS tasks
-- **Systems Manager**: Secure parameter storage for secrets
+- **Container Orchestration**: ECS Fargate with auto-scaling
+- **Database**: RDS PostgreSQL with encryption and automated backups
+- **Authentication**: AWS Cognito replacing Replit OpenID Connect
+- **Load Balancing**: Application Load Balancer with SSL/TLS termination
+- **Security**: WAF protection, VPC isolation, encrypted storage
+- **Monitoring**: CloudWatch dashboards, alarms, and alerting
+- **Storage**: S3 with optional CloudFront CDN
+- **CI/CD**: CodePipeline with CodeBuild for automated deployments
+- **WebSocket Support**: Configured for real-time features
 
-## Prerequisites
+## 📁 File Structure
+
+| File | Purpose |
+|------|---------|
+| `main.tf` | Core infrastructure (VPC, subnets, security groups, RDS, ECS, ALB) |
+| `ecs.tf` | ECS task definitions, services, and auto-scaling configuration |
+| `auth.tf` | AWS Cognito user pools, identity pools, and authentication setup |
+| `ssl.tf` | ACM certificates and HTTPS configuration |
+| `secrets.tf` | SSM Parameter Store for secure configuration management |
+| `websocket.tf` | WebSocket-specific ALB configuration and target groups |
+| `storage.tf` | S3 bucket and optional CloudFront CDN setup |
+| `security.tf` | WAF, VPC endpoints, and enhanced security policies |
+| `monitoring.tf` | CloudWatch dashboards, alarms, and SNS alerting |
+| `cicd.tf` | CodePipeline and CodeBuild for automated deployments |
+| `variables.tf` | Input variables with descriptions and defaults |
+| `outputs.tf` | Output values for integration and reference |
+| `terraform.tfvars.example` | Example configuration file |
+
+## 🚀 Quick Start
+
+### Prerequisites
 
 1. **AWS CLI** configured with appropriate credentials
-2. **Terraform** (>= 1.0) installed
-3. **Docker** for building and pushing images
-4. **OpenAI API Key** for AI functionality
+2. **Terraform** >= 1.0 installed
+3. **Domain name** (optional but recommended for production)
+4. **GitHub repository** (if using CI/CD)
 
-## Quick Start
+### Basic Deployment
 
-1. **Copy the example variables file:**
+1. **Clone and configure**:
    ```bash
+   cd .infrastructure
    cp terraform.tfvars.example terraform.tfvars
    ```
 
-2. **Edit terraform.tfvars with your configuration:**
-   ```bash
-   vim terraform.tfvars
+2. **Edit `terraform.tfvars`** with your specific values:
+   ```hcl
+   project_name = "saprism"
+   environment  = "production"
+   domain_name  = "your-domain.com"  # Optional
+   alert_email  = "admin@your-domain.com"  # Optional
    ```
 
-3. **Initialize Terraform:**
+3. **Initialize and deploy**:
    ```bash
    terraform init
-   ```
-
-4. **Plan the deployment:**
-   ```bash
    terraform plan
-   ```
-
-5. **Apply the configuration:**
-   ```bash
    terraform apply
    ```
 
-## Environment Configuration
+4. **Configure DNS** (if using custom domain):
+   - Create certificate validation records in your DNS provider
+   - Create an A record pointing to the ALB DNS name
 
-### Development
-- Single AZ deployment
-- Minimal resources (t3.micro)
-- No deletion protection
-- Short backup retention
-
-### Production
-- Multi-AZ deployment
-- Larger instance classes
-- Deletion protection enabled
-- Extended backup retention
-- Performance monitoring enabled
-
-## Container Deployment
-
-After infrastructure is created:
-
-1. **Build and tag your Docker image:**
+5. **Update secrets** with actual values:
    ```bash
-   docker build -t salespring .
-   docker tag salespring:latest <ECR_REPOSITORY_URL>:latest
+   # Update SSM parameters with real API keys
+   aws ssm put-parameter --name "/saprism/production/openai_api_key" --value "your-key" --type "SecureString" --overwrite
+   aws ssm put-parameter --name "/saprism/production/salesforce_client_id" --value "your-id" --type "SecureString" --overwrite
+   # ... repeat for other external service credentials
    ```
 
-2. **Push to ECR:**
-   ```bash
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ECR_REPOSITORY_URL>
-   docker push <ECR_REPOSITORY_URL>:latest
-   ```
+## ⚙️ Configuration Options
 
-3. **Update ECS service:**
-   ```bash
-   aws ecs update-service --cluster <CLUSTER_NAME> --service <SERVICE_NAME> --force-new-deployment
-   ```
+### Environment Variables
 
-## Secrets Management
+The infrastructure automatically configures these environment variables in ECS:
 
-The infrastructure creates SSM parameters for:
-- Database connection URL
-- OpenAI API key (placeholder - update manually)
+| Variable | Source | Purpose |
+|----------|---------|---------|
+| `DATABASE_URL` | SSM Parameter | PostgreSQL connection string |
+| `NODE_ENV` | Direct | Environment name (production/staging/development) |
+| `PORT` | Direct | Application port (5000) |
+| `COGNITO_USER_POOL_ID` | SSM Parameter | Cognito authentication |
+| `COGNITO_CLIENT_ID` | SSM Parameter | Cognito client configuration |
+| `OPENAI_API_KEY` | SSM Parameter | AI integration |
+| `SALESFORCE_CLIENT_ID` | SSM Parameter | CRM integration |
+| `LIVEKIT_API_KEY` | SSM Parameter | Video/audio calling |
 
-Update the OpenAI API key:
-```bash
-aws ssm put-parameter --name "/salespring/development/openai_api_key" --value "your-api-key" --type "SecureString" --overwrite
+### Feature Flags
+
+Enable/disable major features via variables:
+
+```hcl
+# SSL and custom domain
+domain_name = "your-domain.com"
+
+# Enhanced security
+enable_vpc_endpoints = true
+waf_rate_limit = 2000
+
+# Storage and CDN
+enable_cloudfront = true
+
+# Monitoring and alerting
+enable_xray = true
+alert_email = "admin@company.com"
+
+# CI/CD pipeline
+enable_cicd = true
+github_owner = "your-org"
+github_repo = "saprism"
+github_token = "your-token"
 ```
 
-## Monitoring
+## 🔐 Security Features
 
-CloudWatch alarms are configured for:
-- High CPU utilization (>80%)
-- High memory utilization (>80%)
-- Application health checks
+### Network Security
+- **VPC Isolation**: Private subnets for database, public for ALB
+- **Security Groups**: Least-privilege access rules
+- **WAF Protection**: Rate limiting and common attack protection
+- **VPC Endpoints**: Private communication with AWS services (optional)
 
-## Security
+### Data Security
+- **Encryption at Rest**: RDS and S3 with AWS-managed keys
+- **Encryption in Transit**: TLS/SSL for all communications
+- **Secrets Management**: SSM Parameter Store with SecureString
+- **IAM Roles**: Least-privilege access for all services
 
-- All traffic encrypted in transit
-- Database encrypted at rest
-- Secrets stored in SSM Parameter Store
-- Network isolation using VPC and security groups
-- IAM roles with least privilege principle
+### Application Security
+- **Authentication**: AWS Cognito with secure token handling
+- **HTTPS Redirect**: Automatic HTTP to HTTPS redirection
+- **Container Security**: ECS with security scanning
+- **Access Logging**: Comprehensive audit trails
 
-## Scaling
+## 📊 Monitoring & Alerting
 
-Auto-scaling policies are configured for:
-- CPU utilization (target: 70%)
-- Memory utilization (target: 80%)
-- Min capacity: 1 task
-- Max capacity: 10 tasks
+### CloudWatch Dashboards
+- **Application Metrics**: Request rates, response times, error rates
+- **Infrastructure Metrics**: CPU, memory, database performance
+- **Custom Metrics**: Business-specific monitoring
 
-## Backup and Recovery
+### Automated Alerts
+- High error rates (5XX responses > 10 in 5 minutes)
+- Slow response times (average > 2 seconds)
+- Database connection issues
+- Low storage space
+- Service health problems
 
-- RDS automated backups (7 days retention)
-- Point-in-time recovery enabled
-- Multi-AZ deployment for production
-- CloudWatch logs retention (14 days)
+### Log Analysis
+- **Centralized Logging**: All application logs in CloudWatch
+- **Log Insights**: Pre-configured queries for common issues
+- **Metric Filters**: Automatic metric extraction from logs
 
-## Cost Optimization
+## 🚀 CI/CD Pipeline
 
-- Fargate Spot instances for development
-- RDS storage auto-scaling
-- CloudWatch log retention limits
-- Resource tagging for cost tracking
+When enabled, the pipeline provides:
 
-## Outputs
+### Automated Workflow
+1. **Source**: GitHub repository monitoring
+2. **Build**: Containerized build with CodeBuild
+3. **Deploy**: Blue-green deployment to ECS
 
-After deployment, Terraform provides:
-- Application URL
-- Database endpoint
-- ECR repository URL
-- Resource ARNs and IDs
+### Build Process
+- Docker image creation
+- Security scanning
+- Automated testing
+- Image push to ECR
 
-## Cleanup
+### Deployment
+- Zero-downtime deployments
+- Automatic rollback on failure
+- Health check validation
 
-To destroy all resources:
-```bash
-terraform destroy
-```
+## 🌐 WebSocket Support
 
-**Warning**: This will permanently delete all resources and data.
+Configured for real-time features:
 
-## Troubleshooting
+### Load Balancer Configuration
+- **Sticky Sessions**: Maintain WebSocket connections
+- **Path Routing**: `/ws/*` routes to WebSocket targets
+- **Protocol Upgrade**: HTTP to WebSocket upgrade support
+
+### Target Groups
+- Separate target group for WebSocket traffic
+- Health checks compatible with WebSocket endpoints
+- Auto-scaling based on connection count
+
+## 📈 Scaling Configuration
+
+### Auto Scaling
+- **ECS Service**: 1-10 tasks based on CPU/memory
+- **RDS Storage**: Automatic storage scaling up to 100GB
+- **Application Load Balancer**: Automatic scaling
+
+### Performance Tuning
+- **ECS Tasks**: 256 CPU, 512 MB memory (configurable)
+- **RDS Instance**: db.t3.micro (configurable)
+- **Connection Pooling**: Optimized database connections
+
+## 🔧 Maintenance
+
+### Backup Strategy
+- **RDS Automated Backups**: 7-day retention
+- **S3 Versioning**: File version management
+- **Snapshot Management**: Automated snapshot lifecycle
+
+### Updates
+- **Minor Version Upgrades**: Automatic for RDS
+- **Security Patches**: Automatic for managed services
+- **Application Updates**: Via CI/CD pipeline
+
+### Monitoring
+- **Health Checks**: ALB and ECS health monitoring
+- **Performance Insights**: Database performance monitoring
+- **Cost Optimization**: Resource utilization tracking
+
+## 💰 Cost Optimization
+
+### Resource Sizing
+- **Development**: Minimal instance sizes for cost efficiency
+- **Production**: Right-sized instances for performance
+- **Auto Scaling**: Automatic resource adjustment
+
+### Optional Features
+- **CloudFront**: Enable only if global CDN needed
+- **VPC Endpoints**: Enable for enhanced security (additional cost)
+- **Enhanced Monitoring**: Optional detailed monitoring
+
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **ECS Task Fails to Start**
-   - Check CloudWatch logs
-   - Verify environment variables
-   - Ensure Docker image is available in ECR
+**Certificate Validation Fails**
+```bash
+# Check DNS records are created correctly
+dig TXT _acme-challenge.your-domain.com
+```
 
-2. **Database Connection Issues**
-   - Verify security group rules
-   - Check database endpoint and credentials
-   - Ensure tasks are in correct subnets
+**Application Won't Start**
+```bash
+# Check ECS service logs
+aws logs describe-log-groups --log-group-name-prefix "/ecs/saprism"
+aws logs tail /ecs/saprism-xyz --follow
+```
 
-3. **Load Balancer Health Checks Fail**
-   - Verify application exposes health endpoint
-   - Check security group inbound rules
-   - Ensure application binds to 0.0.0.0
+**Database Connection Issues**
+```bash
+# Verify security groups allow ECS to RDS communication
+aws ec2 describe-security-groups --group-ids sg-xxx
+```
 
 ### Useful Commands
 
 ```bash
-# Check ECS service status
-aws ecs describe-services --cluster <CLUSTER_NAME> --services <SERVICE_NAME>
+# View all outputs
+terraform output
 
-# View CloudWatch logs
-aws logs tail /ecs/salespring-<SUFFIX> --follow
+# Get specific connection info
+terraform output setup_instructions
 
-# Check ALB target health
-aws elbv2 describe-target-health --target-group-arn <TARGET_GROUP_ARN>
+# Check service status
+aws ecs describe-services --cluster saprism-cluster-xyz --services saprism-service-xyz
 
-# Update ECS service
-aws ecs update-service --cluster <CLUSTER_NAME> --service <SERVICE_NAME> --force-new-deployment
+# Update SSM parameter
+aws ssm put-parameter --name "/saprism/production/openai_api_key" --value "new-key" --type "SecureString" --overwrite
 ```
 
-## Support
+## 🔗 Integration Guide
 
-For issues with:
-- AWS resources: Check AWS documentation
-- Terraform: Check Terraform documentation
-- Application: Check application logs in CloudWatch
+### DNS Setup (GoDaddy Example)
+1. Get ALB DNS name: `terraform output load_balancer_dns`
+2. In GoDaddy DNS management:
+   - Create A record: `your-domain.com` → `alb-dns-name`
+   - Create certificate validation record (from terraform output)
+
+### External Service Configuration
+1. **OpenAI**: Get API key from OpenAI dashboard
+2. **Salesforce**: Create connected app for OAuth
+3. **LiveKit**: Set up LiveKit Cloud account
+4. Update all SSM parameters with actual values
+
+### Application Configuration
+Update your application code to use:
+- AWS Cognito for authentication (replace Replit auth)
+- SSM Parameter Store for configuration
+- S3 for file storage
+- CloudWatch for logging
+
+## 📋 Deployment Checklist
+
+### Pre-Deployment
+- [ ] AWS credentials configured
+- [ ] Domain name configured (if using)
+- [ ] External service accounts created
+- [ ] terraform.tfvars configured
+
+### Post-Deployment
+- [ ] DNS records created
+- [ ] SSL certificate validated
+- [ ] SSM parameters updated with real values
+- [ ] Application health verified
+- [ ] Monitoring alerts configured
+- [ ] CI/CD pipeline tested (if enabled)
+
+### Production Readiness
+- [ ] Enable deletion protection: `enable_deletion_protection = true`
+- [ ] Configure Multi-AZ: `multi_az = true`
+- [ ] Set up proper backup retention
+- [ ] Configure alert notifications
+- [ ] Test disaster recovery procedures
+
+## 📞 Support
+
+For infrastructure issues:
+1. Check CloudWatch logs and metrics
+2. Review Terraform state and outputs
+3. Verify AWS service limits and quotas
+4. Check security group and IAM configurations
+
+This infrastructure is designed to be production-ready with security, scalability, and maintainability built-in. Adjust the configuration variables to match your specific requirements and deployment environment.
