@@ -62,6 +62,13 @@ export class AuthenticationService implements IAuthenticationService {
   }
 
   private async upsertUser(claims: any): Promise<void> {
+    const userEmail = claims["email"];
+    
+    // Check if email is in the allowlist
+    if (!this.isEmailAllowed(userEmail)) {
+      throw new Error(`Access denied: Email ${userEmail} is not authorized to use this application`);
+    }
+
     await this.userService.upsertUser({
       id: claims["sub"],
       email: claims["email"],
@@ -69,6 +76,18 @@ export class AuthenticationService implements IAuthenticationService {
       lastName: claims["last_name"],
       profileImageUrl: claims["profile_image_url"],
     });
+  }
+
+  private isEmailAllowed(email: string): boolean {
+    const allowedEmails = process.env.ALLOWED_EMAILS;
+    
+    // If no allowlist is configured, deny access
+    if (!allowedEmails) {
+      return false;
+    }
+    
+    const allowedEmailList = allowedEmails.split(',').map(e => e.trim().toLowerCase());
+    return allowedEmailList.includes(email?.toLowerCase());
   }
 
   async setupAuth(app: Express): Promise<void> {
@@ -87,10 +106,15 @@ export class AuthenticationService implements IAuthenticationService {
       tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
       verified: passport.AuthenticateCallback
     ) => {
-      const user = {};
-      this.updateUserSession(user, tokens);
-      await this.upsertUser(tokens.claims());
-      verified(null, user);
+      try {
+        const user = {};
+        this.updateUserSession(user, tokens);
+        await this.upsertUser(tokens.claims());
+        verified(null, user);
+      } catch (error) {
+        console.error('Authentication failed:', error.message);
+        verified(error, null);
+      }
     };
 
     for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
@@ -131,8 +155,34 @@ export class AuthenticationService implements IAuthenticationService {
         : req.hostname;
       passport.authenticate(`replitauth:${domain}`, {
         successReturnToOrRedirect: "/",
-        failureRedirect: "/api/login",
+        failureRedirect: "/api/access-denied",
       })(req, res, next);
+    });
+
+    // Add access denied route
+    app.get("/api/access-denied", (req, res) => {
+      res.status(403).send(`
+        <html>
+          <head>
+            <title>Access Denied</title>
+            <style>
+              body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+              .container { max-width: 500px; margin: 0 auto; }
+              h1 { color: #d32f2f; }
+              p { color: #666; margin: 20px 0; }
+              a { color: #1976d2; text-decoration: none; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>Access Denied</h1>
+              <p>Your email address is not authorized to access this application.</p>
+              <p>Please contact the administrator if you believe this is an error.</p>
+              <p><a href="/api/logout">Try logging in with a different account</a></p>
+            </div>
+          </body>
+        </html>
+      `);
     });
 
     app.get("/api/logout", (req, res) => {
