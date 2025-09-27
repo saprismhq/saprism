@@ -131,18 +131,19 @@ export class ResilienceDecorator implements AIProvider {
 
   private isRetriableError(error: any): boolean {
     // Retry on network errors, timeouts, and rate limits
+    const errorMessage = error?.message?.toLowerCase() || '';
+    const errorCode = error?.code || '';
+    const statusCode = error?.status || error?.statusCode || 0;
+    
     return (
-      error instanceof AIProviderTimeoutError ||
-      error instanceof AIProviderRateLimitError ||
-      (error instanceof AIProviderError && error.message.includes('network')) ||
-      (error instanceof Error && (
-        error.message.includes('timeout') ||
-        error.message.includes('ECONNRESET') ||
-        error.message.includes('ENOTFOUND') ||
-        error.message.includes('503') ||
-        error.message.includes('502') ||
-        error.message.includes('504')
-      ))
+      errorMessage.includes('timeout') ||
+      errorMessage.includes('network') ||
+      errorMessage.includes('econnreset') ||
+      errorMessage.includes('enotfound') ||
+      errorCode === 'ECONNRESET' ||
+      errorCode === 'ENOTFOUND' ||
+      errorCode === 'ETIMEDOUT' ||
+      [429, 502, 503, 504].includes(statusCode)
     );
   }
 
@@ -153,10 +154,8 @@ export class ResilienceDecorator implements AIProvider {
   ): Promise<T> {
     // Check circuit breaker
     if (this.isCircuitBreakerOpen(operation)) {
-      throw new AIProviderError(
-        `Circuit breaker is open for operation: ${operation}`,
-        'resilience',
-        operation
+      throw new Error(
+        `Circuit breaker is open for operation: ${operation}`
       );
     }
 
