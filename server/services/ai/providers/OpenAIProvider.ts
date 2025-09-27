@@ -11,10 +11,7 @@ import type {
   ChatOptions, 
   TranscriptionOptions,
   MethodologyInsightsResult,
-  AIProviderError,
-  AIProviderTimeoutError,
-  AIProviderRateLimitError,
-  AIProviderQuotaError
+  AIProviderError
 } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { ProviderConfig } from '../../../config/index';
@@ -34,20 +31,6 @@ export class OpenAIProvider implements AIProvider {
 
   private handleOpenAIError(error: any, operation: string): never {
     const errorMessage = error?.message || error?.toString() || 'Unknown error';
-    
-    if (error?.status === 429 || errorMessage.includes('rate limit')) {
-      const retryAfter = error?.headers?.['retry-after'];
-      throw new AIProviderRateLimitError('openai', operation, retryAfter);
-    }
-    
-    if (error?.status === 402 || errorMessage.includes('quota')) {
-      throw new AIProviderQuotaError('openai', operation);
-    }
-    
-    if (error?.code === 'ECONNABORTED' || errorMessage.includes('timeout')) {
-      throw new AIProviderTimeoutError('openai', operation, this.config.timeouts.request);
-    }
-    
     throw new AIProviderError(errorMessage, 'openai', operation, error);
   }
 
