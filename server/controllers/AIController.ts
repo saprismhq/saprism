@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { INoteService } from "../core/NoteService";
 import { IMeetingService } from "../core/MeetingService";
 import { ICoachingService } from "../core/CoachingService";
-import { openaiService } from "../services/openai";
+import { aiService } from "../services/ai/AIService";
 import { insertCoachingSuggestionSchema } from "@shared/schema";
 
 export class AIController {
@@ -30,8 +30,8 @@ export class AIController {
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
-        openaiService.analyzeNotes(content),
-        openaiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
+        aiService.analyzeNotes(content),
+        aiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
       ]);
       
       console.log(`AI operations completed in ${Date.now() - startTime}ms`);
@@ -74,8 +74,8 @@ export class AIController {
         return;
       }
 
-      // Generate AI response using OpenAI service
-      const response = await openaiService.generateChatResponse(
+      // Generate AI response using AI service
+      const response = await aiService.generateChatResponse(
         message,
         meetingContext || "",
         conversationHistory || []
@@ -130,7 +130,7 @@ export class AIController {
         }
       }
 
-      const suggestions = await openaiService.generateCoachingSuggestions(contextContent, dealStage);
+      const suggestions = await aiService.generateCoachingSuggestions(contextContent, dealStage);
       
       // Store coaching suggestions
       const coachingSuggestionData = insertCoachingSuggestionSchema.parse({
@@ -180,7 +180,7 @@ export class AIController {
       };
 
       // Generate methodology-specific insights
-      const insights = await openaiService.generateMethodologyInsights(
+      const insights = await aiService.generateMethodologyInsights(
         methodology,
         clientInfo,
         allNotesContent,
@@ -246,8 +246,8 @@ export class AIController {
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
-        openaiService.analyzeNotes(updatedContent),
-        openaiService.generateCoachingSuggestions(updatedContent, 'discovery')
+        aiService.analyzeNotes(updatedContent),
+        aiService.generateCoachingSuggestions(updatedContent, 'discovery')
       ]);
       
       console.log(`AI analysis completed in ${Date.now() - startTime}ms`);

@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { isAuthenticated } from "../auth";
-import { OpenAIService } from "../services/openai";
+import { aiService } from "../services/ai/AIService";
 
 const router = Router();
-const openaiService = new OpenAIService();
 
 // AI Chat endpoint
 router.post("/chat", isAuthenticated, async (req: any, res) => {
@@ -15,7 +14,7 @@ router.post("/chat", isAuthenticated, async (req: any, res) => {
     }
 
     // Generate AI response based on message and context
-    const response = await openaiService.generateChatResponse(
+    const response = await aiService.generateChatResponse(
       message,
       meetingContext || "",
       conversationHistory || []

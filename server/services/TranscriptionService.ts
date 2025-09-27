@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { aiService } from './ai/AIService';
 import { createReadStream, unlinkSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
@@ -6,7 +6,7 @@ import { WebSocket } from 'ws';
 import { Container } from '../container/Container';
 import { INoteService } from '../core/NoteService';
 import { ICoachingService } from '../core/CoachingService';
-import { openaiService } from './openai';
+// OpenAI service now abstracted through aiService
 import { insertCoachingSuggestionSchema } from '@shared/schema';
 
 interface TranscriptionSession {
@@ -24,17 +24,12 @@ interface TranscriptionSession {
 }
 
 export class TranscriptionService {
-  private openai: OpenAI;
   private sessions: Map<string, TranscriptionSession> = new Map();
   private processingInterval: NodeJS.Timeout | null = null;
   private maxTranscriptionFailures = 3;
   private fallbackMessage = "📝 **Note:** Transcription temporarily unavailable - audio has been recorded and will be processed later.";
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
-    
     // Start processing interval for real-time transcription
     this.startProcessingLoop();
   }
@@ -117,15 +112,8 @@ export class TranscriptionService {
       // Write the WebM audio data directly (no conversion needed)
       writeFileSync(tempFilePath, combinedBuffer);
 
-      // Process with OpenAI Whisper with improved settings for better quality
-      const transcription = await this.openai.audio.transcriptions.create({
-        file: createReadStream(tempFilePath),
-        model: 'whisper-1',
-        language: 'en',
-        response_format: 'text',
-        temperature: 0.2, // Lower temperature for more consistent results
-        prompt: 'This is a business sales meeting conversation. Please transcribe clearly and accurately.' // Context hint for better accuracy
-      });
+      // Process with AI service transcription (abstracted provider)
+      const transcription = await aiService.transcribeAudio(combinedBuffer);
 
       // Clean up temp file
       unlinkSync(tempFilePath);
@@ -276,8 +264,8 @@ export class TranscriptionService {
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
-        openaiService.analyzeNotes(updatedContent),
-        openaiService.generateCoachingSuggestions(updatedContent, 'discovery')
+        aiService.analyzeNotes(updatedContent),
+        aiService.generateCoachingSuggestions(updatedContent, 'discovery')
       ]);
       
       console.log(`AI analysis completed in ${Date.now() - startTime}ms`);
@@ -338,32 +326,14 @@ export class TranscriptionService {
     }
 
     try {
-      // Use OpenAI to clean up and format the transcription with timeout and retry logic
-      const completion = await this.retryOpenAICall(() => 
-        this.openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: [
-            {
-              role: 'system',
-              content: `You are a professional transcription editor. Clean up the following meeting transcription by:
-              1. Removing filler words and false starts
-              2. Adding proper punctuation and formatting
-              3. Organizing into clear paragraphs
-              4. Maintaining the speaker timestamps
-              5. Making it readable while preserving all important content
-              
-              Keep the format: [timestamp] Speaker content`
-            },
-            {
-              role: 'user',
-              content: rawText
-            }
-          ],
-          temperature: 0.1
-        })
+      // Use abstracted AI service to clean up and format the transcription
+      const cleanedText = await aiService.generateChatResponse(
+        `Clean up this meeting transcription by removing filler words, adding proper punctuation, and organizing into clear paragraphs while maintaining speaker timestamps and content:\n\n${rawText}`,
+        'Professional transcription editing',
+        []
       );
 
-      return completion.choices[0]?.message?.content || rawText;
+      return cleanedText || rawText;
     } catch (error) {
       console.error('Error finalizing transcription with OpenAI, returning raw text:', error);
       return rawText;
