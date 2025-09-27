@@ -57,8 +57,7 @@ export class OpenAIProvider implements AIProvider {
         ],
         response_format: { type: 'json_object' },
         temperature: options?.temperature || promptConfig.temperature,
-        max_tokens: options?.maxTokens || promptConfig.maxTokens,
-        timeout: options?.timeout || this.config.timeouts.request
+        max_tokens: options?.maxTokens || promptConfig.maxTokens
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
@@ -104,8 +103,7 @@ export class OpenAIProvider implements AIProvider {
         ],
         response_format: { type: 'json_object' },
         temperature: options?.temperature || promptConfig.temperature,
-        max_tokens: options?.maxTokens || promptConfig.maxTokens,
-        timeout: options?.timeout || this.config.timeouts.request
+        max_tokens: options?.maxTokens || promptConfig.maxTokens
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
