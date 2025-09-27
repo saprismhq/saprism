@@ -10,9 +10,9 @@ import type {
   CoachingOptions, 
   ChatOptions, 
   TranscriptionOptions,
-  MethodologyInsightsResult,
-  AIProviderError
+  MethodologyInsightsResult
 } from '../interfaces/AIProvider';
+import { AIProviderError } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { ProviderConfig } from '../../../config/index';
 import { promptTemplateManager } from '../templates/PromptTemplateManager';
