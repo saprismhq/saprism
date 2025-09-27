@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranscriptionWebSocket as useTranscriptionContext } from '@/contexts/TranscriptionWebSocketContext';
+import { getConfig } from '@/config';
 
 interface TranscriptionMessage {
   type: string;
@@ -26,17 +28,15 @@ export function useTranscriptionWebSocket({
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [accumulatedText, setAccumulatedText] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
-  const wsRef = useRef<WebSocket | null>(null);
+  const { wsRef, setCurrentSessionId } = useTranscriptionContext();
+  const config = getConfig();
   const sessionIdRef = useRef<string | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectAttemptsRef = useRef(0);
-  const maxReconnectAttempts = 10;
-  const baseReconnectDelay = 1000; // 1 second
   const shouldReconnectRef = useRef(false);
   const pendingSessionRef = useRef<{ sessionId: string; meetingId: number; userId: string } | null>(null);
   
-  // Expose wsRef for audio data sending
-  (window as any).transcriptionWsRef = wsRef;
+  // No need to expose wsRef globally anymore - using context
 
   const clearReconnectTimeout = useCallback(() => {
     if (reconnectTimeoutRef.current) {
@@ -46,8 +46,8 @@ export function useTranscriptionWebSocket({
   }, []);
 
   const scheduleReconnect = useCallback(() => {
-    if (!shouldReconnectRef.current || reconnectAttemptsRef.current >= maxReconnectAttempts) {
-      if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
+    if (!shouldReconnectRef.current || reconnectAttemptsRef.current >= config.webSocket.maxReconnectAttempts) {
+      if (reconnectAttemptsRef.current >= config.webSocket.maxReconnectAttempts) {
         console.error('Max reconnection attempts reached');
         onError?.('Failed to reconnect to transcription service after multiple attempts');
         setConnectionStatus('disconnected');
@@ -59,8 +59,8 @@ export function useTranscriptionWebSocket({
     
     // Exponential backoff with jitter
     const delay = Math.min(
-      baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current) + Math.random() * 1000,
-      30000 // Max 30 seconds
+      config.webSocket.baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current) + Math.random() * config.webSocket.reconnectJitterMax,
+      config.webSocket.maxReconnectDelay
     );
     
     console.log(`Scheduling reconnection attempt ${reconnectAttemptsRef.current + 1} in ${delay}ms`);
@@ -70,7 +70,7 @@ export function useTranscriptionWebSocket({
       reconnectAttemptsRef.current++;
       connect();
     }, delay);
-  }, [clearReconnectTimeout, onError]);
+  }, [clearReconnectTimeout, onError, config.webSocket]);
 
   const connect = useCallback(() => {
     // Prevent multiple connections
@@ -93,8 +93,7 @@ export function useTranscriptionWebSocket({
         reconnectAttemptsRef.current = 0; // Reset reconnect attempts on successful connection
         clearReconnectTimeout();
         
-        // Store the WebSocket reference globally for audio data sending
-        (window as any).transcriptionWsRef = wsRef;
+        // WebSocket reference is now managed by context
 
         // Resume pending session if any
         if (pendingSessionRef.current) {
@@ -235,7 +234,10 @@ export function useTranscriptionWebSocket({
     setConnectionStatus('disconnected');
     sessionIdRef.current = null;
     reconnectAttemptsRef.current = 0;
-  }, [clearReconnectTimeout]);
+    
+    // Clear session in context
+    setCurrentSessionId(null);
+  }, [clearReconnectTimeout, setCurrentSessionId]);
 
   const startTranscription = useCallback((sessionId: string, meetingId: number, userId: string) => {
     shouldReconnectRef.current = true; // Enable auto-reconnection
@@ -244,6 +246,9 @@ export function useTranscriptionWebSocket({
     
     // Store session info for potential reconnection
     pendingSessionRef.current = { sessionId, meetingId, userId };
+    
+    // Store session in context instead of globally
+    setCurrentSessionId(sessionId);
 
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
       console.log('WebSocket not connected, attempting to connect first');
@@ -267,12 +272,15 @@ export function useTranscriptionWebSocket({
       // Keep pending session for retry
       return false;
     }
-  }, [connect]);
+  }, [connect, setCurrentSessionId]);
 
   const endTranscription = useCallback(() => {
     shouldReconnectRef.current = false; // Disable auto-reconnection
     pendingSessionRef.current = null;
     clearReconnectTimeout();
+    
+    // Clear session in context
+    setCurrentSessionId(null);
     
     if (!wsRef.current || !sessionIdRef.current) return;
 

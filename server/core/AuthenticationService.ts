@@ -14,7 +14,7 @@ export interface IAuthenticationService {
 }
 
 export class AuthenticationService implements IAuthenticationService {
-  private oidcConfig: any;
+  private oidcConfig: () => Promise<any>;
 
   constructor(private userService: IUserService) {
     this.oidcConfig = memoize(
@@ -52,7 +52,7 @@ export class AuthenticationService implements IAuthenticationService {
   }
 
   private updateUserSession(
-    user: any,
+    user: Record<string, any>,
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
   ): void {
     user.claims = tokens.claims();
@@ -61,7 +61,7 @@ export class AuthenticationService implements IAuthenticationService {
     user.expires_at = user.claims?.exp;
   }
 
-  private async upsertUser(claims: any): Promise<void> {
+  private async upsertUser(claims: Record<string, any>): Promise<void> {
     const userEmail = claims["email"];
     
     // Check if email is in the allowlist
@@ -107,7 +107,7 @@ export class AuthenticationService implements IAuthenticationService {
       verified: passport.AuthenticateCallback
     ) => {
       try {
-        const user = {};
+        const user: Record<string, any> = {};
         this.updateUserSession(user, tokens);
         await this.upsertUser(tokens.claims());
         verified(null, user);

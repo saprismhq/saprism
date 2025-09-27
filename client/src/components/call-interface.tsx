@@ -18,6 +18,8 @@ import { useServices } from '@/lib/services/ServiceContainer';
 import type { Participant, SessionContext } from '@/lib/services/types';
 import type { MeetingWithSessions } from '@shared/schema';
 import { useTranscriptionWebSocket } from '@/hooks/useTranscriptionWebSocket';
+import { useTranscriptionWebSocket as useTranscriptionContext } from '@/contexts/TranscriptionWebSocketContext';
+import { getConfig } from '@/config';
 import { nanoid } from 'nanoid';
 
 interface CallInterfaceProps {
@@ -54,6 +56,8 @@ function formatTranscriptionAsNotes(rawTranscription: string): string {
 export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscriptionUpdate }: CallInterfaceProps) {
   const { toast } = useToast();
   const { callService, sessionService } = useServices();
+  const { wsRef: contextWsRef, currentSessionId: contextSessionId, setCurrentSessionId } = useTranscriptionContext();
+  const config = getConfig();
   
   // Call state
   const [isConnected, setIsConnected] = useState(false);
@@ -162,8 +166,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
       
       // Set session ID immediately for audio capture
       setTranscriptionSessionId(sessionId);
-      // Store globally for MediaRecorder callbacks
-      (window as any).currentTranscriptionSessionId = sessionId;
+      // Session ID is now managed by context instead of global variables
       console.log('Set transcription session ID:', sessionId);
       
       // Wait a moment for connection then start transcription
@@ -222,7 +225,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
           if (MediaRecorder.isTypeSupported(option.mimeType)) {
             mediaRecorder = new MediaRecorder(stream, {
               mimeType: option.mimeType,
-              audioBitsPerSecond: 128000
+              audioBitsPerSecond: config.audio.audioBitsPerSecond
             });
             console.log('Using audio format:', option.mimeType);
             break;
@@ -249,21 +252,20 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
             console.log('Created audio blob, size:', audioBlob.size);
             
             // Send audio to transcription service via WebSocket
-            // Use global references instead of stale closure variables
-            const globalSessionId = (window as any).currentTranscriptionSessionId;
-            const transcriptionWs = (window as any).transcriptionWsRef?.current;
+            // Use context references passed from component level
+            const transcriptionWs = contextWsRef.current;
             
             console.log('Audio capture check:', { 
-              hasGlobalSession: !!globalSessionId, 
+              hasCurrentSession: !!contextSessionId, 
               hasWsRef: !!transcriptionWs,
               wsState: transcriptionWs?.readyState,
               isOpen: transcriptionWs?.readyState === WebSocket.OPEN
             });
             
-            if (transcriptionWs?.readyState === WebSocket.OPEN && globalSessionId) {
+            if (transcriptionWs?.readyState === WebSocket.OPEN && contextSessionId) {
               try {
                 const arrayBuffer = await audioBlob.arrayBuffer();
-                console.log('Sending audio chunk, size:', arrayBuffer.byteLength, 'session:', globalSessionId);
+                console.log('Sending audio chunk, size:', arrayBuffer.byteLength, 'session:', contextSessionId);
                 
                 transcriptionWs.send(arrayBuffer);
                 console.log('Audio data sent successfully');
@@ -274,14 +276,14 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
               console.log('Cannot send audio - missing WebSocket or session:', {
                 hasWs: !!transcriptionWs,
                 wsState: transcriptionWs?.readyState,
-                hasSession: !!globalSessionId
+                hasSession: !!contextSessionId
               });
             }
             audioChunks = [];
           }
         };
         
-        // Record audio in 6-second chunks for better transcription quality
+        // Record audio in chunks for better transcription quality
         const recordingInterval = setInterval(() => {
           console.log('Recording interval triggered, mediaRecorder state:', mediaRecorder.state);
           if (mediaRecorder.state === 'recording') {
@@ -294,7 +296,7 @@ export function CallInterface({ meeting, isLoading, onSessionUpdate, onTranscrip
               }
             }, 100);
           }
-        }, 6000); // Longer chunks for better transcription accuracy
+        }, config.audio.recordingIntervalMs); // Configurable chunks for better transcription accuracy
         
         // Start recording
         mediaRecorder.start();
