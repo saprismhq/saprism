@@ -5,9 +5,19 @@ import type { AIAnalysisResult, CoachingSuggestionContent } from "@shared/schema
 
 // AI API functions
 export const aiApi = {
-  analyzeNotes: async (meetingId: number): Promise<AIAnalysisResult> => {
-    const response = await apiRequest("POST", `/api/ai/analyze`, { meetingId });
+  analyzeNotes: async (params: { meetingId: number; content: string }): Promise<AIAnalysisResult> => {
+    const response = await apiRequest("POST", `/api/ai/analyze`, { 
+      meetingId: params.meetingId, 
+      content: params.content 
+    });
     return response.json();
+  },
+
+  getAnalysisResult: async (meetingId: number): Promise<AIAnalysisResult | null> => {
+    // Get existing analysis from notes endpoint instead of triggering new analysis
+    const response = await apiRequest("GET", `/api/meetings/${meetingId}`);
+    const meetingData = await response.json();
+    return meetingData.notes?.[0]?.aiAnalysis || null;
   },
 
   generateCoaching: async (meetingId: number): Promise<CoachingSuggestionContent> => {
@@ -27,7 +37,8 @@ export const useAnalyzeNotes = () => {
 
   return useMutation({
     mutationFn: aiApi.analyzeNotes,
-    onSuccess: (analysis, meetingId) => {
+    onSuccess: (analysis, params) => {
+      const meetingId = params.meetingId;
       // Cache the analysis result
       queryClient.setQueryData(
         queryKeys.ai.analysis(meetingId),
@@ -84,7 +95,7 @@ export const useGenerateFollowUp = () => {
 export const useAnalysisResult = (meetingId: number | null) => {
   return useQuery({
     queryKey: queryKeys.ai.analysis(meetingId!),
-    queryFn: () => aiApi.analyzeNotes(meetingId!),
+    queryFn: () => aiApi.getAnalysisResult(meetingId!),
     enabled: false, // Only fetch when explicitly triggered
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
