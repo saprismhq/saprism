@@ -17,12 +17,18 @@ interface TranscriptionSession {
   wsConnections: Set<WebSocket>;
   isActive: boolean;
   accumulatedText: string;
+  audioBackupPath?: string; // Path to backup audio file
+  transcriptionFailures: number;
+  lastTranscriptionError?: string;
+  hasTranscriptionFailed: boolean;
 }
 
 export class TranscriptionService {
   private openai: OpenAI;
   private sessions: Map<string, TranscriptionSession> = new Map();
   private processingInterval: NodeJS.Timeout | null = null;
+  private maxTranscriptionFailures = 3;
+  private fallbackMessage = "📝 **Note:** Transcription temporarily unavailable - audio has been recorded and will be processed later.";
 
   constructor() {
     this.openai = new OpenAI({
@@ -41,7 +47,10 @@ export class TranscriptionService {
       lastProcessed: Date.now(),
       wsConnections: new Set([wsConnection]),
       isActive: true,
-      accumulatedText: ''
+      accumulatedText: '',
+      audioBackupPath: join(tmpdir(), `backup_audio_${sessionId}_${Date.now()}.webm`),
+      transcriptionFailures: 0,
+      hasTranscriptionFailed: false
     };
 
     this.sessions.set(sessionId, session);
@@ -66,11 +75,27 @@ export class TranscriptionService {
     console.log(`Adding audio chunk to session ${sessionId}, size: ${audioData.length}`);
     session.audioBuffer.push(audioData);
     
+    // Always backup audio data to file for resilience
+    await this.backupAudioChunk(sessionId, audioData);
+    
     // Process audio chunks when we have enough data (every 4 seconds worth for better context)
     const now = Date.now();
     if (now - session.lastProcessed > 4000 && session.audioBuffer.length > 0) {
       console.log(`Processing accumulated audio for session ${sessionId}, buffer count: ${session.audioBuffer.length}`);
       await this.processAudioBuffer(sessionId);
+    }
+  }
+
+  private async backupAudioChunk(sessionId: string, audioData: Buffer): Promise<void> {
+    const session = this.sessions.get(sessionId);
+    if (!session || !session.audioBackupPath) return;
+
+    try {
+      // Append audio chunk to backup file
+      const fs = await import('fs/promises');
+      await fs.appendFile(session.audioBackupPath, audioData);
+    } catch (error) {
+      console.error(`Failed to backup audio chunk for session ${sessionId}:`, error);
     }
   }
 
@@ -126,16 +151,59 @@ export class TranscriptionService {
       }
 
     } catch (error) {
-      // Only log significant errors, silence minor audio processing issues
-      if (error instanceof Error && !error.message.includes('ENODATA')) {
-        console.error(`Transcription error for session ${sessionId}:`, error.message);
-        this.broadcastToSession(sessionId, {
-          type: 'transcription_error', 
-          sessionId,
-          error: 'Audio processing error - continuing...'
-        });
-      }
-      // Skip broadcasting minor audio processing failures to reduce noise
+      await this.handleTranscriptionError(sessionId, error);
+    }
+  }
+
+  private async handleTranscriptionError(sessionId: string, error: any): Promise<void> {
+    const session = this.sessions.get(sessionId);
+    if (!session) return;
+
+    session.transcriptionFailures++;
+    session.lastTranscriptionError = error instanceof Error ? error.message : String(error);
+    
+    console.error(`Transcription error for session ${sessionId} (attempt ${session.transcriptionFailures}):`, session.lastTranscriptionError);
+
+    // Only log significant errors, silence minor audio processing issues
+    if (error instanceof Error && error.message.includes('ENODATA')) {
+      console.log(`Minor audio processing error for session ${sessionId} - skipping`);
+      return;
+    }
+
+    // If we've reached max failures, mark transcription as failed but continue recording
+    if (session.transcriptionFailures >= this.maxTranscriptionFailures && !session.hasTranscriptionFailed) {
+      session.hasTranscriptionFailed = true;
+      
+      console.warn(`Transcription service failed after ${this.maxTranscriptionFailures} attempts for session ${sessionId}. Continuing audio recording.`);
+      
+      // Add fallback message to accumulated text
+      const timestamp = new Date().toLocaleTimeString();
+      const fallbackMessage = `[${timestamp}] ${this.fallbackMessage}\n`;
+      session.accumulatedText += fallbackMessage;
+
+      // Broadcast fallback message to clients
+      this.broadcastToSession(sessionId, {
+        type: 'transcription_chunk',
+        sessionId,
+        text: fallbackMessage,
+        timestamp: Date.now(),
+        accumulatedText: session.accumulatedText
+      });
+
+      // Notify about transcription failure but audio backup
+      this.broadcastToSession(sessionId, {
+        type: 'transcription_fallback',
+        sessionId,
+        message: 'Transcription temporarily unavailable - audio recording continues',
+        hasAudioBackup: true
+      });
+    } else if (session.transcriptionFailures < this.maxTranscriptionFailures) {
+      // For early failures, just broadcast a soft error
+      this.broadcastToSession(sessionId, {
+        type: 'transcription_error', 
+        sessionId,
+        error: `Audio processing error (${session.transcriptionFailures}/${this.maxTranscriptionFailures}) - retrying...`
+      });
     }
   }
 
@@ -147,13 +215,25 @@ export class TranscriptionService {
 
     session.isActive = false;
 
-    // Process any remaining audio
-    if (session.audioBuffer.length > 0) {
+    // Process any remaining audio if transcription hasn't completely failed
+    if (session.audioBuffer.length > 0 && !session.hasTranscriptionFailed) {
       await this.processAudioBuffer(sessionId);
     }
 
     // Clean up and finalize transcription
-    const finalText = await this.finalizeTranscription(session.accumulatedText);
+    let finalText = session.accumulatedText;
+    
+    // Only attempt to finalize through OpenAI if transcription was working
+    if (!session.hasTranscriptionFailed && finalText.trim()) {
+      finalText = await this.finalizeTranscription(finalText);
+    } else if (session.hasTranscriptionFailed) {
+      // Add summary message for failed transcription
+      const backupNote = `\n\n--- Audio Recording Summary ---\n` +
+        `Transcription service encountered issues during this session.\n` +
+        `Audio has been recorded and saved for manual processing.\n` +
+        `Last error: ${session.lastTranscriptionError || 'Unknown error'}`;
+      finalText += backupNote;
+    }
     
     // Save and analyze the finalized transcription directly
     try {
@@ -215,6 +295,26 @@ export class TranscriptionService {
       console.log('Transcription finalized and analyzed successfully');
     } catch (error) {
       console.error('Error finalizing transcription:', error);
+      
+      // If finalization fails, at least save a fallback note
+      try {
+        const container = Container.getInstance();
+        const noteService = container.get<INoteService>('NoteService');
+        
+        const fallbackContent = session.hasTranscriptionFailed 
+          ? `Meeting Notes\n\n${this.fallbackMessage}\n\nAudio has been recorded and saved for processing.`
+          : `Meeting Notes\n\nTranscription processing failed, but audio was recorded.\nAudio has been saved for manual processing.`;
+          
+        await noteService.createNote({
+          meetingId: session.meetingId,
+          content: fallbackContent,
+          aiAnalysis: null
+        });
+        
+        console.log('Fallback note created due to transcription processing failure');
+      } catch (fallbackError) {
+        console.error('Failed to create fallback note:', fallbackError);
+      }
     }
     
     // Broadcast completion
@@ -225,10 +325,10 @@ export class TranscriptionService {
       meetingId: session.meetingId
     });
 
-    // Clean up session
+    // Clean up session (but keep backup file for potential manual processing)
     this.sessions.delete(sessionId);
     
-    console.log(`Ended transcription session ${sessionId}`);
+    console.log(`Ended transcription session ${sessionId}${session.hasTranscriptionFailed ? ' (with transcription failures)' : ''}`);
     return finalText;
   }
 
@@ -238,34 +338,57 @@ export class TranscriptionService {
     }
 
     try {
-      // Use OpenAI to clean up and format the transcription
-      const completion = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional transcription editor. Clean up the following meeting transcription by:
-            1. Removing filler words and false starts
-            2. Adding proper punctuation and formatting
-            3. Organizing into clear paragraphs
-            4. Maintaining the speaker timestamps
-            5. Making it readable while preserving all important content
-            
-            Keep the format: [timestamp] Speaker content`
-          },
-          {
-            role: 'user',
-            content: rawText
-          }
-        ],
-        temperature: 0.1
-      });
+      // Use OpenAI to clean up and format the transcription with timeout and retry logic
+      const completion = await this.retryOpenAICall(() => 
+        this.openai.chat.completions.create({
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'system',
+              content: `You are a professional transcription editor. Clean up the following meeting transcription by:
+              1. Removing filler words and false starts
+              2. Adding proper punctuation and formatting
+              3. Organizing into clear paragraphs
+              4. Maintaining the speaker timestamps
+              5. Making it readable while preserving all important content
+              
+              Keep the format: [timestamp] Speaker content`
+            },
+            {
+              role: 'user',
+              content: rawText
+            }
+          ],
+          temperature: 0.1
+        })
+      );
 
       return completion.choices[0]?.message?.content || rawText;
     } catch (error) {
-      console.error('Error finalizing transcription:', error);
+      console.error('Error finalizing transcription with OpenAI, returning raw text:', error);
       return rawText;
     }
+  }
+
+  private async retryOpenAICall<T>(apiCall: () => Promise<T>, maxRetries: number = 2): Promise<T> {
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await apiCall();
+      } catch (error) {
+        lastError = error;
+        console.warn(`OpenAI API call failed (attempt ${attempt + 1}/${maxRetries + 1}):`, error);
+        
+        if (attempt < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          const delay = Math.pow(2, attempt) * 1000;
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    throw lastError;
   }
 
   addWebSocketConnection(sessionId: string, ws: WebSocket): void {
