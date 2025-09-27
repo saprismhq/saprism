@@ -182,7 +182,7 @@ export class ResilienceDecorator implements AIProvider {
         this.recordFailure(operation);
 
         // Don't retry on certain errors
-        if (!this.isRetriableError(error) || error instanceof AIProviderQuotaError) {
+        if (!this.isRetriableError(error)) {
           throw error;
         }
 
@@ -198,10 +198,8 @@ export class ResilienceDecorator implements AIProvider {
       }
     }
 
-    throw lastError || new AIProviderError(
-      `Operation failed after ${retry.maxAttempts} attempts`,
-      'resilience',
-      operation
+    throw lastError || new Error(
+      `Operation failed after ${retry.maxAttempts} attempts`
     );
   }
 
