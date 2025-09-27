@@ -234,12 +234,12 @@ STOP. NEVER ADD MORE THAN 2 ITEMS PER SECTION.`;
         model: "gpt-4o",
         messages: messages as any,
         temperature: 0.7,
-        max_tokens: isFromSectionButton ? 120 : 60, // Force ultra-short responses
+        max_tokens: isFromSectionButton ? 150 : 100, // Allow room for complete sentences
       });
 
       let aiResponse = response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
       
-      // Post-processing validation: Enforce exactly 2 items per section
+      // Post-processing validation: Enforce exactly 2 items per section with smart truncation
       aiResponse = this.enforceResponseFormat(aiResponse);
       
       return aiResponse;
@@ -248,7 +248,7 @@ STOP. NEVER ADD MORE THAN 2 ITEMS PER SECTION.`;
     }
   }
 
-  // Post-processing validation to enforce exactly 2 items per section
+  // Post-processing validation to enforce exactly 2 items per section with smart truncation
   private enforceResponseFormat(response: string): string {
     try {
       // Split response into sections
@@ -289,12 +289,54 @@ STOP. NEVER ADD MORE THAN 2 ITEMS PER SECTION.`;
       // Extract bullets (lines starting with •)
       const bullets = sectionText.split('\n')
         .filter(line => line.trim().startsWith('•'))
-        .slice(0, 2); // Enforce exactly 2 items maximum
+        .slice(0, 2) // Enforce exactly 2 items maximum
+        .map(bullet => this.smartTruncateAtSentence(bullet)); // Apply smart truncation to each bullet
       
       return bullets.join('\n');
     } catch (error) {
       return '';
     }
+  }
+
+  // Smart truncation that respects sentence boundaries
+  private smartTruncateAtSentence(text: string, maxLength: number = 120): string {
+    if (!text || text.length <= maxLength) return text;
+    
+    // Find sentence endings: ., !, ?, or line breaks
+    const sentenceEndings = /[.!?]\s+|[.!?]$|\n/g;
+    const matches = [...text.matchAll(sentenceEndings)];
+    
+    if (matches.length === 0) {
+      // No sentence endings found, find word boundaries instead
+      return this.smartTruncateAtWord(text, maxLength);
+    }
+    
+    // Find the last complete sentence within the limit
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const endPos = matches[i].index! + matches[i][0].length;
+      if (endPos <= maxLength) {
+        return text.substring(0, endPos).trim();
+      }
+    }
+    
+    // If no complete sentence fits, truncate at word boundary
+    return this.smartTruncateAtWord(text, maxLength);
+  }
+
+  // Fallback truncation at word boundaries
+  private smartTruncateAtWord(text: string, maxLength: number): string {
+    if (text.length <= maxLength) return text;
+    
+    // Find the last space before maxLength
+    const truncated = text.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    
+    if (lastSpace > maxLength * 0.7) { // Only truncate at word if we don't lose too much
+      return truncated.substring(0, lastSpace) + '...';
+    }
+    
+    // If truncating at word would lose too much, just truncate at character with ellipsis
+    return truncated.trim() + '...';
   }
 
   async generateMethodologyInsights(methodology: string, clientInfo: any, notesContent: string, meeting: any): Promise<any> {
