@@ -10,7 +10,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   type: SortOrderSchema.optional(),
   content: SortOrderSchema.optional(),
   isUsed: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
-  createdAt: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
+  createdAt: SortOrderSchema.optional(),
   meeting: z.lazy(() => MeetingOrderByWithRelationInputObjectSchema).optional()
 }).strict();
 export const CoachingSuggestionOrderByWithRelationInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionOrderByWithRelationInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionOrderByWithRelationInput>;

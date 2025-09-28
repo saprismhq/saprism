@@ -9,7 +9,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   type: z.string(),
   content: z.union([JsonNullValueInputSchema, jsonSchema]),
   isUsed: z.boolean().nullish(),
-  createdAt: z.date().nullish()
+  createdAt: z.date().optional()
 }).strict();
 export const CoachingSuggestionCreateManyMeetingInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionCreateManyMeetingInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionCreateManyMeetingInput>;
 export const CoachingSuggestionCreateManyMeetingInputObjectZodSchema = makeSchema();

@@ -4,7 +4,7 @@ import { IntWithAggregatesFilterObjectSchema } from './IntWithAggregatesFilter.s
 import { StringWithAggregatesFilterObjectSchema } from './StringWithAggregatesFilter.schema';
 import { JsonWithAggregatesFilterObjectSchema } from './JsonWithAggregatesFilter.schema';
 import { BoolNullableWithAggregatesFilterObjectSchema } from './BoolNullableWithAggregatesFilter.schema';
-import { DateTimeNullableWithAggregatesFilterObjectSchema } from './DateTimeNullableWithAggregatesFilter.schema'
+import { DateTimeWithAggregatesFilterObjectSchema } from './DateTimeWithAggregatesFilter.schema'
 
 const makeSchema = (): z.ZodObject<any> => z.object({
   AND: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
@@ -15,7 +15,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   type: z.union([z.lazy(() => StringWithAggregatesFilterObjectSchema), z.string().max(255)]).optional(),
   content: z.lazy(() => JsonWithAggregatesFilterObjectSchema).optional(),
   isUsed: z.union([z.lazy(() => BoolNullableWithAggregatesFilterObjectSchema), z.boolean()]).nullish(),
-  createdAt: z.union([z.lazy(() => DateTimeNullableWithAggregatesFilterObjectSchema), z.date()]).nullish()
+  createdAt: z.union([z.lazy(() => DateTimeWithAggregatesFilterObjectSchema), z.date()]).optional()
 }).strict();
 export const CoachingSuggestionScalarWhereWithAggregatesInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionScalarWhereWithAggregatesInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionScalarWhereWithAggregatesInput>;
 export const CoachingSuggestionScalarWhereWithAggregatesInputObjectZodSchema = makeSchema();

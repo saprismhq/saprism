@@ -14,7 +14,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   type: SortOrderSchema.optional(),
   content: SortOrderSchema.optional(),
   isUsed: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
-  createdAt: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
+  createdAt: SortOrderSchema.optional(),
   _count: z.lazy(() => CoachingSuggestionCountOrderByAggregateInputObjectSchema).optional(),
   _avg: z.lazy(() => CoachingSuggestionAvgOrderByAggregateInputObjectSchema).optional(),
   _max: z.lazy(() => CoachingSuggestionMaxOrderByAggregateInputObjectSchema).optional(),

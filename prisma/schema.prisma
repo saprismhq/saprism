@@ -54,9 +54,12 @@ model Client {
   updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  user     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   meetings Meeting[]
 
+  // Indexes for performance optimization
+  @@index([userId], map: "IDX_clients_user_id")
+  @@index([userId, createdAt], map: "IDX_clients_user_recent")
   @@map("clients")
 }
 
@@ -72,13 +75,19 @@ model Meeting {
   updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  user                User                 @relation(fields: [userId], references: [id])
-  client              Client?              @relation(fields: [clientId], references: [id])
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client              Client?              @relation(fields: [clientId], references: [id], onDelete: SetNull)
   notes               Note[]
   coachingSuggestions CoachingSuggestion[]
   crmSyncLogs         CrmSyncLog[]
   callSessions        CallSession[]
 
+  // Indexes for performance optimization
+  @@index([userId], map: "IDX_meetings_user_id")
+  @@index([clientId], map: "IDX_meetings_client_id")
+  @@index([userId, createdAt], map: "IDX_meetings_user_recent")
+  @@index([userId, status, createdAt(sort: Desc)], map: "IDX_meetings_user_status_recent")
+  @@index([status], map: "IDX_meetings_status")
   @@map("meetings")
 }
 
@@ -91,8 +100,11 @@ model Note {
   updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  meeting Meeting @relation(fields: [meetingId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
+  // Indexes for performance optimization
+  @@index([meetingId], map: "IDX_notes_meeting_id")
+  @@index([meetingId, createdAt], map: "IDX_notes_meeting_recent")
   @@map("notes")
 }
 
@@ -102,11 +114,14 @@ model CoachingSuggestion {
   type       String   @db.VarChar(255)
   content    Json
   isUsed     Boolean? @map("is_used")
-  createdAt  DateTime? @default(now()) @map("created_at")
+  createdAt  DateTime @default(now()) @map("created_at")
 
   // Relations
-  meeting Meeting @relation(fields: [meetingId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
+  // Indexes for performance optimization
+  @@index([meetingId], map: "IDX_coaching_suggestions_meeting_id")
+  @@index([meetingId, createdAt], map: "IDX_coaching_suggestions_meeting_recent")
   @@map("coaching_suggestions")
 }
 
@@ -119,8 +134,12 @@ model CrmSyncLog {
   createdAt  DateTime @default(now()) @map("created_at")
 
   // Relations
-  meeting Meeting @relation(fields: [meetingId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
+  // Indexes for performance optimization
+  @@index([meetingId], map: "IDX_crm_sync_logs_meeting_id")
+  @@index([meetingId, createdAt(sort: Desc)], map: "IDX_crm_sync_logs_meeting_latest")
+  @@index([status], map: "IDX_crm_sync_logs_status")
   @@map("crm_sync_logs")
 }
 
@@ -139,7 +158,12 @@ model CallSession {
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
 
   // Relations
-  meeting Meeting @relation(fields: [meetingId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
+  // Indexes for performance optimization
+  @@index([meetingId], map: "IDX_call_sessions_meeting_id")
+  @@index([meetingId, status], map: "IDX_call_sessions_meeting_status")
+  @@index([status], map: "IDX_call_sessions_status")
+  @@index([status, createdAt(sort: Desc)], map: "IDX_call_sessions_status_recent")
   @@map("call_sessions")
 }

@@ -5,6 +5,6 @@ export const CoachingSuggestionCreateResultSchema = z.object({
   type: z.string(),
   content: z.unknown(),
   isUsed: z.boolean().optional(),
-  createdAt: z.date().optional(),
+  createdAt: z.date(),
   meeting: z.unknown()
 });

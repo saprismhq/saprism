@@ -4,7 +4,7 @@ import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
 import { JsonFilterObjectSchema } from './JsonFilter.schema';
 import { BoolNullableFilterObjectSchema } from './BoolNullableFilter.schema';
-import { DateTimeNullableFilterObjectSchema } from './DateTimeNullableFilter.schema'
+import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema'
 
 const makeSchema = (): z.ZodObject<any> => z.object({
   AND: z.union([z.lazy(makeSchema), z.lazy(makeSchema).array()]).optional(),
@@ -15,7 +15,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   type: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   content: z.lazy(() => JsonFilterObjectSchema).optional(),
   isUsed: z.union([z.lazy(() => BoolNullableFilterObjectSchema), z.boolean()]).nullish(),
-  createdAt: z.union([z.lazy(() => DateTimeNullableFilterObjectSchema), z.date()]).nullish()
+  createdAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional()
 }).strict();
 export const CoachingSuggestionScalarWhereInputObjectSchema: z.ZodType<Prisma.CoachingSuggestionScalarWhereInput> = makeSchema() as unknown as z.ZodType<Prisma.CoachingSuggestionScalarWhereInput>;
 export const CoachingSuggestionScalarWhereInputObjectZodSchema = makeSchema();

@@ -7,7 +7,7 @@ export const CoachingSuggestionModelSchema = z.object({
     type: z.string(),
     content: z.unknown(),
     isUsed: z.boolean().nullable(),
-    createdAt: z.date().nullable(),
+    createdAt: z.date(),
     meeting: z.unknown()
 }).strict();
 

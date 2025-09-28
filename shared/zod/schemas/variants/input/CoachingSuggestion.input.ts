@@ -7,7 +7,7 @@ export const CoachingSuggestionInputSchema = z.object({
     type: z.string(),
     content: z.unknown(),
     isUsed: z.boolean().optional().nullable(),
-    createdAt: z.date().optional().nullable(),
+    createdAt: z.date(),
     meeting: z.unknown()
 }).strict();
 
