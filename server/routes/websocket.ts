@@ -1,17 +1,19 @@
 import { Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { transcriptionService } from '../services/TranscriptionService';
+import { getLogger } from '../utils/LoggerFactory';
 
 export function setupWebSocketServer(httpServer: Server): void {
+  const logger = getLogger('WebSocketServer');
   const wss = new WebSocketServer({ 
     server: httpServer, 
     path: '/ws/transcription'
   });
 
-  console.log('WebSocket server setup for transcription on /ws/transcription');
+  logger.info('WebSocket server setup', { path: '/ws/transcription' });
 
   wss.on('connection', (ws: WebSocket, request) => {
-    console.log('New WebSocket connection for transcription');
+    logger.info('New WebSocket connection for transcription');
     
     let sessionId: string | null = null;
     let meetingId: number | null = null;
@@ -20,11 +22,11 @@ export function setupWebSocketServer(httpServer: Server): void {
       try {
         // Handle binary audio data directly
         if (data.length > 100 && !data.toString().startsWith('{')) {
-          console.log('Received binary audio data, size:', data.length);
+          logger.debug('Received binary audio data', { size: data.length });
           if (sessionId) {
             await transcriptionService.addAudioChunk(sessionId, data);
           } else {
-            console.log('No active session for binary audio data');
+            logger.warn('No active session for binary audio data');
           }
           return;
         }
@@ -40,7 +42,7 @@ export function setupWebSocketServer(httpServer: Server): void {
             
             if (sessionId && meetingId && userId) {
               await transcriptionService.startTranscription(sessionId, meetingId, userId, ws);
-              console.log(`Started transcription for session ${sessionId}`);
+              logger.info('Started transcription for session', { sessionId });
             }
             break;
 
@@ -61,22 +63,25 @@ export function setupWebSocketServer(httpServer: Server): void {
                 finalText,
                 meetingId
               }));
-              console.log(`Ended transcription for session ${sessionId}`);
+              logger.info('Ended transcription for session', { sessionId });
             }
             break;
 
           case 'subscribe':
             if (message.sessionId) {
               transcriptionService.addWebSocketConnection(message.sessionId, ws);
-              console.log(`Client subscribed to session ${message.sessionId}`);
+              logger.debug('Client subscribed to session', { sessionId: message.sessionId });
             }
             break;
 
           default:
-            console.warn('Unknown message type:', message.type);
+            logger.warn('Unknown message type', { messageType: message.type });
         }
       } catch (error) {
-        console.error('WebSocket message error:', error);
+        logger.error('WebSocket message error', { 
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined
+        });
         ws.send(JSON.stringify({
           type: 'error',
           message: 'Failed to process message'
@@ -87,12 +92,15 @@ export function setupWebSocketServer(httpServer: Server): void {
     ws.on('close', () => {
       if (sessionId) {
         transcriptionService.removeWebSocketConnection(sessionId, ws);
-        console.log(`WebSocket connection closed for session ${sessionId}`);
+        logger.info('WebSocket connection closed for session', { sessionId });
       }
     });
 
     ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
+      logger.error('WebSocket error', { 
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       if (sessionId) {
         transcriptionService.removeWebSocketConnection(sessionId, ws);
       }

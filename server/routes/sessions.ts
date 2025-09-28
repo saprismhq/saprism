@@ -5,6 +5,7 @@ import { db } from "../db";
 import { IAuthenticationService } from "../core/AuthenticationService";
 import { Container } from "../container/Container";
 import { z } from "zod";
+import { getLogger } from "../utils/LoggerFactory";
 
 const createSessionSchema = z.object({
   meetingId: z.number(),
@@ -31,6 +32,7 @@ const updateContextSchema = z.object({
 });
 
 export function registerSessionRoutes(app: Express) {
+  const logger = getLogger('SessionRoutes');
   // Get auth service from container
   const container = Container.getInstance();
   const authService = container.get<IAuthenticationService>('AuthenticationService');
@@ -70,7 +72,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json(callSession);
     } catch (error) {
-      console.error("Error creating call session:", error);
+      logger.error('Error creating call session', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to create call session" });
     }
   });
@@ -97,7 +99,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json(callSession);
     } catch (error) {
-      console.error("Error getting call session:", error);
+      logger.error('Error getting call session', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to get call session" });
     }
   });
@@ -138,7 +140,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json(updatedSession);
     } catch (error) {
-      console.error("Error updating call session:", error);
+      logger.error('Error updating call session', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to update call session" });
     }
   });
@@ -166,7 +168,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json({ message: "Call session ended successfully" });
     } catch (error) {
-      console.error("Error ending call session:", error);
+      logger.error('Error ending call session', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to end call session" });
     }
   });
@@ -219,7 +221,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json(context);
     } catch (error) {
-      console.error("Error getting session context:", error);
+      logger.error('Error getting session context', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to get session context" });
     }
   });
@@ -254,7 +256,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json({ message: "Session context updated successfully" });
     } catch (error) {
-      console.error("Error updating session context:", error);
+      logger.error('Error updating session context', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to update session context" });
     }
   });
@@ -299,7 +301,7 @@ export function registerSessionRoutes(app: Express) {
 
       res.json({ message: "Notes saved successfully" });
     } catch (error) {
-      console.error("Error saving session notes:", error);
+      logger.error('Error saving session notes', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to save notes" });
     }
   });
@@ -334,7 +336,7 @@ export function registerSessionRoutes(app: Express) {
       const content = callSession.meeting.notes[0]?.content || '';
       res.json({ content });
     } catch (error) {
-      console.error("Error getting session notes:", error);
+      logger.error('Error getting session notes', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       res.status(500).json({ message: "Failed to get notes" });
     }
   });

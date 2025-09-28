@@ -3,8 +3,10 @@ import { z } from 'zod';
 import { db as prisma } from '../db';
 import { isAuthenticated } from '../auth';
 import { InsertClientSchema } from '../../shared/schema';
+import { getLogger } from '../utils/LoggerFactory';
 
 const router = Router();
+const logger = getLogger('ClientsRoute');
 
 /**
  * GET /api/clients
@@ -26,7 +28,11 @@ router.get('/', isAuthenticated, async (req: any, res) => {
 
     res.json(clients);
   } catch (error) {
-    console.error('Error fetching clients:', error);
+    logger.error('Error fetching clients', { 
+      userId: req.user?.claims?.sub,
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined 
+    });
     res.status(500).json({ message: 'Failed to fetch clients' });
   }
 });
@@ -120,18 +126,22 @@ router.post('/', isAuthenticated, async (req: any, res) => {
             // Create new client in Salesforce
             salesforceResult = await salesforceService.createOrUpdateClient(clientData);
             if (salesforceResult.success) {
-              console.log('Created new client in Salesforce');
+              logger.info('Created new client in Salesforce', { 
+                company: clientData.company, 
+                name: clientData.name,
+                hasEmail: !!clientData.email 
+              });
             } else {
-              console.warn('Failed to create client in Salesforce:', salesforceResult.error);
+              logger.warn('Failed to create client in Salesforce', { error: salesforceResult.error });
             }
           } else {
-            console.warn('Salesforce search failed:', existingSfClient.error);
+            logger.warn('Salesforce search failed', { error: existingSfClient.error });
           }
         } else {
-          console.warn('Salesforce not configured:', connectionTest.error);
+          logger.warn('Salesforce not configured', { error: connectionTest.error });
         }
       } catch (sfError) {
-        console.warn('Salesforce integration error:', sfError);
+        logger.warn('Salesforce integration error', { error: sfError instanceof Error ? sfError.message : String(sfError) });
         // Continue to local creation below
       }
     }
@@ -190,7 +200,11 @@ router.post('/', isAuthenticated, async (req: any, res) => {
       });
     }
     
-    console.error('Error creating client:', error);
+    logger.error('Error creating client', { 
+      userId: req.user?.claims?.sub,
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined 
+    });
     res.status(500).json({ message: 'Failed to create client' });
   }
 });
@@ -226,7 +240,12 @@ router.get('/:id', isAuthenticated, async (req: any, res) => {
 
     res.json(client);
   } catch (error) {
-    console.error('Error fetching client:', error);
+    logger.error('Error fetching client', { 
+      userId: req.user?.claims?.sub,
+      clientId: req.params.id,
+      error: error instanceof Error ? error.message : String(error), 
+      stack: error instanceof Error ? error.stack : undefined 
+    });
     res.status(500).json({ message: 'Failed to fetch client' });
   }
 });
@@ -277,7 +296,7 @@ router.get('/:id/meetings', isAuthenticated, async (req: any, res) => {
 
     res.json(meetings);
   } catch (error) {
-    console.error('Error fetching client meetings:', error);
+    logger.error('Error fetching client meetings', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
     res.status(500).json({ message: 'Failed to fetch client meetings' });
   }
 });
@@ -354,7 +373,7 @@ router.put('/:id', isAuthenticated, async (req: any, res) => {
       });
     }
     
-    console.error('Error updating client:', error);
+    logger.error('Error updating client', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
     res.status(500).json({ message: 'Failed to update client' });
   }
 });
@@ -403,7 +422,7 @@ router.delete('/:id', isAuthenticated, async (req: any, res) => {
 
     res.json({ message: 'Client deleted successfully' });
   } catch (error) {
-    console.error('Error deleting client:', error);
+    logger.error('Error deleting client', { error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
     res.status(500).json({ message: 'Failed to delete client' });
   }
 });
