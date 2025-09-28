@@ -36,26 +36,29 @@ export class AIService {
    * 
    * @param notesContent - The meeting notes content
    * @param dealStage - Current stage of the deal
+   * @param options - Optional coaching options including journey context
    * @returns Coaching suggestions with questions, pain mapping, and next steps
    */
-  async generateCoachingSuggestions(notesContent: string, dealStage: string): Promise<CoachingSuggestionContent> {
-    return this.provider.generateCoachingSuggestions(notesContent, dealStage);
+  async generateCoachingSuggestions(notesContent: string, dealStage: string, options?: any): Promise<CoachingSuggestionContent> {
+    return this.provider.generateCoachingSuggestions(notesContent, dealStage, options);
   }
 
   /**
    * Generate Growth Guide chat responses with structured format
    * 
    * @param message - User's chat message
-   * @param meetingContext - Current meeting context
-   * @param conversationHistory - Previous conversation history
+   * @param options - Chat options including meeting context, conversation history, and journey context
    * @returns Formatted chat response with sections
    */
-  async generateChatResponse(message: string, meetingContext: string, conversationHistory: any[]): Promise<string> {
-    return this.provider.generateChatResponse(message, {
-      meetingContext,
-      conversationHistory,
-      isExtendedResponse: message.length > 200 || this.isFromSectionButton(message)
-    });
+  async generateChatResponse(message: string, options: any): Promise<string> {
+    const chatOptions = {
+      meetingContext: options.meetingContext || '',
+      conversationHistory: options.conversationHistory || [],
+      journeyContext: options.journeyContext,
+      isExtendedResponse: options.isExtendedResponse || message.length > 200 || this.isFromSectionButton(message)
+    };
+    
+    return this.provider.generateChatResponse(message, chatOptions);
   }
 
   /**

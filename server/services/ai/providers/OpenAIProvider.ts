@@ -87,10 +87,16 @@ export class OpenAIProvider implements AIProvider {
     options?: CoachingOptions
   ): Promise<CoachingSuggestionContent> {
     try {
+      // Use journey-aware template if context is available
+      const templateId = options?.journeyContext ? 'generateCoachingJourney' : 'generateCoaching';
+      const variables = options?.journeyContext 
+        ? { notesContent: content, dealStage, journeyContext: options.journeyContext }
+        : { notesContent: content, dealStage };
+
       const promptConfig = promptTemplateManager.getPrompt(
-        'generateCoaching',
+        templateId,
         'openai',
-        { notesContent: content, dealStage },
+        variables,
         this.config
       );
 
@@ -134,10 +140,21 @@ export class OpenAIProvider implements AIProvider {
       const isExtended = options?.isExtendedResponse || message.length > 200;
       const meetingContext = options?.meetingContext || '';
       
+      // Use journey-aware template if context is available
+      const templateId = options?.journeyContext ? 'generateChatJourney' : 'generateChat';
+      const variables = options?.journeyContext 
+        ? { 
+            message, 
+            meetingContext,
+            journeyContext: options.journeyContext,
+            isExtended: isExtended.toString() 
+          }
+        : { message, meetingContext, isExtended: isExtended.toString() };
+      
       const promptConfig = promptTemplateManager.getPrompt(
-        'generateChat',
+        templateId,
         'openai',
-        { message, meetingContext, isExtended: isExtended.toString() },
+        variables,
         this.config
       );
 

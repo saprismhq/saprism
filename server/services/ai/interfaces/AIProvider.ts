@@ -20,11 +20,13 @@ export interface CoachingOptions extends AIOperationOptions {
   dealStage?: string;
   methodology?: string;
   useAllMeetingsContext?: boolean;
+  journeyContext?: string;
 }
 
 export interface ChatOptions extends AIOperationOptions {
   conversationHistory?: Array<{ role: string; content: string }>;
   meetingContext?: string;
+  journeyContext?: string;
   isExtendedResponse?: boolean;
 }
 

@@ -92,23 +92,25 @@ export class AIController {
 
       // Build enhanced context with optional journey history
       let enhancedContext = meetingContext || "";
+      let journeyContext: string | undefined;
       if (useAllMeetingsContext && meetingId) {
         // Validate meeting ownership if using journey context
         const userId = req.user?.claims?.sub;
         if (userId) {
           const hasAccess = await this.meetingService.validateMeetingOwnership(meetingId, userId);
           if (hasAccess) {
-            enhancedContext = await this.buildClientJourneyContext(meetingId, meetingContext || "");
+            journeyContext = await this.buildClientJourneyContext(meetingId, meetingContext || "");
+            enhancedContext = journeyContext;
           }
         }
       }
 
-      // Generate AI response using AI service
-      const response = await aiService.generateChatResponse(
-        message,
-        enhancedContext,
-        conversationHistory || []
-      );
+      // Generate AI response using AI service with journey context
+      const response = await aiService.generateChatResponse(message, {
+        meetingContext: enhancedContext,
+        conversationHistory: conversationHistory || [],
+        journeyContext
+      });
 
       res.json({ response });
     } catch (error) {
@@ -139,11 +141,17 @@ export class AIController {
 
       // Build context with optional journey history
       let contextContent = content;
+      let journeyContext: string | undefined;
       if (useAllMeetingsContext) {
-        contextContent = await this.buildClientJourneyContext(meetingId, content);
+        journeyContext = await this.buildClientJourneyContext(meetingId, content);
+        contextContent = journeyContext;
       }
 
-      const suggestions = await aiService.generateCoachingSuggestions(contextContent, dealStage);
+      const suggestions = await aiService.generateCoachingSuggestions(
+        contextContent, 
+        dealStage, 
+        { journeyContext }
+      );
       
       // Store coaching suggestions
       const coachingSuggestionData = insertCoachingSuggestionSchema.parse({
