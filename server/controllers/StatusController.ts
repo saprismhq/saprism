@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export interface ServiceStatus {
   name: string;
@@ -16,6 +18,12 @@ export interface SystemStatus {
 }
 
 export class StatusController {
+  private logger: winston.Logger;
+  
+  constructor() {
+    this.logger = getLogger('StatusController');
+  }
+  
   async getSystemStatus(req: Request, res: Response): Promise<void> {
     try {
       const now = new Date().toISOString();
@@ -51,7 +59,10 @@ export class StatusController {
 
       res.json(systemStatus);
     } catch (error) {
-      console.error("Error getting system status:", error);
+      this.logger.error('Error getting system status', { 
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ 
         message: "Failed to get system status",
         error: error instanceof Error ? error.message : 'Unknown error'

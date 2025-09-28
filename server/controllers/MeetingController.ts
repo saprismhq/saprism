@@ -1,9 +1,15 @@
 import { Request, Response } from "express";
 import { IMeetingService } from "../core/MeetingService";
 import { CreateMeetingSchema } from "@shared/schema";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export class MeetingController {
-  constructor(private meetingService: IMeetingService) {}
+  private logger: winston.Logger;
+  
+  constructor(private meetingService: IMeetingService) {
+    this.logger = getLogger('MeetingController');
+  }
 
   async createMeeting(req: any, res: Response): Promise<void> {
     try {
@@ -25,9 +31,13 @@ export class MeetingController {
       const meeting = await this.meetingService.createMeeting(meetingData);
       res.json(meeting);
     } catch (error) {
-      console.error("Error creating meeting:", error);
+      this.logger.error('Error creating meeting', { 
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       if (error instanceof Error) {
-        console.error("Error details:", error.message);
+        // Error details already included in structured logging above
       }
       res.status(500).json({ message: "Failed to create meeting" });
     }
@@ -39,7 +49,11 @@ export class MeetingController {
       const meetings = await this.meetingService.getMeetingsByUserId(userId);
       res.json(meetings);
     } catch (error) {
-      console.error("Error fetching meetings:", error);
+      this.logger.error('Error fetching meetings', { 
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to fetch meetings" });
     }
   }
@@ -65,7 +79,12 @@ export class MeetingController {
 
       res.json(meeting);
     } catch (error) {
-      console.error("Error fetching meeting:", error);
+      this.logger.error('Error fetching meeting', { 
+        meetingId: parseInt(req.params.id),
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to fetch meeting" });
     }
   }
@@ -85,7 +104,12 @@ export class MeetingController {
       await this.meetingService.deleteMeeting(meetingId);
       res.json({ message: "Meeting deleted successfully" });
     } catch (error) {
-      console.error("Error deleting meeting:", error);
+      this.logger.error('Error deleting meeting', { 
+        meetingId: parseInt(req.params.id),
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to delete meeting" });
     }
   }

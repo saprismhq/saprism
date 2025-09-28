@@ -2,12 +2,18 @@ import { Request, Response } from "express";
 import { INoteService } from "../core/NoteService";
 import { IMeetingService } from "../core/MeetingService";
 import { insertNoteSchema } from "@shared/schema";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export class NoteController {
+  private logger: winston.Logger;
+  
   constructor(
     private noteService: INoteService,
     private meetingService: IMeetingService
-  ) {}
+  ) {
+    this.logger = getLogger('NoteController');
+  }
 
   async getNotesByMeeting(req: any, res: Response): Promise<void> {
     try {
@@ -29,7 +35,12 @@ export class NoteController {
       const notes = await this.noteService.getNotesByMeetingId(meetingId);
       res.json(notes);
     } catch (error) {
-      console.error("Error getting notes:", error);
+      this.logger.error('Error getting notes', { 
+        meetingId: parseInt(req.query.meetingId as string),
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to get notes" });
     }
   }
@@ -49,7 +60,12 @@ export class NoteController {
       const note = await this.noteService.createNote(noteData);
       res.json(note);
     } catch (error) {
-      console.error("Error creating note:", error);
+      this.logger.error('Error creating note', { 
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to create note" });
     }
   }
@@ -62,7 +78,12 @@ export class NoteController {
       const note = await this.noteService.updateNote(noteId, updates);
       res.json(note);
     } catch (error) {
-      console.error("Error updating note:", error);
+      this.logger.error('Error updating note', { 
+        noteId: parseInt(req.params.id),
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to update note" });
     }
   }
