@@ -1,5 +1,6 @@
 import { aiService } from './ai/AIService';
-import { createReadStream, unlinkSync, writeFileSync } from 'fs';
+import { createReadStream } from 'fs';
+import fs from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { WebSocket } from 'ws';
@@ -91,7 +92,6 @@ export class TranscriptionService {
 
     try {
       // Append audio chunk to backup file
-      const fs = await import('fs/promises');
       await fs.appendFile(session.audioBackupPath, audioData);
     } catch (error) {
       this.logger.error('Failed to backup audio chunk', { sessionId, error: error instanceof Error ? error.message : String(error) });
@@ -114,13 +114,13 @@ export class TranscriptionService {
       const tempFilePath = join(tmpdir(), `audio_${sessionId}_${Date.now()}.webm`);
       
       // Write the WebM audio data directly (no conversion needed)
-      writeFileSync(tempFilePath, combinedBuffer);
+      await fs.writeFile(tempFilePath, combinedBuffer);
 
       // Process with AI service transcription (abstracted provider)
       const transcription = await aiService.transcribeAudio(combinedBuffer);
 
       // Clean up temp file
-      unlinkSync(tempFilePath);
+      await fs.unlink(tempFilePath);
 
       if (transcription && transcription.trim()) {
         // Add timestamp and speaker identification

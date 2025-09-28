@@ -1,7 +1,8 @@
 // OpenAI Provider Implementation - uses prompt template manager and configuration
 
 import OpenAI from 'openai';
-import { createReadStream, writeFileSync, unlinkSync } from 'fs';
+import { createReadStream } from 'fs';
+import fs from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import type { 
@@ -286,7 +287,7 @@ export class OpenAIProvider implements AIProvider {
     try {
       // Create temporary file
       tempFilePath = join(tmpdir(), `audio-${Date.now()}.webm`);
-      writeFileSync(tempFilePath, audioBuffer);
+      await fs.writeFile(tempFilePath, audioBuffer);
 
       const transcription = await this.openai.audio.transcriptions.create({
         file: createReadStream(tempFilePath),
@@ -304,7 +305,7 @@ export class OpenAIProvider implements AIProvider {
       // Clean up temp file
       if (tempFilePath) {
         try {
-          unlinkSync(tempFilePath);
+          await fs.unlink(tempFilePath);
         } catch (cleanupError) {
           this.logger.warn('Failed to clean up temp file', { 
             tempFilePath,
