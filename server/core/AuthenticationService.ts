@@ -6,6 +6,8 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { IUserService } from "./UserService";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export interface IAuthenticationService {
   setupAuth(app: Express): Promise<void>;
@@ -15,8 +17,10 @@ export interface IAuthenticationService {
 
 export class AuthenticationService implements IAuthenticationService {
   private oidcConfig: () => Promise<any>;
+  private logger: winston.Logger;
 
   constructor(private userService: IUserService) {
+    this.logger = getLogger('AuthenticationService');
     this.oidcConfig = memoize(
       async () => {
         return await client.discovery(
@@ -112,7 +116,11 @@ export class AuthenticationService implements IAuthenticationService {
         await this.upsertUser(tokens.claims());
         verified(null, user);
       } catch (error) {
-        console.error('Authentication failed:', error.message);
+        this.logger.error('Authentication failed', { 
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          operation: 'oidc_verify'
+        });
         verified(error, null);
       }
     };

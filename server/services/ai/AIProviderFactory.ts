@@ -6,6 +6,8 @@ import { CacheDecorator, MemoryCacheStrategy, HybridCacheStrategy } from './deco
 import { DebounceDecorator } from './decorators/DebounceDecorator';
 import { ResilienceDecorator } from './decorators/ResilienceDecorator';
 import { getServerConfig } from '../../config/index';
+import { getLogger } from '../../utils/LoggerFactory';
+import winston from 'winston';
 
 // Supported AI providers
 export type AIProviderType = 'openai' | 'anthropic' | 'gemini';
@@ -21,8 +23,11 @@ export interface ProviderFactoryOptions {
 export class AIProviderFactory {
   private static instance: AIProviderFactory;
   private providers = new Map<string, AIProvider>();
+  private logger: winston.Logger;
 
-  private constructor() {}
+  private constructor() {
+    this.logger = getLogger('AIProviderFactory');
+  }
 
   public static getInstance(): AIProviderFactory {
     if (!AIProviderFactory.instance) {
@@ -91,11 +96,15 @@ export class AIProviderFactory {
     // Cache the configured provider
     this.providers.set(cacheKey, aiProvider);
 
-    console.log(`Created AI provider: ${provider} with decorators: ${[
-      enableResilience && 'resilience',
-      enableDebouncing && 'debouncing', 
-      enableCaching && `caching(${cacheStrategy})`
-    ].filter(Boolean).join(', ')}`);
+    this.logger.info('AI provider created', {
+      provider,
+      decorators: [
+        enableResilience && 'resilience',
+        enableDebouncing && 'debouncing', 
+        enableCaching && `caching(${cacheStrategy})`
+      ].filter(Boolean),
+      cacheKey
+    });
 
     return aiProvider;
   }
@@ -109,7 +118,7 @@ export class AIProviderFactory {
         return new MemoryCacheStrategy(cacheConfig.maxSize);
       case 'redis':
         // TODO: Implement Redis cache when available
-        console.warn('Redis cache not implemented, falling back to memory cache');
+        this.logger.warn('Redis cache not implemented, falling back to memory cache', { strategy: 'redis' });
         return new MemoryCacheStrategy(cacheConfig.maxSize);
       case 'hybrid':
         return new HybridCacheStrategy(Math.min(cacheConfig.maxSize / 5, 100));
@@ -166,7 +175,7 @@ export class AIProviderFactory {
    */
   public clearCache(): void {
     this.providers.clear();
-    console.log('AI provider cache cleared');
+    this.logger.info('AI provider cache cleared', { providersCount: this.providers.size });
   }
 
   /**

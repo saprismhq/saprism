@@ -3,6 +3,8 @@
 import type { AIProvider } from './interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../shared/schema';
 import { getDefaultAIProvider } from './AIProviderFactory';
+import { getLogger } from '../../utils/LoggerFactory';
+import winston from 'winston';
 
 /**
  * Unified AI Service - maintains backward compatibility while providing provider abstraction
@@ -12,9 +14,11 @@ import { getDefaultAIProvider } from './AIProviderFactory';
  */
 export class AIService {
   private provider: AIProvider;
+  private logger: winston.Logger;
 
   constructor(provider?: AIProvider) {
     this.provider = provider || getDefaultAIProvider();
+    this.logger = getLogger('AIService');
   }
 
   /**
@@ -116,7 +120,9 @@ export class AIService {
    */
   switchProvider(newProvider: AIProvider): void {
     this.provider = newProvider;
-    console.log('AI provider switched successfully');
+    this.logger.info('AI provider switched successfully', { 
+      newProviderType: newProvider.constructor.name 
+    });
   }
 }
 

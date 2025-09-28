@@ -16,13 +16,17 @@ import { AIProviderError } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { ProviderConfig } from '../../../config/index';
 import { promptTemplateManager } from '../templates/PromptTemplateManager';
+import { getLogger } from '../../../utils/LoggerFactory';
+import winston from 'winston';
 
 export class OpenAIProvider implements AIProvider {
   private openai: OpenAI;
   private config: ProviderConfig;
+  private logger: winston.Logger;
 
   constructor(config: ProviderConfig) {
     this.config = config;
+    this.logger = getLogger('OpenAIProvider');
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR,
       timeout: config.timeouts.request
@@ -305,7 +309,11 @@ export class OpenAIProvider implements AIProvider {
         try {
           unlinkSync(tempFilePath);
         } catch (cleanupError) {
-          console.warn('Failed to clean up temp file:', cleanupError);
+          this.logger.warn('Failed to clean up temp file', { 
+            tempFilePath,
+            error: cleanupError instanceof Error ? cleanupError.message : String(cleanupError),
+            stack: cleanupError instanceof Error ? cleanupError.stack : undefined
+          });
         }
       }
     }
