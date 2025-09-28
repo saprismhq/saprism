@@ -10,6 +10,7 @@ import { NoteService, INoteService } from "../core/NoteService";
 import { CoachingService, ICoachingService } from "../core/CoachingService";
 import { CrmSyncService, ICrmSyncService } from "../core/CrmSyncService";
 import { AuthenticationService, IAuthenticationService } from "../core/AuthenticationService";
+import { LoggerFactory } from "../utils/LoggerFactory";
 
 export class Container {
   private static instance: Container;
@@ -27,6 +28,9 @@ export class Container {
   }
 
   private registerServices(): void {
+    // Register logger factory (singleton)
+    this.services.set('LoggerFactory', LoggerFactory.getInstance());
+
     // Register repositories
     this.services.set('UserRepository', new UserRepository());
     this.services.set('MeetingRepository', new MeetingRepository());

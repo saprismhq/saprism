@@ -10,6 +10,8 @@ import type {
 } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { DebounceConfig } from '../../../config/index';
+import { getLogger } from '../../../utils/LoggerFactory';
+import winston from 'winston';
 
 // Debounced operation tracking
 interface DebounceState {
@@ -23,12 +25,14 @@ interface DebounceState {
 export class DebounceDecorator implements AIProvider {
   private debounceStates = new Map<string, DebounceState>();
   private config: DebounceConfig;
+  private logger: winston.Logger;
 
   constructor(
     private provider: AIProvider,
     config: DebounceConfig
   ) {
     this.config = config;
+    this.logger = getLogger('DebounceDecorator');
   }
 
   private async debounceOperation<T>(
@@ -73,7 +77,7 @@ export class DebounceDecorator implements AIProvider {
       // Set new timeout
       state.timeoutId = setTimeout(async () => {
         try {
-          console.log(`Executing debounced operation: ${operationKey}`);
+          this.logger.debug("Executing debounced operation", { operationKey });
           const result = await operation();
           state.resolve?.(result);
           this.debounceStates.delete(operationKey);

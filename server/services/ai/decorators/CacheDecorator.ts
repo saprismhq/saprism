@@ -9,6 +9,8 @@ import type {
   MethodologyInsightsResult 
 } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
+import { getLogger } from '../../../utils/LoggerFactory';
+import winston from 'winston';
 import type { CacheConfig } from '../../../config/index';
 
 // Cache strategy interface
@@ -79,9 +81,11 @@ export class MemoryCacheStrategy implements CacheStrategy {
 
 // Redis cache implementation (for future use)
 export class RedisCacheStrategy implements CacheStrategy {
+  private logger = getLogger('RedisCacheStrategy');
+  
   // TODO: Implement Redis cache strategy when Redis is available
   async get<T>(key: string): Promise<T | null> {
-    console.log('Redis cache not implemented yet, falling back to memory');
+    this.logger.debug('Redis cache not implemented yet, falling back to memory');
     return null;
   }
 
@@ -163,6 +167,7 @@ export class HybridCacheStrategy implements CacheStrategy {
 export class CacheDecorator implements AIProvider {
   private cache: CacheStrategy;
   private config: CacheConfig;
+  private logger: winston.Logger;
 
   constructor(
     private provider: AIProvider,
@@ -170,6 +175,7 @@ export class CacheDecorator implements AIProvider {
     config: CacheConfig
   ) {
     this.config = config;
+    this.logger = getLogger('CacheDecorator');
     
     // Initialize cache strategy based on config
     if (!config.enabled || !cacheStrategy) {
@@ -206,12 +212,12 @@ export class CacheDecorator implements AIProvider {
     // Try cache first
     const cached = await this.cache.get<AIAnalysisResult>(cacheKey);
     if (cached) {
-      console.log(`Cache hit for analysis: ${cacheKey}`);
+      this.logger.debug('Cache hit', { operation: 'analysis', cacheKey });
       return cached;
     }
 
     // Cache miss - call provider
-    console.log(`Cache miss for analysis: ${cacheKey}`);
+    this.logger.debug('Cache miss', { operation: 'analysis', cacheKey });
     const result = await this.provider.analyzeNotes(content, options);
     
     // Store in cache
@@ -233,11 +239,11 @@ export class CacheDecorator implements AIProvider {
     
     const cached = await this.cache.get<CoachingSuggestionContent>(cacheKey);
     if (cached) {
-      console.log(`Cache hit for coaching: ${cacheKey}`);
+      this.logger.debug('Cache hit', { operation: 'coaching', cacheKey });
       return cached;
     }
 
-    console.log(`Cache miss for coaching: ${cacheKey}`);
+    this.logger.debug('Cache miss', { operation: 'coaching', cacheKey });
     const result = await this.provider.generateCoachingSuggestions(content, dealStage, options);
     
     await this.cache.set(cacheKey, result, this.config.ttl.coaching);
@@ -254,11 +260,11 @@ export class CacheDecorator implements AIProvider {
     
     const cached = await this.cache.get<string>(cacheKey);
     if (cached) {
-      console.log(`Cache hit for chat: ${cacheKey}`);
+      this.logger.debug('Cache hit', { operation: 'chat', cacheKey });
       return cached;
     }
 
-    console.log(`Cache miss for chat: ${cacheKey}`);
+    this.logger.debug('Cache miss', { operation: 'chat', cacheKey });
     const result = await this.provider.generateChatResponse(message, options);
     
     await this.cache.set(cacheKey, result, this.config.ttl.chat);
@@ -281,11 +287,11 @@ export class CacheDecorator implements AIProvider {
     
     const cached = await this.cache.get<MethodologyInsightsResult>(cacheKey);
     if (cached) {
-      console.log(`Cache hit for methodology: ${cacheKey}`);
+      this.logger.debug('Cache hit', { operation: 'methodology', cacheKey });
       return cached;
     }
 
-    console.log(`Cache miss for methodology: ${cacheKey}`);
+    this.logger.debug('Cache miss', { operation: 'methodology', cacheKey });
     const result = await this.provider.generateMethodologyInsights(methodology, clientInfo, notesContent, meeting, options);
     
     await this.cache.set(cacheKey, result, this.config.ttl.methodology);
@@ -306,11 +312,11 @@ export class CacheDecorator implements AIProvider {
     
     const cached = await this.cache.get<string[]>(cacheKey);
     if (cached) {
-      console.log(`Cache hit for follow-up: ${cacheKey}`);
+      this.logger.debug('Cache hit', { operation: 'follow-up', cacheKey });
       return cached;
     }
 
-    console.log(`Cache miss for follow-up: ${cacheKey}`);
+    this.logger.debug('Cache miss', { operation: 'follow-up', cacheKey });
     const result = await this.provider.generateFollowUpQuestions(notesContent, painPoints, options);
     
     await this.cache.set(cacheKey, result, this.config.ttl.followUp);

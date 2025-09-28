@@ -4,14 +4,20 @@ import { IMeetingService } from "../core/MeetingService";
 import { ICoachingService } from "../core/CoachingService";
 import { aiService } from "../services/ai/AIService";
 import { insertCoachingSuggestionSchema } from "@shared/schema";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export class AIController {
+  private logger: winston.Logger;
+
   constructor(
     private noteService: INoteService,
     private meetingService: IMeetingService,
     private coachingService: ICoachingService,
     private clientService?: any // Add client service for methodology insights
-  ) {}
+  ) {
+    this.logger = getLogger('AIController');
+  }
 
   async analyzeNotes(req: any, res: Response): Promise<void> {
     try {
@@ -26,7 +32,7 @@ export class AIController {
       }
 
       // Run AI Analysis and Coaching Generation in parallel for better performance
-      console.log("Starting parallel AI operations...");
+      this.logger.info("Starting parallel AI operations", { meetingId, userId });
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
@@ -34,9 +40,14 @@ export class AIController {
         aiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
       ]);
       
-      console.log(`AI operations completed in ${Date.now() - startTime}ms`);
-      console.log("Analysis result:", analysis);
-      console.log("Coaching suggestions result:", coachingSuggestions);
+      const duration = Date.now() - startTime;
+      this.logger.info("AI operations completed", { 
+        meetingId, 
+        userId, 
+        duration,
+        hasAnalysis: !!analysis,
+        hasCoachingSuggestions: !!coachingSuggestions
+      });
       
       // Find the most recent note for this meeting
       const notes = await this.noteService.getNotesByMeetingId(meetingId);
@@ -57,10 +68,15 @@ export class AIController {
         analysis,
         coachingSuggestions
       };
-      console.log("Sending response:", response);
+      this.logger.debug("Sending analysis response", { meetingId, userId, responseKeys: Object.keys(response) });
       res.json(response);
     } catch (error) {
-      console.error("Error analyzing notes:", error);
+      this.logger.error("Error analyzing notes", { 
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to analyze notes" });
     }
   }
@@ -83,7 +99,13 @@ export class AIController {
 
       res.json({ response });
     } catch (error) {
-      console.error("AI chat error:", error);
+      this.logger.error("AI chat error", { 
+        userId: req.user?.claims?.sub,
+        hasMessage: !!message,
+        hasContext: !!meetingContext,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ error: "Failed to generate chat response" });
     }
   }
@@ -143,7 +165,13 @@ export class AIController {
       
       res.json(suggestions);
     } catch (error) {
-      console.error("Error generating coaching suggestions:", error);
+      this.logger.error("Error generating coaching suggestions", { 
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        dealStage: req.body?.dealStage,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to generate coaching suggestions" });
     }
   }
@@ -189,7 +217,13 @@ export class AIController {
       
       res.json(insights);
     } catch (error) {
-      console.error("Error generating methodology insights:", error);
+      this.logger.error("Error generating methodology insights", { 
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        methodology: req.body?.methodology,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to generate methodology insights" });
     }
   }
@@ -242,7 +276,7 @@ export class AIController {
       }
 
       // Run AI analysis on the updated content
-      console.log("Running AI analysis on finalized transcription...");
+      this.logger.info("Running AI analysis on finalized transcription", { meetingId, userId });
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
@@ -250,7 +284,14 @@ export class AIController {
         aiService.generateCoachingSuggestions(updatedContent, 'discovery')
       ]);
       
-      console.log(`AI analysis completed in ${Date.now() - startTime}ms`);
+      const duration = Date.now() - startTime;
+      this.logger.info("AI analysis completed on finalized transcription", { 
+        meetingId, 
+        userId,
+        duration,
+        hasAnalysis: !!analysis,
+        hasCoachingSuggestions: !!coachingSuggestions
+      });
 
       // Update note with AI analysis and store coaching suggestions
       await Promise.all([
@@ -270,7 +311,12 @@ export class AIController {
       });
 
     } catch (error) {
-      console.error("Error finalizing transcription:", error);
+      this.logger.error("Error finalizing transcription", { 
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to finalize transcription" });
     }
   }

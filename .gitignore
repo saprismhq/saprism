@@ -55,4 +55,4 @@ out/
 # Backup files
 *.sql
 *.backup
-*.dump
+*.dumplogs/

@@ -12,6 +12,8 @@ import type {
 } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { ResilienceConfig } from '../../../config/index';
+import { getLogger } from '../../../utils/LoggerFactory';
+import winston from 'winston';
 
 // Circuit breaker states
 enum CircuitBreakerState {
@@ -40,12 +42,14 @@ interface RetryOptions {
 export class ResilienceDecorator implements AIProvider {
   private circuitBreakers = new Map<string, CircuitBreakerStatus>();
   private config: ResilienceConfig;
+  private logger: winston.Logger;
 
   constructor(
     private provider: AIProvider,
     config: ResilienceConfig
   ) {
     this.config = config;
+    this.logger = getLogger('ResilienceDecorator');
   }
 
   private getCircuitBreakerKey(operation: string): string {
@@ -111,7 +115,11 @@ export class ResilienceDecorator implements AIProvider {
     if (status.failureCount >= this.config.circuitBreakerThreshold) {
       status.state = CircuitBreakerState.OPEN;
       status.nextAttemptTime = now + this.config.circuitBreakerTimeout;
-      console.warn(`Circuit breaker opened for operation: ${operation}`);
+      this.logger.warn("Circuit breaker opened", { 
+        operation, 
+        failureCount: status.failureCount, 
+        threshold: this.config.circuitBreakerThreshold 
+      });
     }
 
     this.updateCircuitBreakerStatus(operation, status);
@@ -191,7 +199,13 @@ export class ResilienceDecorator implements AIProvider {
 
         // Calculate and apply retry delay
         const delay = this.calculateRetryDelay(attempt, retry);
-        console.warn(`Operation ${operation} failed (attempt ${attempt + 1}), retrying in ${delay}ms:`, error);
+        this.logger.warn("Operation failed, retrying", { 
+          operation, 
+          attempt: attempt + 1, 
+          maxAttempts: retry.maxAttempts,
+          delayMs: delay,
+          error: error?.message || 'Unknown error'
+        });
         await this.sleep(delay);
       }
     }
@@ -282,10 +296,10 @@ export class ResilienceDecorator implements AIProvider {
     if (operation) {
       const key = this.getCircuitBreakerKey(operation);
       this.circuitBreakers.delete(key);
-      console.log(`Circuit breaker reset for operation: ${operation}`);
+      this.logger.info("Circuit breaker reset", { operation });
     } else {
       this.circuitBreakers.clear();
-      console.log('All circuit breakers reset');
+      this.logger.info("All circuit breakers reset");
     }
   }
 }
