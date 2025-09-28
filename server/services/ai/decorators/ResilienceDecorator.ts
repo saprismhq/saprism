@@ -8,9 +8,7 @@ import type {
   TranscriptionOptions,
   MethodologyInsightsResult,
   AIProviderError,
-  AIProviderTimeoutError,
-  AIProviderRateLimitError,
-  AIProviderQuotaError
+  AIProviderRateLimitError
 } from '../interfaces/AIProvider';
 import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../../shared/schema';
 import type { ResilienceConfig } from '../../../config/index';

@@ -105,23 +105,9 @@ export class AIProviderError extends Error {
   }
 }
 
-export class AIProviderTimeoutError extends AIProviderError {
-  constructor(provider: string, operation: string, timeout: number) {
-    super(`Operation timed out after ${timeout}ms`, provider, operation);
-    this.name = 'AIProviderTimeoutError';
-  }
-}
-
 export class AIProviderRateLimitError extends AIProviderError {
   constructor(provider: string, operation: string, retryAfter?: number) {
     super(`Rate limit exceeded${retryAfter ? `, retry after ${retryAfter}s` : ''}`, provider, operation);
     this.name = 'AIProviderRateLimitError';
-  }
-}
-
-export class AIProviderQuotaError extends AIProviderError {
-  constructor(provider: string, operation: string) {
-    super('API quota exceeded', provider, operation);
-    this.name = 'AIProviderQuotaError';
   }
 }
