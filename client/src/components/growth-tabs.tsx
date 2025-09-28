@@ -287,6 +287,7 @@ export function GrowthTabs({
             <GrowthMethodComponent
               meeting={meeting}
               selectedClient={actualSelectedClient}
+              useAllMeetingsContext={meetingContextMode === "all"}
             />
           </TabsContent>
         </div>

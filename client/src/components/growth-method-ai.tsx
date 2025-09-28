@@ -31,9 +31,10 @@ interface MethodologyInsights {
 interface GrowthMethodAIProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   selectedClient?: any;
+  useAllMeetingsContext?: boolean;
 }
 
-export function GrowthMethodAI({ meeting, selectedClient }: GrowthMethodAIProps) {
+export function GrowthMethodAI({ meeting, selectedClient, useAllMeetingsContext = true }: GrowthMethodAIProps) {
   const [insights, setInsights] = useState<MethodologyInsights | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -56,7 +57,8 @@ export function GrowthMethodAI({ meeting, selectedClient }: GrowthMethodAIProps)
     try {
       const response = await apiRequest('POST', '/api/ai/methodology', {
         meetingId: meeting.id,
-        methodology: clientMethodology
+        methodology: clientMethodology,
+        useAllMeetingsContext
       });
       const data = await response.json();
       setInsights(data);

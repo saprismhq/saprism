@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { MeetingWithNotes, MeetingWithSessions } from "@shared/schema";
+import { GrowthMethodAI } from "./growth-method-ai";
 
 interface MethodologyStep {
   id: string;
@@ -31,6 +32,7 @@ interface SalesMethodology {
 interface GrowthMethodProps {
   meeting: MeetingWithNotes | MeetingWithSessions | undefined | null;
   selectedClient?: any;
+  useAllMeetingsContext?: boolean;
 }
 
 const METHODOLOGIES: SalesMethodology[] = [
@@ -649,7 +651,7 @@ const METHODOLOGIES: SalesMethodology[] = [
   }
 ];
 
-export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
+export function GrowthMethod({ meeting, selectedClient, useAllMeetingsContext = true }: GrowthMethodProps) {
   const [selectedMethodology, setSelectedMethodology] = useState<string>("");
   const [methodology, setMethodology] = useState<SalesMethodology | null>(null);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
@@ -1018,6 +1020,19 @@ export function GrowthMethod({ meeting, selectedClient }: GrowthMethodProps) {
                 </CardContent>
               </Card>
             )}
+
+            {/* AI Insights Section */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <Zap className="w-5 h-5 mr-2 text-primary" />
+                AI-Powered Methodology Insights
+              </h3>
+              <GrowthMethodAI 
+                meeting={meeting} 
+                selectedClient={selectedClient}
+                useAllMeetingsContext={useAllMeetingsContext}
+              />
+            </div>
           </>
         )}
 

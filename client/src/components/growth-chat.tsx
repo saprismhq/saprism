@@ -50,10 +50,12 @@ export function GrowthChat({
 
   // Chat mutation
   const chatMutation = useMutation({
-    mutationFn: async ({ message, meetingContext }: { message: string; meetingContext: string }) => {
+    mutationFn: async ({ message, meetingContext, meetingId }: { message: string; meetingContext: string; meetingId?: number }) => {
       const response = await apiRequest("POST", "/api/ai/chat", { 
         message, 
         meetingContext,
+        meetingId,
+        useAllMeetingsContext: meetingContextMode === "all",
         conversationHistory: messages.slice(-5) // Send last 5 messages for context
       });
       return response.json();
@@ -153,6 +155,7 @@ export function GrowthChat({
     chatMutation.mutate({
       message: inputValue.trim(),
       meetingContext: meetingContext.trim(),
+      meetingId: meeting.id,
     });
 
     setInputValue("");

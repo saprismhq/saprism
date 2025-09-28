@@ -25,7 +25,12 @@ export function GrowthGuide({ meeting, onChatRedirect, useAllMeetingsContext = t
   // Generate coaching suggestions mutation
   const generateCoachingMutation = useMutation({
     mutationFn: async ({ content, dealStage, meetingId }: { content: string; dealStage: string; meetingId: number }) => {
-      const response = await apiRequest("POST", "/api/ai/coaching", { content, dealStage, meetingId });
+      const response = await apiRequest("POST", "/api/ai/coaching", { 
+        content, 
+        dealStage, 
+        meetingId,
+        useAllMeetingsContext 
+      });
       return response.json();
     },
     onSuccess: (data) => {
