@@ -66,22 +66,30 @@ export const useCreateMeeting = () => {
     onSuccess: (newMeeting) => {
       console.log('Meeting created successfully:', newMeeting);
       
-      // Optimistic update to meetings list
+      // Optimistic update to meetings list - no need to invalidate
       queryClient.setQueryData<Meeting[]>(
         queryKeys.meetings.lists(),
         (old) => old ? [newMeeting, ...old] : [newMeeting]
       );
       
-      // Invalidate all relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/meetings'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/clients'] });
+      // Pre-seed the meeting detail cache for instant navigation
+      queryClient.setQueryData(
+        queryKeys.meetings.detail(newMeeting.id),
+        { 
+          ...newMeeting, 
+          notes: [], 
+          coachingSuggestions: [],
+          callSessions: []
+        }
+      );
       
-      // Also invalidate client-specific meeting queries if clientId exists
+      // Update client-specific meetings if clientId exists
       if (newMeeting.clientId) {
-        console.log(`Invalidating meetings for client ${newMeeting.clientId}`);
-        queryClient.invalidateQueries({ 
-          queryKey: ['/api/clients', newMeeting.clientId, 'meetings'] 
-        });
+        // Use centralized query keys for consistency
+        queryClient.setQueryData(
+          ['/api/clients', newMeeting.clientId, 'meetings'],
+          (old: Meeting[] | undefined) => old ? [newMeeting, ...old] : [newMeeting]
+        );
       }
     },
     onError: (error) => {
