@@ -9,6 +9,7 @@ export interface IMeetingRepository {
   create(meeting: InsertMeeting): Promise<Meeting>;
   getById(id: number): Promise<MeetingWithSessions | undefined>;
   getByUserId(userId: string): Promise<Meeting[]>;
+  getByClientId(clientId: number, userId: string): Promise<Meeting[]>;
   update(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
   delete(id: number): Promise<void>;
 }
@@ -58,6 +59,16 @@ export class MeetingRepository implements IMeetingRepository {
   async delete(id: number): Promise<void> {
     await db.meeting.delete({
       where: { id },
+    });
+  }
+
+  async getByClientId(clientId: number, userId: string): Promise<Meeting[]> {
+    return await db.meeting.findMany({
+      where: { 
+        clientId,
+        userId 
+      },
+      orderBy: { createdAt: 'asc' }, // Chronological order for journey context
     });
   }
 }

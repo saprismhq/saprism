@@ -324,71 +324,16 @@ export class AIController {
   }
 
   /**
-   * Build cumulative client journey context from meeting summaries
+   * Build cumulative client journey context using MeetingService helper
    */
   private async buildClientJourneyContext(meetingId: number, currentContent: string = ''): Promise<string> {
     try {
-      const currentMeeting = await this.meetingService.getMeetingById(meetingId);
-      if (!currentMeeting || !currentMeeting.clientId) {
-        return currentContent;
-      }
-
-      // Get all meetings for this client, sorted chronologically
-      const allMeetings = await this.meetingService.getMeetingsByUserId(currentMeeting.userId);
-      const clientMeetings = allMeetings
-        .filter(m => m.clientId === currentMeeting.clientId)
-        .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-      if (clientMeetings.length <= 1) {
-        // Only current meeting, no journey context to add
-        return currentContent;
-      }
-
-      // Build journey context from summaries
-      let journeyContext = `SALES JOURNEY CONTEXT:\n`;
-      journeyContext += `Client: ${currentMeeting.clientName}${currentMeeting.clientCompany ? ` from ${currentMeeting.clientCompany}` : ''}\n`;
-      journeyContext += `Journey Progress: ${clientMeetings.length} meetings (${clientMeetings[0].dealType} → ${currentMeeting.dealType})\n\n`;
-
-      // Add summaries from previous meetings (excluding current)
-      const previousMeetings = clientMeetings.filter(m => m.id !== meetingId);
-      if (previousMeetings.length > 0) {
-        journeyContext += `PREVIOUS MEETINGS SUMMARY:\n`;
-        
-        previousMeetings.forEach((meeting: any, index: number) => {
-          const meetingDate = new Date(meeting.createdAt).toLocaleDateString();
-          journeyContext += `\n--- Meeting ${index + 1}: ${meeting.dealType} (${meetingDate}) ---\n`;
-          
-          if (meeting.summary) {
-            const summary = meeting.summary as MeetingSummary;
-            if (summary.pains?.length > 0) {
-              journeyContext += `Pain Points: ${summary.pains.join('; ')}\n`;
-            }
-            if (summary.progress?.length > 0) {
-              journeyContext += `Progress: ${summary.progress.join('; ')}\n`;
-            }
-            if (summary.nextSteps?.length > 0) {
-              journeyContext += `Next Steps: ${summary.nextSteps.join('; ')}\n`;
-            }
-            if (summary.keyInsights?.length > 0) {
-              journeyContext += `Key Insights: ${summary.keyInsights.join('; ')}\n`;
-            }
-          } else {
-            journeyContext += `Summary: Not yet available\n`;
-          }
-        });
-      }
-
-      // Add current meeting content
-      journeyContext += `\n--- CURRENT MEETING: ${currentMeeting.dealType} ---\n`;
-      if (currentContent) {
-        journeyContext += `${currentContent}\n`;
-      }
-
-      this.logger.info("Built client journey context", { 
-        meetingId, 
-        clientId: currentMeeting.clientId,
-        totalMeetings: clientMeetings.length,
-        previousMeetingsWithSummary: previousMeetings.filter(m => m.summary).length
+      // Use the new MeetingService helper method for efficiency
+      const journeyContext = await this.meetingService.buildClientJourneyContext(meetingId, currentContent);
+      
+      this.logger.info("Built client journey context via MeetingService", { 
+        meetingId,
+        hasEnhancedContext: journeyContext.length > currentContent.length
       });
 
       return journeyContext;
