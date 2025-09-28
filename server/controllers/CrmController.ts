@@ -3,20 +3,29 @@ import { IMeetingService } from "../core/MeetingService";
 import { INoteService } from "../core/NoteService";
 import { ICrmSyncService } from "../core/CrmSyncService";
 import { salesforceService } from "../services/salesforce";
+import { getLogger } from "../utils/LoggerFactory";
+import winston from "winston";
 
 export class CrmController {
+  private logger: winston.Logger;
+  
   constructor(
     private meetingService: IMeetingService,
     private noteService: INoteService,
     private crmSyncService: ICrmSyncService
-  ) {}
+  ) {
+    this.logger = getLogger('CrmController');
+  }
 
   async getCrmStatus(req: any, res: Response): Promise<void> {
     try {
       const status = await salesforceService.testConnection();
       res.json(status);
     } catch (error) {
-      console.error("Error checking CRM status:", error);
+      this.logger.error("Error checking CRM status", { 
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       res.status(500).json({ message: "Failed to check CRM status" });
     }
   }
@@ -77,7 +86,12 @@ export class CrmController {
 
       res.json(result);
     } catch (error) {
-      console.error("Error syncing to CRM:", error);
+      this.logger.error("Error syncing to CRM", {
+        meetingId: req.body?.meetingId,
+        userId: req.user?.claims?.sub,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       const errorMessage = error instanceof Error ? error.message : String(error);
       await this.crmSyncService.createCrmSyncLog({
         meetingId: req.body.meetingId,

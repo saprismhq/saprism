@@ -8,6 +8,8 @@ import { INoteService } from '../core/NoteService';
 import { ICoachingService } from '../core/CoachingService';
 // OpenAI service now abstracted through aiService
 import { insertCoachingSuggestionSchema } from '@shared/schema';
+import { getLogger } from '../utils/LoggerFactory';
+import winston from 'winston';
 
 interface TranscriptionSession {
   meetingId: number;
@@ -28,8 +30,10 @@ export class TranscriptionService {
   private processingInterval: NodeJS.Timeout | null = null;
   private maxTranscriptionFailures = 3;
   private fallbackMessage = "📝 **Note:** Transcription temporarily unavailable - audio has been recorded and will be processed later.";
+  private logger: winston.Logger;
 
   constructor() {
+    this.logger = getLogger('TranscriptionService');
     // Start processing interval for real-time transcription
     this.startProcessingLoop();
   }
@@ -50,7 +54,7 @@ export class TranscriptionService {
 
     this.sessions.set(sessionId, session);
     
-    console.log(`Started transcription session ${sessionId} for meeting ${meetingId}`);
+    this.logger.info('Started transcription session', { sessionId, meetingId });
     
     // Send initial status to client
     this.broadcastToSession(sessionId, {
@@ -63,11 +67,11 @@ export class TranscriptionService {
   async addAudioChunk(sessionId: string, audioData: Buffer): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session || !session.isActive) {
-      console.log(`Session ${sessionId} not found or inactive for audio chunk`);
+      this.logger.warn('Session not found or inactive for audio chunk', { sessionId });
       return;
     }
 
-    console.log(`Adding audio chunk to session ${sessionId}, size: ${audioData.length}`);
+    this.logger.debug('Adding audio chunk', { sessionId, audioSize: audioData.length });
     session.audioBuffer.push(audioData);
     
     // Always backup audio data to file for resilience
@@ -76,7 +80,7 @@ export class TranscriptionService {
     // Process audio chunks when we have enough data (every 4 seconds worth for better context)
     const now = Date.now();
     if (now - session.lastProcessed > 4000 && session.audioBuffer.length > 0) {
-      console.log(`Processing accumulated audio for session ${sessionId}, buffer count: ${session.audioBuffer.length}`);
+      this.logger.debug('Processing accumulated audio', { sessionId, bufferCount: session.audioBuffer.length });
       await this.processAudioBuffer(sessionId);
     }
   }
@@ -90,7 +94,7 @@ export class TranscriptionService {
       const fs = await import('fs/promises');
       await fs.appendFile(session.audioBackupPath, audioData);
     } catch (error) {
-      console.error(`Failed to backup audio chunk for session ${sessionId}:`, error);
+      this.logger.error('Failed to backup audio chunk', { sessionId, error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -126,7 +130,7 @@ export class TranscriptionService {
         session.accumulatedText += formattedText;
 
         // Broadcast real-time transcription to connected clients
-        console.log(`Broadcasting transcription chunk for session ${sessionId}: "${formattedText}"`);
+        this.logger.debug('Broadcasting transcription chunk', { sessionId, formattedText });
         this.broadcastToSession(sessionId, {
           type: 'transcription_chunk',
           sessionId,
@@ -135,7 +139,7 @@ export class TranscriptionService {
           accumulatedText: session.accumulatedText
         });
 
-        console.log(`Transcribed for session ${sessionId}: ${transcription.trim()}`);
+        this.logger.debug('Transcribed for session', { sessionId, transcription: transcription.trim() });
       }
 
     } catch (error) {
@@ -150,11 +154,11 @@ export class TranscriptionService {
     session.transcriptionFailures++;
     session.lastTranscriptionError = error instanceof Error ? error.message : String(error);
     
-    console.error(`Transcription error for session ${sessionId} (attempt ${session.transcriptionFailures}):`, session.lastTranscriptionError);
+    this.logger.error('Transcription error', { sessionId, attempts: session.transcriptionFailures, error: session.lastTranscriptionError });
 
     // Only log significant errors, silence minor audio processing issues
     if (error instanceof Error && error.message.includes('ENODATA')) {
-      console.log(`Minor audio processing error for session ${sessionId} - skipping`);
+      this.logger.debug('Minor audio processing error - skipping', { sessionId });
       return;
     }
 
@@ -162,7 +166,7 @@ export class TranscriptionService {
     if (session.transcriptionFailures >= this.maxTranscriptionFailures && !session.hasTranscriptionFailed) {
       session.hasTranscriptionFailed = true;
       
-      console.warn(`Transcription service failed after ${this.maxTranscriptionFailures} attempts for session ${sessionId}. Continuing audio recording.`);
+      this.logger.warn('Transcription service failed after max attempts, continuing audio recording', { sessionId, maxAttempts: this.maxTranscriptionFailures });
       
       // Add fallback message to accumulated text
       const timestamp = new Date().toLocaleTimeString();
@@ -260,7 +264,7 @@ export class TranscriptionService {
       }
 
       // Run AI analysis on the updated content
-      console.log("Running AI analysis on finalized transcription...");
+      this.logger.info('Running AI analysis on finalized transcription', { sessionId, meetingId: session.meetingId });
       const startTime = Date.now();
       
       const [analysis, coachingSuggestions] = await Promise.all([
@@ -268,7 +272,7 @@ export class TranscriptionService {
         aiService.generateCoachingSuggestions(updatedContent, 'discovery')
       ]);
       
-      console.log(`AI analysis completed in ${Date.now() - startTime}ms`);
+      this.logger.info('AI analysis completed', { sessionId, duration: Date.now() - startTime });
 
       // Update note with AI analysis and store coaching suggestions
       await Promise.all([
@@ -280,9 +284,9 @@ export class TranscriptionService {
         }))
       ]);
 
-      console.log('Transcription finalized and analyzed successfully');
+      this.logger.info('Transcription finalized and analyzed successfully', { sessionId, meetingId: session.meetingId });
     } catch (error) {
-      console.error('Error finalizing transcription:', error);
+      this.logger.error('Error finalizing transcription', { sessionId, error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined });
       
       // If finalization fails, at least save a fallback note
       try {
@@ -299,9 +303,9 @@ export class TranscriptionService {
           aiAnalysis: null
         });
         
-        console.log('Fallback note created due to transcription processing failure');
+        this.logger.warn('Fallback note created due to transcription processing failure', { sessionId, meetingId: session.meetingId });
       } catch (fallbackError) {
-        console.error('Failed to create fallback note:', fallbackError);
+        this.logger.error('Failed to create fallback note', { sessionId, error: fallbackError instanceof Error ? fallbackError.message : String(fallbackError) });
       }
     }
     
@@ -316,7 +320,7 @@ export class TranscriptionService {
     // Clean up session (but keep backup file for potential manual processing)
     this.sessions.delete(sessionId);
     
-    console.log(`Ended transcription session ${sessionId}${session.hasTranscriptionFailed ? ' (with transcription failures)' : ''}`);
+    this.logger.info('Ended transcription session', { sessionId, hasTranscriptionFailed: session.hasTranscriptionFailed });
     return finalText;
   }
 
@@ -335,7 +339,7 @@ export class TranscriptionService {
 
       return cleanedText || rawText;
     } catch (error) {
-      console.error('Error finalizing transcription with OpenAI, returning raw text:', error);
+      this.logger.error('Error finalizing transcription with OpenAI, returning raw text', { error: error instanceof Error ? error.message : String(error) });
       return rawText;
     }
   }
@@ -348,7 +352,7 @@ export class TranscriptionService {
         return await apiCall();
       } catch (error) {
         lastError = error;
-        console.warn(`OpenAI API call failed (attempt ${attempt + 1}/${maxRetries + 1}):`, error);
+        this.logger.warn('OpenAI API call failed', { attempt: attempt + 1, maxRetries: maxRetries + 1, error: error instanceof Error ? error.message : String(error) });
         
         if (attempt < maxRetries) {
           // Wait before retrying (exponential backoff)
