@@ -167,8 +167,7 @@ export class OpenAIProvider implements AIProvider {
         model: options?.model || promptConfig.model || this.config.model,
         messages,
         temperature: options?.temperature || promptConfig.temperature,
-        max_tokens: options?.maxTokens || promptConfig.maxTokens || (isExtended ? 150 : 100),
-        timeout: options?.timeout || this.config.timeouts.request
+        max_tokens: options?.maxTokens || promptConfig.maxTokens || (isExtended ? 150 : 100)
       });
 
       let aiResponse = response.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try again.";
@@ -239,8 +238,7 @@ export class OpenAIProvider implements AIProvider {
         ],
         response_format: { type: 'json_object' },
         temperature: options?.temperature || this.config.temperature.methodology,
-        max_tokens: options?.maxTokens || this.config.maxTokens.methodology,
-        timeout: options?.timeout || this.config.timeouts.request
+        max_tokens: options?.maxTokens || this.config.maxTokens.methodology
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
@@ -272,8 +270,7 @@ export class OpenAIProvider implements AIProvider {
         ],
         response_format: { type: 'json_object' },
         temperature: options?.temperature || this.config.temperature.followUp,
-        max_tokens: options?.maxTokens || this.config.maxTokens.followUp,
-        timeout: options?.timeout || this.config.timeouts.request
+        max_tokens: options?.maxTokens || this.config.maxTokens.followUp
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
