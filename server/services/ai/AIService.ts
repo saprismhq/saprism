@@ -72,6 +72,17 @@ export class AIService {
   }
 
   /**
+   * Generate structured meeting summary for cross-meeting context
+   * 
+   * @param notesContent - The meeting notes and transcription content
+   * @param dealStage - Current deal stage for context
+   * @returns Structured summary with pains, progress, next steps, and key insights
+   */
+  async generateMeetingSummary(notesContent: string, dealStage: string): Promise<any> {
+    return this.provider.generateMeetingSummary(notesContent, dealStage);
+  }
+
+  /**
    * Generate follow-up questions based on notes and pain points
    * 
    * @param notesContent - Meeting notes content

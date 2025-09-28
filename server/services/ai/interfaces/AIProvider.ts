@@ -84,6 +84,12 @@ export interface AIProvider {
     painPoints: string[],
     options?: AIOperationOptions
   ): Promise<string[]>;
+
+  generateMeetingSummary(
+    notesContent: string,
+    dealStage: string,
+    options?: AIOperationOptions
+  ): Promise<any>;
   
   // Transcription method
   transcribeAudio(

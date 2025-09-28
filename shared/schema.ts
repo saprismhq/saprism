@@ -109,6 +109,17 @@ export const DEAL_TYPES = [
 
 export type DealType = typeof DEAL_TYPES[number];
 
+// Meeting Summary Schema for AI-generated structured summaries
+export const MeetingSummarySchema = z.object({
+  pains: z.array(z.string()).describe("Pain points identified during the meeting"),
+  progress: z.array(z.string()).describe("Progress made during the meeting"),
+  nextSteps: z.array(z.string()).describe("Identified next steps and action items"),
+  keyInsights: z.array(z.string()).describe("Key insights and important discoveries"),
+  dealStage: z.enum(DEAL_TYPES).optional().describe("Current deal stage assessed during meeting")
+});
+
+export type MeetingSummary = z.infer<typeof MeetingSummarySchema>;
+
 export const MeetingSchema = z.object({
   id: z.number(),
   userId: z.string(),

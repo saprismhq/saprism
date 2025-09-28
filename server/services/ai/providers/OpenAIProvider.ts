@@ -317,6 +317,42 @@ export class OpenAIProvider implements AIProvider {
     }
   }
 
+  async generateMeetingSummary(notesContent: string, dealStage: string, options?: AIOperationOptions): Promise<any> {
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: options?.model || this.config.model,
+        messages: [
+          {
+            role: 'system',
+            content: `You are an AI sales coach analyzing a meeting transcript. Generate a structured summary in JSON format that will be used for context in future meetings with this client.
+
+Extract and organize information into this exact JSON structure:
+{
+  "pains": ["array of pain points and challenges identified"],
+  "progress": ["array of progress made and positive developments"],
+  "nextSteps": ["array of next steps and action items"],
+  "keyInsights": ["array of key insights and important discoveries"],
+  "dealStage": "${dealStage}"
+}
+
+Focus on actionable insights that will help in future meetings. Keep each item concise but informative (1-2 sentences max).`
+          },
+          {
+            role: 'user',
+            content: `Meeting Stage: ${dealStage}\nMeeting Content: ${notesContent}\n\nGenerate the structured summary.`
+          }
+        ],
+        response_format: { type: 'json_object' },
+        temperature: options?.temperature || 0.3,
+        max_tokens: options?.maxTokens || 800
+      });
+
+      return JSON.parse(response.choices[0].message.content || '{}');
+    } catch (error) {
+      this.handleOpenAIError(error, 'generateMeetingSummary');
+    }
+  }
+
   // Format enforcement for chat responses (moved from original openai.ts)
   private enforceResponseFormat(response: string): string {
     try {

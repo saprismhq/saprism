@@ -3,7 +3,7 @@ import { INoteService } from "../core/NoteService";
 import { IMeetingService } from "../core/MeetingService";
 import { ICoachingService } from "../core/CoachingService";
 import { aiService } from "../services/ai/AIService";
-import { insertCoachingSuggestionSchema } from "@shared/schema";
+import { insertCoachingSuggestionSchema, MeetingSummarySchema, type MeetingSummary } from "@shared/schema";
 import { getLogger } from "../utils/LoggerFactory";
 import winston from "winston";
 
@@ -275,39 +275,43 @@ export class AIController {
         noteId = newNote.id;
       }
 
-      // Run AI analysis on the updated content
-      this.logger.info("Running AI analysis on finalized transcription", { meetingId, userId });
+      // Run AI analysis on the updated content and generate meeting summary
+      this.logger.info("Running AI analysis and summary generation on finalized transcription", { meetingId, userId });
       const startTime = Date.now();
       
-      const [analysis, coachingSuggestions] = await Promise.all([
+      const [analysis, coachingSuggestions, meetingSummary] = await Promise.all([
         aiService.analyzeNotes(updatedContent),
-        aiService.generateCoachingSuggestions(updatedContent, 'discovery')
+        aiService.generateCoachingSuggestions(updatedContent, 'discovery'),
+        this.generateMeetingSummary(updatedContent, meetingId)
       ]);
       
       const duration = Date.now() - startTime;
-      this.logger.info("AI analysis completed on finalized transcription", { 
+      this.logger.info("AI analysis and summary generation completed on finalized transcription", { 
         meetingId, 
         userId,
         duration,
         hasAnalysis: !!analysis,
-        hasCoachingSuggestions: !!coachingSuggestions
+        hasCoachingSuggestions: !!coachingSuggestions,
+        hasSummary: !!meetingSummary
       });
 
-      // Update note with AI analysis and store coaching suggestions
+      // Update note with AI analysis, store coaching suggestions, and update meeting with summary
       await Promise.all([
         this.noteService.updateNote(noteId, { aiAnalysis: analysis }),
         this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
           meetingId,
           type: 'transcription_coaching',
           content: coachingSuggestions
-        }))
+        })),
+        meetingSummary ? this.meetingService.updateMeeting(meetingId, { summary: meetingSummary }) : Promise.resolve()
       ]);
 
       res.json({
         success: true,
         analysis,
         coachingSuggestions,
-        message: "Transcription finalized and analyzed successfully"
+        summary: meetingSummary,
+        message: "Transcription finalized, analyzed, and summarized successfully"
       });
 
     } catch (error) {
@@ -318,6 +322,41 @@ export class AIController {
         stack: error instanceof Error ? error.stack : undefined
       });
       res.status(500).json({ message: "Failed to finalize transcription" });
+    }
+  }
+
+  /**
+   * Generate structured meeting summary using AI
+   */
+  private async generateMeetingSummary(content: string, meetingId: number): Promise<MeetingSummary | null> {
+    try {
+      // Get meeting to determine deal stage for context
+      const meeting = await this.meetingService.getMeetingById(meetingId);
+      const dealStage = meeting?.dealType || 'Discovery';
+
+      this.logger.info("Generating meeting summary", { meetingId, dealStage });
+
+      // Use the dedicated meeting summary method
+      const summaryResponse = await aiService.generateMeetingSummary(content, dealStage);
+
+      // Validate the AI response
+      const validatedSummary = MeetingSummarySchema.parse(summaryResponse);
+      
+      this.logger.info("Meeting summary generated successfully", { 
+        meetingId, 
+        dealStage,
+        painPointsCount: validatedSummary.pains?.length || 0,
+        nextStepsCount: validatedSummary.nextSteps?.length || 0
+      });
+
+      return validatedSummary;
+    } catch (error) {
+      this.logger.error("Error generating meeting summary", {
+        meetingId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      return null;
     }
   }
 }
