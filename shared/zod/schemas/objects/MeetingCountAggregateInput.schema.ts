@@ -10,6 +10,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: z.literal(true).optional(),
   dealType: z.literal(true).optional(),
   status: z.literal(true).optional(),
+  summary: z.literal(true).optional(),
   createdAt: z.literal(true).optional(),
   updatedAt: z.literal(true).optional(),
   _all: z.literal(true).optional()

@@ -7,6 +7,7 @@ export const MeetingGroupByResultSchema = z.array(z.object({
   clientCompany: z.string(),
   dealType: z.string(),
   status: z.string(),
+  summary: z.unknown(),
   createdAt: z.date(),
   updatedAt: z.date(),
   _count: z.object({
@@ -17,6 +18,7 @@ export const MeetingGroupByResultSchema = z.array(z.object({
     clientCompany: z.number(),
     dealType: z.number(),
     status: z.number(),
+    summary: z.number(),
     createdAt: z.number(),
     updatedAt: z.number(),
     user: z.number(),

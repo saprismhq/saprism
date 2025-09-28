@@ -16,6 +16,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
   dealType: SortOrderSchema.optional(),
   status: SortOrderSchema.optional(),
+  summary: z.union([SortOrderSchema, z.lazy(() => SortOrderInputObjectSchema)]).optional(),
   createdAt: SortOrderSchema.optional(),
   updatedAt: SortOrderSchema.optional(),
   _count: z.lazy(() => MeetingCountOrderByAggregateInputObjectSchema).optional(),

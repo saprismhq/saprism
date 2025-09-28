@@ -4,6 +4,7 @@ import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
 import { IntNullableFilterObjectSchema } from './IntNullableFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
+import { JsonNullableFilterObjectSchema } from './JsonNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema'
 
 const makeSchema = (): z.ZodObject<any> => z.object({
@@ -17,6 +18,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: z.union([z.lazy(() => StringNullableFilterObjectSchema), z.string()]).nullish(),
   dealType: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
   status: z.union([z.lazy(() => StringFilterObjectSchema), z.string()]).optional(),
+  summary: z.lazy(() => JsonNullableFilterObjectSchema).optional(),
   createdAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional(),
   updatedAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional()
 }).strict();

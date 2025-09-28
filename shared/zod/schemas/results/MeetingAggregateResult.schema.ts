@@ -7,6 +7,7 @@ export const MeetingAggregateResultSchema = z.object({  _count: z.object({
     clientCompany: z.number(),
     dealType: z.number(),
     status: z.number(),
+    summary: z.number(),
     createdAt: z.number(),
     updatedAt: z.number(),
     user: z.number(),

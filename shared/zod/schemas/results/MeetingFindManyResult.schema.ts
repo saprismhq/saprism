@@ -8,6 +8,7 @@ export const MeetingFindManyResultSchema = z.object({
   clientCompany: z.string().optional(),
   dealType: z.string(),
   status: z.string(),
+  summary: z.unknown().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
   user: z.unknown(),

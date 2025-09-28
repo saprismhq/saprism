@@ -9,6 +9,7 @@ export const MeetingInputSchema = z.object({
     clientCompany: z.string().optional().nullable(),
     dealType: z.string(),
     status: z.string(),
+    summary: z.unknown().optional().nullable(),
     createdAt: z.date(),
     updatedAt: z.date(),
     user: z.unknown(),

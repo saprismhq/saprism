@@ -9,6 +9,7 @@ export const MeetingResultSchema = z.object({
     clientCompany: z.string().nullable(),
     dealType: z.string(),
     status: z.string(),
+    summary: z.unknown().nullable(),
     createdAt: z.date(),
     updatedAt: z.date(),
     user: z.unknown(),

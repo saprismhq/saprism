@@ -16,6 +16,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: z.boolean().optional(),
   dealType: z.boolean().optional(),
   status: z.boolean().optional(),
+  summary: z.boolean().optional(),
   createdAt: z.boolean().optional(),
   updatedAt: z.boolean().optional(),
   user: z.union([z.boolean(), z.lazy(() => UserArgsObjectSchema)]).optional(),

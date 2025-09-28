@@ -10,6 +10,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: SortOrderSchema.optional(),
   dealType: SortOrderSchema.optional(),
   status: SortOrderSchema.optional(),
+  summary: SortOrderSchema.optional(),
   createdAt: SortOrderSchema.optional(),
   updatedAt: SortOrderSchema.optional()
 }).strict();

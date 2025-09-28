@@ -71,6 +71,7 @@ model Meeting {
   clientCompany String?   @map("client_company") @db.VarChar(255) // Keep for backwards compatibility
   dealType      String    @default("Connect") @map("deal_type") @db.VarChar(100)
   status        String    @default("active") @db.VarChar(50)
+  summary       Json?     // AI-generated meeting summary: {pains, progress, nextSteps, keyInsights}
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
 

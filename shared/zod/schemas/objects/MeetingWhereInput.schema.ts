@@ -4,6 +4,7 @@ import { IntFilterObjectSchema } from './IntFilter.schema';
 import { StringFilterObjectSchema } from './StringFilter.schema';
 import { IntNullableFilterObjectSchema } from './IntNullableFilter.schema';
 import { StringNullableFilterObjectSchema } from './StringNullableFilter.schema';
+import { JsonNullableFilterObjectSchema } from './JsonNullableFilter.schema';
 import { DateTimeFilterObjectSchema } from './DateTimeFilter.schema';
 import { UserScalarRelationFilterObjectSchema } from './UserScalarRelationFilter.schema';
 import { UserWhereInputObjectSchema } from './UserWhereInput.schema';
@@ -25,6 +26,7 @@ const makeSchema = (): z.ZodObject<any> => z.object({
   clientCompany: z.union([z.lazy(() => StringNullableFilterObjectSchema), z.string().max(255)]).nullish(),
   dealType: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(100)]).optional(),
   status: z.union([z.lazy(() => StringFilterObjectSchema), z.string().max(50)]).optional(),
+  summary: z.lazy(() => JsonNullableFilterObjectSchema).optional(),
   createdAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional(),
   updatedAt: z.union([z.lazy(() => DateTimeFilterObjectSchema), z.date()]).optional(),
   user: z.union([z.lazy(() => UserScalarRelationFilterObjectSchema), z.lazy(() => UserWhereInputObjectSchema)]).optional(),
