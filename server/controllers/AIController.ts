@@ -83,17 +83,30 @@ export class AIController {
 
   async handleChat(req: any, res: any): Promise<void> {
     try {
-      const { message, meetingContext, conversationHistory } = req.body;
+      const { message, meetingContext, conversationHistory, meetingId, useAllMeetingsContext = false } = req.body;
 
       if (!message || typeof message !== "string") {
         res.status(400).json({ error: "Message is required" });
         return;
       }
 
+      // Build enhanced context with optional journey history
+      let enhancedContext = meetingContext || "";
+      if (useAllMeetingsContext && meetingId) {
+        // Validate meeting ownership if using journey context
+        const userId = req.user?.claims?.sub;
+        if (userId) {
+          const hasAccess = await this.meetingService.validateMeetingOwnership(meetingId, userId);
+          if (hasAccess) {
+            enhancedContext = await this.buildClientJourneyContext(meetingId, meetingContext || "");
+          }
+        }
+      }
+
       // Generate AI response using AI service
       const response = await aiService.generateChatResponse(
         message,
-        meetingContext || "",
+        enhancedContext,
         conversationHistory || []
       );
 
@@ -101,8 +114,10 @@ export class AIController {
     } catch (error) {
       this.logger.error("AI chat error", { 
         userId: req.user?.claims?.sub,
+        meetingId: req.body?.meetingId,
         hasMessage: !!req.body?.message,
         hasContext: !!req.body?.meetingContext,
+        useAllMeetingsContext: req.body?.useAllMeetingsContext,
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined
       });
@@ -122,34 +137,10 @@ export class AIController {
         return;
       }
 
+      // Build context with optional journey history
       let contextContent = content;
-
-      // If using all meetings context, build accumulated context
       if (useAllMeetingsContext) {
-        const currentMeeting = await this.meetingService.getMeetingById(meetingId);
-        if (currentMeeting) {
-          // Get all meetings for this client
-          const allMeetings = await this.meetingService.getMeetingsByUserId(userId);
-          const clientMeetings = allMeetings.filter(m => m.clientId === currentMeeting.clientId);
-          
-          // Build accumulated context from all meetings
-          let accumulatedContext = `Client: ${currentMeeting.clientName}${currentMeeting.clientCompany ? ` from ${currentMeeting.clientCompany}` : ''}\n`;
-          accumulatedContext += `Deal Type: ${currentMeeting.dealType || 'Not specified'}\n\n`;
-          accumulatedContext += `Meeting History (${clientMeetings.length} meetings):\n`;
-          
-          clientMeetings
-            .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-            .forEach((meeting: any, index: number) => {
-              accumulatedContext += `\n--- Meeting ${index + 1} (${new Date(meeting.createdAt).toLocaleDateString()}) ---\n`;
-              // Get notes for this meeting
-              // Note: We'd need to modify this to include notes, but for now use available content
-              if (meeting.id === meetingId) {
-                accumulatedContext += `Notes: ${content}\n`;
-              }
-            });
-          
-          contextContent = accumulatedContext;
-        }
+        contextContent = await this.buildClientJourneyContext(meetingId, content);
       }
 
       const suggestions = await aiService.generateCoachingSuggestions(contextContent, dealStage);
@@ -178,7 +169,7 @@ export class AIController {
 
   async generateMethodologyInsights(req: any, res: Response): Promise<void> {
     try {
-      const { meetingId, methodology } = req.body;
+      const { meetingId, methodology, useAllMeetingsContext = true } = req.body; // Default to true for methodology insights
       
       // Validate meeting ownership
       const userId = req.user.claims.sub;
@@ -197,7 +188,13 @@ export class AIController {
 
       // Get all notes for this meeting
       const notes = await this.noteService.getNotesByMeetingId(meetingId);
-      const allNotesContent = notes.map(note => note.content).join('\n\n');
+      const currentNotesContent = notes.map(note => note.content).join('\n\n');
+
+      // Build context with optional journey history (especially important for methodology insights)
+      let contextContent = currentNotesContent;
+      if (useAllMeetingsContext) {
+        contextContent = await this.buildClientJourneyContext(meetingId, currentNotesContent);
+      }
 
       // Get client information (we'll need to add client service later)
       const clientInfo = {
@@ -207,11 +204,11 @@ export class AIController {
         // TODO: Add client-specific data like industry, sales methodology, etc.
       };
 
-      // Generate methodology-specific insights
+      // Generate methodology-specific insights with enhanced context
       const insights = await aiService.generateMethodologyInsights(
         methodology,
         clientInfo,
-        allNotesContent,
+        contextContent,
         meeting
       );
       
@@ -221,6 +218,7 @@ export class AIController {
         meetingId: req.body?.meetingId,
         userId: req.user?.claims?.sub,
         methodology: req.body?.methodology,
+        useAllMeetingsContext: req.body?.useAllMeetingsContext,
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined
       });
@@ -322,6 +320,84 @@ export class AIController {
         stack: error instanceof Error ? error.stack : undefined
       });
       res.status(500).json({ message: "Failed to finalize transcription" });
+    }
+  }
+
+  /**
+   * Build cumulative client journey context from meeting summaries
+   */
+  private async buildClientJourneyContext(meetingId: number, currentContent: string = ''): Promise<string> {
+    try {
+      const currentMeeting = await this.meetingService.getMeetingById(meetingId);
+      if (!currentMeeting || !currentMeeting.clientId) {
+        return currentContent;
+      }
+
+      // Get all meetings for this client, sorted chronologically
+      const allMeetings = await this.meetingService.getMeetingsByUserId(currentMeeting.userId);
+      const clientMeetings = allMeetings
+        .filter(m => m.clientId === currentMeeting.clientId)
+        .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+      if (clientMeetings.length <= 1) {
+        // Only current meeting, no journey context to add
+        return currentContent;
+      }
+
+      // Build journey context from summaries
+      let journeyContext = `SALES JOURNEY CONTEXT:\n`;
+      journeyContext += `Client: ${currentMeeting.clientName}${currentMeeting.clientCompany ? ` from ${currentMeeting.clientCompany}` : ''}\n`;
+      journeyContext += `Journey Progress: ${clientMeetings.length} meetings (${clientMeetings[0].dealType} → ${currentMeeting.dealType})\n\n`;
+
+      // Add summaries from previous meetings (excluding current)
+      const previousMeetings = clientMeetings.filter(m => m.id !== meetingId);
+      if (previousMeetings.length > 0) {
+        journeyContext += `PREVIOUS MEETINGS SUMMARY:\n`;
+        
+        previousMeetings.forEach((meeting: any, index: number) => {
+          const meetingDate = new Date(meeting.createdAt).toLocaleDateString();
+          journeyContext += `\n--- Meeting ${index + 1}: ${meeting.dealType} (${meetingDate}) ---\n`;
+          
+          if (meeting.summary) {
+            const summary = meeting.summary as MeetingSummary;
+            if (summary.pains?.length > 0) {
+              journeyContext += `Pain Points: ${summary.pains.join('; ')}\n`;
+            }
+            if (summary.progress?.length > 0) {
+              journeyContext += `Progress: ${summary.progress.join('; ')}\n`;
+            }
+            if (summary.nextSteps?.length > 0) {
+              journeyContext += `Next Steps: ${summary.nextSteps.join('; ')}\n`;
+            }
+            if (summary.keyInsights?.length > 0) {
+              journeyContext += `Key Insights: ${summary.keyInsights.join('; ')}\n`;
+            }
+          } else {
+            journeyContext += `Summary: Not yet available\n`;
+          }
+        });
+      }
+
+      // Add current meeting content
+      journeyContext += `\n--- CURRENT MEETING: ${currentMeeting.dealType} ---\n`;
+      if (currentContent) {
+        journeyContext += `${currentContent}\n`;
+      }
+
+      this.logger.info("Built client journey context", { 
+        meetingId, 
+        clientId: currentMeeting.clientId,
+        totalMeetings: clientMeetings.length,
+        previousMeetingsWithSummary: previousMeetings.filter(m => m.summary).length
+      });
+
+      return journeyContext;
+    } catch (error) {
+      this.logger.error("Error building client journey context", {
+        meetingId,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return currentContent; // Fallback to current content only
     }
   }
 
