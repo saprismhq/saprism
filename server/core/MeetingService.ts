@@ -36,7 +36,8 @@ export class MeetingService implements IMeetingService {
   }
 
   async validateMeetingOwnership(meetingId: number, userId: string): Promise<boolean> {
-    const meeting = await this.meetingRepository.getById(meetingId);
+    // Use optimized query for ownership validation (no need for relations)
+    const meeting = await this.meetingRepository.getBasicById(meetingId);
     return meeting?.userId === userId;
   }
 
@@ -49,33 +50,38 @@ export class MeetingService implements IMeetingService {
    */
   async buildClientJourneyContext(meetingId: number, currentContent: string = ''): Promise<string> {
     try {
-      const currentMeeting = await this.meetingRepository.getById(meetingId);
+      // Use optimized query to get basic meeting info only (no relations)
+      const currentMeeting = await this.meetingRepository.getBasicById(meetingId);
       if (!currentMeeting || !currentMeeting.clientId) {
         return currentContent;
       }
 
-      // Get all meetings for this client, sorted chronologically
-      const clientMeetings = await this.meetingRepository.getByClientId(
+      // Get only meeting summaries (limited to last 5 meetings for performance)
+      const clientMeetingSummaries = await this.meetingRepository.getClientMeetingSummaries(
         currentMeeting.clientId, 
-        currentMeeting.userId
+        currentMeeting.userId,
+        5 // Limit to last 5 meetings for performance
       );
 
-      if (clientMeetings.length <= 1) {
+      if (clientMeetingSummaries.length <= 1) {
         // Only current meeting, no journey context to add
         return currentContent;
       }
 
+      // Reverse to get chronological order (oldest first)
+      const chronologicalMeetings = clientMeetingSummaries.reverse();
+
       // Build journey context from summaries
       let journeyContext = `SALES JOURNEY CONTEXT:\n`;
       journeyContext += `Client: ${currentMeeting.clientName}${currentMeeting.clientCompany ? ` from ${currentMeeting.clientCompany}` : ''}\n`;
-      journeyContext += `Journey Progress: ${clientMeetings.length} meetings (${clientMeetings[0].dealType} → ${currentMeeting.dealType})\n\n`;
+      journeyContext += `Journey Progress: ${chronologicalMeetings.length} recent meetings (${chronologicalMeetings[0].dealType} → ${currentMeeting.dealType})\n\n`;
 
       // Add summaries from previous meetings (excluding current)
-      const previousMeetings = clientMeetings.filter(m => m.id !== meetingId);
+      const previousMeetings = chronologicalMeetings.filter(m => m.id !== meetingId);
       if (previousMeetings.length > 0) {
         journeyContext += `PREVIOUS MEETINGS SUMMARY:\n`;
         
-        previousMeetings.forEach((meeting: Meeting, index: number) => {
+        previousMeetings.forEach((meeting, index: number) => {
           const meetingDate = new Date(meeting.createdAt).toLocaleDateString();
           journeyContext += `\n--- Meeting ${index + 1}: ${meeting.dealType} (${meetingDate}) ---\n`;
           

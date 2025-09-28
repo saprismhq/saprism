@@ -12,6 +12,9 @@ export interface IMeetingRepository {
   getByClientId(clientId: number, userId: string): Promise<Meeting[]>;
   update(id: number, updates: Partial<InsertMeeting>): Promise<Meeting>;
   delete(id: number): Promise<void>;
+  // Optimized methods for journey context
+  getBasicById(id: number): Promise<{ id: number; clientId: number | null; userId: string; clientName: string; clientCompany: string | null; dealType: string } | undefined>;
+  getClientMeetingSummaries(clientId: number, userId: string, limit?: number): Promise<{ id: number; summary: any; dealType: string; createdAt: Date }[]>;
 }
 
 export class MeetingRepository implements IMeetingRepository {
@@ -69,6 +72,40 @@ export class MeetingRepository implements IMeetingRepository {
         userId 
       },
       orderBy: { createdAt: 'asc' }, // Chronological order for journey context
+    });
+  }
+
+  // Optimized method to get basic meeting info without relations
+  async getBasicById(id: number): Promise<{ id: number; clientId: number | null; userId: string; clientName: string; clientCompany: string | null; dealType: string } | undefined> {
+    const meeting = await db.meeting.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        clientId: true,
+        userId: true,
+        clientName: true,
+        clientCompany: true,
+        dealType: true,
+      },
+    });
+    return meeting || undefined;
+  }
+
+  // Optimized method to get only meeting summaries for journey context
+  async getClientMeetingSummaries(clientId: number, userId: string, limit: number = 5): Promise<{ id: number; summary: any; dealType: string; createdAt: Date }[]> {
+    return await db.meeting.findMany({
+      where: { 
+        clientId,
+        userId 
+      },
+      select: {
+        id: true,
+        summary: true,
+        dealType: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' }, // Most recent first, then we'll reverse for chronological
+      take: limit, // Limit to last N meetings for performance
     });
   }
 }
