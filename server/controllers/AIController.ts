@@ -101,8 +101,8 @@ export class AIController {
     } catch (error) {
       this.logger.error("AI chat error", { 
         userId: req.user?.claims?.sub,
-        hasMessage: !!message,
-        hasContext: !!meetingContext,
+        hasMessage: !!req.body?.message,
+        hasContext: !!req.body?.meetingContext,
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined
       });
