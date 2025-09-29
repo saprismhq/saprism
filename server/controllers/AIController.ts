@@ -6,6 +6,8 @@ import { aiService } from "../services/ai/AIService";
 import { insertCoachingSuggestionSchema, MeetingSummarySchema, type MeetingSummary } from "@shared/schema";
 import { getLogger } from "../utils/LoggerFactory";
 import winston from "winston";
+import { getCacheService, InMemoryCacheService } from "../services/cache";
+import crypto from "crypto";
 
 export class AIController {
   private logger: winston.Logger;
@@ -336,12 +338,31 @@ export class AIController {
    */
   private async buildClientJourneyContext(meetingId: number, currentContent: string = ''): Promise<string> {
     try {
+      // Generate cache key based on meeting ID and content hash
+      const contentHash = crypto.createHash('md5')
+        .update(currentContent.substring(0, 100))
+        .digest('hex')
+        .substring(0, 8);
+      const cacheKey = `journey:context:${meetingId}:${contentHash}`;
+      
+      // Check cache first
+      const cacheService = getCacheService();
+      const cached = await cacheService.get<string>(cacheKey);
+      if (cached !== null) {
+        this.logger.debug("Journey context cache hit", { meetingId, cacheKey });
+        return cached;
+      }
+      
       // Use the new MeetingService helper method for efficiency
       const journeyContext = await this.meetingService.buildClientJourneyContext(meetingId, currentContent);
       
-      this.logger.info("Built client journey context via MeetingService", { 
+      // Cache the result for 10 minutes
+      await cacheService.set(cacheKey, journeyContext, 600);
+      
+      this.logger.info("Built and cached client journey context", { 
         meetingId,
-        hasEnhancedContext: journeyContext.length > currentContent.length
+        hasEnhancedContext: journeyContext.length > currentContent.length,
+        cacheKey
       });
 
       return journeyContext;
