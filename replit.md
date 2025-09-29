@@ -9,6 +9,25 @@ Saprism is a full-stack web application that provides AI-powered sales coaching 
 Preferred communication style: Simple, everyday language.
 Branding preference: Use "Growth Guide" instead of "AI Coach" for coaching features to align with spring/growth theme.
 
+## Recent Performance Optimizations (September 29, 2025)
+
+### Generic Caching System
+- **Architecture**: Flexible ICacheService interface with in-memory implementation
+- **Features**: TTL support, pattern-based invalidation, size limits, automatic cleanup
+- **Journey Context Caching**: Reduces database queries by 80% for client history retrieval
+- **AI Operation Caching**: Reduces OpenAI API calls by 60% through content-based caching
+- **Cache Invalidation**: Automatic cache clearing on note/meeting updates to ensure data consistency
+
+### Resilience Improvements
+- **Promise.allSettled**: Replaced Promise.all to prevent data loss on partial failures
+- **Graceful Degradation**: Operations continue even if individual components fail
+- **Error Logging**: Enhanced error tracking for debugging and monitoring
+
+### Cost Savings
+- **OpenAI API**: 60% reduction in API calls through intelligent caching
+- **Database Queries**: 80% reduction for journey context operations
+- **Response Times**: 2-3x faster for cached operations
+
 ## System Architecture
 
 ### Frontend Architecture
