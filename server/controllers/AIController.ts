@@ -37,10 +37,22 @@ export class AIController {
       this.logger.info("Starting parallel AI operations", { meetingId, userId });
       const startTime = Date.now();
       
-      const [analysis, coachingSuggestions] = await Promise.all([
+      const results = await Promise.allSettled([
         aiService.analyzeNotes(content),
         aiService.generateCoachingSuggestions(content, 'discovery') // Use discovery as default
       ]);
+      
+      // Extract results with error handling
+      const analysis = results[0].status === 'fulfilled' ? results[0].value : null;
+      const coachingSuggestions = results[1].status === 'fulfilled' ? results[1].value : null;
+      
+      // Log any errors
+      if (results[0].status === 'rejected') {
+        this.logger.error("AI analysis failed", { error: results[0].reason });
+      }
+      if (results[1].status === 'rejected') {
+        this.logger.error("Coaching suggestions generation failed", { error: results[1].reason });
+      }
       
       const duration = Date.now() - startTime;
       this.logger.info("AI operations completed", { 
@@ -56,14 +68,22 @@ export class AIController {
       const latestNote = notes[0];
       
       // Update note with analysis and store coaching suggestions in parallel
-      await Promise.all([
-        latestNote ? this.noteService.updateNote(latestNote.id, { aiAnalysis: analysis }) : Promise.resolve(),
-        this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
+      const updateResults = await Promise.allSettled([
+        latestNote && analysis ? this.noteService.updateNote(latestNote.id, { aiAnalysis: analysis }) : Promise.resolve(),
+        coachingSuggestions ? this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
           meetingId,
           type: 'coaching',
           content: coachingSuggestions
-        }))
+        })) : Promise.resolve()
       ]);
+      
+      // Log any errors from updates
+      updateResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const operation = index === 0 ? 'note update' : 'coaching suggestion storage';
+          this.logger.error(`Failed to complete ${operation}`, { error: result.reason });
+        }
+      });
       
       // Return both analysis and coaching suggestions
       const response = {
@@ -287,11 +307,24 @@ export class AIController {
       this.logger.info("Running AI analysis and summary generation on finalized transcription", { meetingId, userId });
       const startTime = Date.now();
       
-      const [analysis, coachingSuggestions, meetingSummary] = await Promise.all([
+      const results = await Promise.allSettled([
         aiService.analyzeNotes(updatedContent),
         aiService.generateCoachingSuggestions(updatedContent, 'discovery'),
         this.generateMeetingSummary(updatedContent, meetingId)
       ]);
+      
+      // Extract results with error handling
+      const analysis = results[0].status === 'fulfilled' ? results[0].value : null;
+      const coachingSuggestions = results[1].status === 'fulfilled' ? results[1].value : null;
+      const meetingSummary = results[2].status === 'fulfilled' ? results[2].value : null;
+      
+      // Log any errors
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const operations = ['AI analysis', 'coaching suggestions', 'meeting summary'];
+          this.logger.error(`${operations[index]} failed`, { error: result.reason });
+        }
+      });
       
       const duration = Date.now() - startTime;
       this.logger.info("AI analysis and summary generation completed on finalized transcription", { 
@@ -304,15 +337,23 @@ export class AIController {
       });
 
       // Update note with AI analysis, store coaching suggestions, and update meeting with summary
-      await Promise.all([
-        this.noteService.updateNote(noteId, { aiAnalysis: analysis }),
-        this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
+      const updateResults = await Promise.allSettled([
+        analysis ? this.noteService.updateNote(noteId, { aiAnalysis: analysis }) : Promise.resolve(),
+        coachingSuggestions ? this.coachingService.createCoachingSuggestion(insertCoachingSuggestionSchema.parse({
           meetingId,
           type: 'transcription_coaching',
           content: coachingSuggestions
-        })),
+        })) : Promise.resolve(),
         meetingSummary ? this.meetingService.updateMeeting(meetingId, { summary: meetingSummary }) : Promise.resolve()
       ]);
+      
+      // Log any errors from updates
+      updateResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const operations = ['note update', 'coaching suggestion storage', 'meeting summary update'];
+          this.logger.error(`Failed to complete ${operations[index]}`, { error: result.reason });
+        }
+      });
 
       res.json({
         success: true,
