@@ -1,11 +1,11 @@
 // Export all cache-related interfaces and implementations
-export { ICacheService, CacheEntry, CacheOptions } from './ICacheService';
-export { InMemoryCacheService } from './InMemoryCacheService';
+export type { ICacheService, CacheEntry, CacheOptions } from './ICacheService.js';
+export { InMemoryCacheService } from './InMemoryCacheService.js';
 export { 
   Cacheable, 
   CacheInvalidate, 
   CacheManager,
-  CacheableOptions,
+  type CacheableOptions,
   initializeCacheService,
   getCacheService
-} from './CacheableDecorator';
+} from './CacheableDecorator.js';

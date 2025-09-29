@@ -1,5 +1,5 @@
-import { ICacheService, CacheEntry, CacheOptions } from './ICacheService';
-import { getLogger } from '../../utils/LoggerFactory';
+import { ICacheService, CacheEntry, CacheOptions } from './ICacheService.js';
+import { getLogger } from '../../utils/LoggerFactory.js';
 import winston from 'winston';
 import crypto from 'crypto';
 

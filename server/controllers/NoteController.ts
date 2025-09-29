@@ -4,6 +4,7 @@ import { IMeetingService } from "../core/MeetingService";
 import { insertNoteSchema } from "@shared/schema";
 import { getLogger } from "../utils/LoggerFactory";
 import winston from "winston";
+import { CacheManager } from "../services/cache";
 
 export class NoteController {
   private logger: winston.Logger;
@@ -58,6 +59,10 @@ export class NoteController {
       }
 
       const note = await this.noteService.createNote(noteData);
+      
+      // Invalidate cache for this meeting's journey context
+      await CacheManager.invalidate([`journey:context:${noteData.meetingId}:*`]);
+      
       res.json(note);
     } catch (error) {
       this.logger.error('Error creating note', { 
@@ -76,6 +81,16 @@ export class NoteController {
       const updates = req.body;
       
       const note = await this.noteService.updateNote(noteId, updates);
+      
+      // Invalidate cache for this meeting's journey context and AI analysis
+      if (note?.meetingId) {
+        await CacheManager.invalidate([
+          `journey:context:${note.meetingId}:*`,
+          `ai:analysis:*`,
+          `ai:coaching:*`
+        ]);
+      }
+      
       res.json(note);
     } catch (error) {
       this.logger.error('Error updating note', { 

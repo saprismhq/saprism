@@ -1,6 +1,6 @@
-import { ICacheService } from './ICacheService';
-import { InMemoryCacheService } from './InMemoryCacheService';
-import { getLogger } from '../../utils/LoggerFactory';
+import { ICacheService } from './ICacheService.js';
+import { InMemoryCacheService } from './InMemoryCacheService.js';
+import { getLogger } from '../../utils/LoggerFactory.js';
 import winston from 'winston';
 
 /**
