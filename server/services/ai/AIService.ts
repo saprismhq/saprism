@@ -5,6 +5,8 @@ import type { AIAnalysisResult, CoachingSuggestionContent } from '../../../share
 import { getDefaultAIProvider } from './AIProviderFactory';
 import { getLogger } from '../../utils/LoggerFactory';
 import winston from 'winston';
+import { getCacheService } from '../cache';
+import crypto from 'crypto';
 
 /**
  * Unified AI Service - maintains backward compatibility while providing provider abstraction
@@ -28,7 +30,27 @@ export class AIService {
    * @returns Structured analysis including deal stage, pain points, sentiment, etc.
    */
   async analyzeNotes(notesContent: string): Promise<AIAnalysisResult> {
-    return this.provider.analyzeNotes(notesContent);
+    // Generate cache key based on content hash
+    const contentHash = crypto.createHash('md5')
+      .update(notesContent)
+      .digest('hex')
+      .substring(0, 12);
+    const cacheKey = `ai:analysis:${contentHash}`;
+    
+    // Check cache first
+    const cacheService = getCacheService();
+    const cached = await cacheService.get<AIAnalysisResult>(cacheKey);
+    if (cached !== null) {
+      this.logger.debug("AI analysis cache hit", { cacheKey });
+      return cached;
+    }
+    
+    // Call provider and cache result
+    const result = await this.provider.analyzeNotes(notesContent);
+    await cacheService.set(cacheKey, result, 900); // Cache for 15 minutes
+    
+    this.logger.debug("AI analysis cached", { cacheKey });
+    return result;
   }
 
   /**
@@ -40,7 +62,32 @@ export class AIService {
    * @returns Coaching suggestions with questions, pain mapping, and next steps
    */
   async generateCoachingSuggestions(notesContent: string, dealStage: string, options?: any): Promise<CoachingSuggestionContent> {
-    return this.provider.generateCoachingSuggestions(notesContent, dealStage, options);
+    // Generate cache key including journey context if present
+    const cacheKeyComponents = [notesContent, dealStage];
+    if (options?.journeyContext) {
+      cacheKeyComponents.push(options.journeyContext.substring(0, 200));
+    }
+    
+    const contentHash = crypto.createHash('md5')
+      .update(cacheKeyComponents.join('|'))
+      .digest('hex')
+      .substring(0, 12);
+    const cacheKey = `ai:coaching:${dealStage}:${contentHash}`;
+    
+    // Check cache first
+    const cacheService = getCacheService();
+    const cached = await cacheService.get<CoachingSuggestionContent>(cacheKey);
+    if (cached !== null) {
+      this.logger.debug("Coaching suggestions cache hit", { cacheKey, dealStage });
+      return cached;
+    }
+    
+    // Call provider and cache result
+    const result = await this.provider.generateCoachingSuggestions(notesContent, dealStage, options);
+    await cacheService.set(cacheKey, result, 900); // Cache for 15 minutes
+    
+    this.logger.debug("Coaching suggestions cached", { cacheKey, dealStage });
+    return result;
   }
 
   /**
