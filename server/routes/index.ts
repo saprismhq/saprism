@@ -17,8 +17,12 @@ import { ICoachingService } from "../core/CoachingService";
 import { ICrmSyncService } from "../core/CrmSyncService";
 import { IAuthenticationService } from "../core/AuthenticationService";
 import { setupWebSocketServer } from "./websocket";
+import { initializeCacheService } from "../services/cache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize cache service before anything else
+  initializeCacheService();
+  
   // Get dependencies from container
   const container = Container.getInstance();
   
